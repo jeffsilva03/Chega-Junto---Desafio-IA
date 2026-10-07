@@ -1,0 +1,25 @@
+/* Núcleo vetorial: a mesma geometria é preservada em qualquer escala. */
+@media (min-width: 901px) {
+  .ai-visual::before,
+  .ai-visual::after,
+  .ai-links,
+  .ai-orbit,
+  .ai-circle { display: none !important; }
+
+  .ai-vector-core {
+    position: absolute !important;
+    z-index: 2 !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 970px !important;
+    height: 670px !important;
+    overflow: visible !important;
+    pointer-events: none;
+  }
+
+  .ai-vector-core .core-line { fill: none; stroke: #c8fa4d; stroke-width: 1.25; stroke-linecap: round; }
+  .ai-vector-core .core-word { fill: #d6e9fb; font-family: Inter, Arial, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 4px; }
+  .ai-vector-core .core-name { fill: #ffffff; font-family: Manrope, Arial, sans-serif; font-size: 27px; font-weight: 800; }
+  .ai-vector-core .core-sub { fill: #b8cfe8; font-family: Inter, Arial, sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 3px; }
+  .ai-node::after { display: none !important; }
+}

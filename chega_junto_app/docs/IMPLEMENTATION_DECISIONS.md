@@ -1,0 +1,27 @@
+# Decisões de implementação do MVP
+
+- Documentação oficial e protótipos existentes orientam a implementação. Código pertence somente a esta pasta.
+- Boas-vindas usa uma única página, três indicadores decorativos e ambos os acessos seguem para Login.
+- Navegação: Início, Agenda, Preparo, Perfil. Preparo abre diretamente o checklist do próximo atendimento.
+- Mocks em outubro de 2026. A mesma consulta, profissional, unidade, horário e status são reutilizados entre Home, Agenda, Detalhes e Checklist.
+- Progresso geral: documentos/preparo, presença, relato e revisão final. Os três primeiros começam concluídos; revisão final está pendente (75%).
+- Checklist: documento com foto e cartão SUS são obrigatórios; demais itens são opcionais. Com os dois documentos marcados, seu percentual é 100%, enquanto o preparo geral permanece em 75%. Desmarcar um documento reduz checklist para 50% e preparo geral para 50%.
+- Concluir checklist salva o estado já selecionado e retorna à Home, sem marcar automaticamente itens e sem impedir navegação com pendências.
+- Agenda inicia em Próximos porque a consulta é futura em relação à data fictícia de referência. Hoje e filtros funcionam sobre os itens da lista. O destaque do próximo atendimento permanece separado dos resultados de busca.
+- Lembretes são registros locais em memória. Não geram push ou alarmes do Android.
+- Novo Lembrete segue o novo protótipo com card flutuante ancorado no botão, título editável/limpável e três antecipações relativas à próxima consulta. Cancelar não grava. Os horários calculados são listados cronologicamente na Agenda e o registro guarda o identificador da consulta.
+- O card de lembrete mantém Salvar/Cancelar visíveis com teclado e fonte ampliada; seu conteúdo rola quando necessário. O menu permanece visível, e o card é reposicionado quando faltar espaço acima do botão.
+- Perfil reproduz a tela principal com dados fictícios e email no domínio reservado example.test. O cartão SUS reutiliza o símbolo do protótipo e a unidade da consulta compartilhada; não há validação de cadastro pelo SUS.
+- Por decisão explícita do usuário, os destinos de Meus dados, Minha saúde, Configurações e cartão SUS aguardam protótipos próprios. Nenhuma tela de destino nem diálogo de dados foi criado. A engrenagem mantém a saída da demonstração.
+- O menu do protótipo de Perfil é adaptado para a decisão oficial Início, Agenda, Preparo, Perfil.
+- Ajuste oficial posterior do Perfil: Meus dados contém apenas Dados pessoais (endereço e contato de emergência pertencerão à mesma página). Minha saúde contém Medicamentos e alergias em um único destino, com Histórico separado.
+- O mapa de Detalhes é uma ilustração vetorial local. Como chegar apresenta o endereço fictício com opção de copiar. Não chama serviços de mapas.
+- Não há ações reais de remarcação, cancelamento, aviso à unidade ou envio a profissionais.
+- Confirmação segue o protótipo aprovado: resumo da consulta, três opções, informação, ajuda, salvar e responder depois. O indicador usa Etapa 2 de 4 conforme as macroetapas oficiais.
+- Presença é salva somente ao tocar em Salvar resposta; Responder depois ou sair pelo menu não grava a seleção. A resposta atualiza a mesma consulta em Home, Agenda e Detalhes e pode ser revista.
+- Regra atual de progresso (submetida à decisão de produto): Vou comparecer conclui a etapa de presença; Ainda não sei e Não poderei comparecer mantêm essa etapa pendente. Nenhuma resposta cancela ou remarca a consulta.
+- Ver como remarcar e Orientações para avisar a unidade abrem explicações em diálogos; não criam integração nem nova tela de barreiras sem protótipo.
+- Menu inferior obrigatório em todas as telas internas. Detalhes destaca Agenda; Checklist e Confirmação destacam Preparo. As telas de entrada aprovadas permanecem sem navegação de sessão.
+- Relato permanece na rota técnica existente, aguardando implementação autorizada.
+- O logo recebe transparência no momento da renderização, sem redesenho da marca nem alteração de arquivos de referência.
+- Textos e layouts suportam rolagem, largura mobile limitada na Web e fonte ampliada. Molduras de aparelhos e barras de sistema desenhadas nos protótipos não são recriadas como UI.

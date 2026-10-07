@@ -1,0 +1,31 @@
+# Metadados de repositórios locais e ferramentas
+**/.git/
+**/.openai/
+**/.local/
+**/.idea/
+**/.vscode/
+**/node_modules/
+**/.dart_tool/
+**/.gradle/
+**/build/
+**/dist/
+**/coverage/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.pyc
+__pycache__/
+
+# Credenciais e configurações específicas de máquina
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+*.jks
+**/secrets/
+**/local.properties
+**/key.properties
