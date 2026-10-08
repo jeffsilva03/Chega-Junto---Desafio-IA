@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +20,7 @@ import 'package:chega_junto_app/features/pre_visit_report/presentation/pages/aud
 import 'package:chega_junto_app/features/ai_summary/presentation/pages/ai_summary_page.dart';
 import 'package:chega_junto_app/features/questions/presentation/pages/consultation_questions_page.dart';
 import 'package:chega_junto_app/features/profile/presentation/pages/accessibility_page.dart';
+import 'package:chega_junto_app/features/final_review/presentation/pages/final_review_page.dart';
 
 class _Auth implements AuthRepository {
   @override
@@ -34,31 +38,49 @@ Future<void> _size(WidgetTester tester, Size size, [double scale = 1]) async {
     await (FontLoader(
       'NunitoSans',
     )..addFont(rootBundle.load('assets/fonts/NunitoSans.ttf'))).load();
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 }
 
 Future<void> _mount(
   WidgetTester tester, {
   MockProfileRepository? profile,
+  GlobalKey? capture,
 }) async {
   final session = DemoSession(_Auth());
   await session.signIn();
   addTearDown(session.dispose);
-  await tester.pumpWidget(
-    ChegaJuntoApp(
-      key: UniqueKey(),
-      session: session,
-      initialLocation: AppRoutes.report,
-      profileRepository: profile,
-      aiAssistant: const MockAiAssistantService(
-        delay: Duration(milliseconds: 800),
-      ),
-      audioDraftService: const MockAudioDraftService(
-        delay: Duration(milliseconds: 400),
-      ),
+  final app = ChegaJuntoApp(
+    key: UniqueKey(),
+    session: session,
+    initialLocation: AppRoutes.report,
+    profileRepository: profile,
+    aiAssistant: const MockAiAssistantService(
+      delay: Duration(milliseconds: 800),
+    ),
+    audioDraftService: const MockAudioDraftService(
+      delay: Duration(milliseconds: 400),
     ),
   );
+  await tester.pumpWidget(
+    capture == null ? app : RepaintBoundary(key: capture, child: app),
+  );
   await tester.pumpAndSettle();
+}
+
+Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
+  if (!const bool.fromEnvironment('CAPTURE_QA')) return;
+  await tester.runAsync(() async {
+    final boundary =
+        key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final shot = await boundary.toImage(pixelRatio: 2);
+    final bytes = await shot.toByteData(format: ui.ImageByteFormat.png);
+    Directory('.local/qa').createSync(recursive: true);
+    File('.local/qa/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+    shot.dispose();
+  });
 }
 
 GoRouter _router(WidgetTester tester) =>
@@ -146,11 +168,9 @@ void main() {
         'Como organizar minhas anotações?',
       );
       await _tap(tester, find.text('Continuar'));
-      expect(
-        _router(tester).routeInformationProvider.value.uri.path,
-        AppRoutes.checklist,
-      );
+      expect(_router(tester).state.uri.path, AppRoutes.finalReview);
       expect(controller.reviewed, isTrue);
+      expect(controller.preparation.overview!.progress.percentage, 75);
       expect(
         controller.preparation.overview!.report.organizedSummary,
         contains('Meu texto revisado.'),
@@ -271,12 +291,15 @@ void main() {
         AppRoutes.audio,
         AppRoutes.summary,
         AppRoutes.questions,
+        AppRoutes.finalReview,
       ]) {
         _router(tester).go(route);
         await tester.pumpAndSettle();
         await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       }
+      _router(tester).go(AppRoutes.questions);
+      await tester.pumpAndSettle();
       expect(
         tester.getSemantics(find.byKey(const ValueKey('question-care'))),
         isSemantics(
@@ -318,6 +341,7 @@ void main() {
         AppRoutes.audio,
         AppRoutes.summary,
         AppRoutes.questions,
+        AppRoutes.finalReview,
         AppRoutes.processing,
       ]) {
         for (final destination in {
@@ -419,6 +443,164 @@ void main() {
     );
   });
 
+  testWidgets(
+    'Revisão reúne conteúdo escolhido permite editar e atualiza Home de 75 para 100',
+    (tester) async {
+      await _size(tester, const Size(390, 844));
+      final capture = GlobalKey();
+      await _mount(tester, capture: capture);
+      final controller = tester
+          .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
+          .controller;
+      final original = controller.text;
+      await tester.runAsync(() => controller.organize());
+      controller.editSection(
+        'reason',
+        'Meu resumo revisado para esta consulta.',
+      );
+      controller.selectQuestion('care', false);
+      _router(tester).go(AppRoutes.questions);
+      await tester.pumpAndSettle();
+      await _tap(tester, find.text('Continuar'));
+      expect(find.byType(FinalReviewPage), findsOneWidget);
+      expect(find.text('Preparar para a consulta'), findsOneWidget);
+      expect(find.text('3 de 4 etapas • 75%'), findsOneWidget);
+      expect(
+        find.text('Meu resumo revisado para esta consulta.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Existe algum cuidado que eu deva seguir?'),
+        findsNothing,
+      );
+      expect(
+        find.text('O que devo observar até o próximo atendimento?'),
+        findsOneWidget,
+      );
+      expect(controller.text, original);
+      await _capture(tester, capture, 'revisao-final-390');
+      await _tap(tester, find.byKey(const ValueKey('review-edit-summary')));
+      await _tap(tester, find.byKey(const ValueKey('edit-reason')));
+      await tester.enterText(
+        find.byKey(const ValueKey('report-edit-field')),
+        'Resumo ajustado por mim.',
+      );
+      await _tap(tester, find.byKey(const ValueKey('report-edit-save')));
+      _router(tester).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Resumo ajustado por mim.'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('review-edit-questions')));
+      await _tap(tester, find.byKey(const ValueKey('question-observe')));
+      await _tap(tester, find.text('Adicionar minha própria pergunta'));
+      await tester.enterText(
+        find.byKey(const ValueKey('report-edit-field')),
+        'Minha pergunta para levar?',
+      );
+      await _tap(tester, find.byKey(const ValueKey('report-edit-save')));
+      await _tap(tester, find.text('Continuar'));
+      expect(find.byType(FinalReviewPage), findsOneWidget);
+      expect(find.text('Minha pergunta para levar?'), findsOneWidget);
+      expect(
+        find.text('O que devo observar até o próximo atendimento?'),
+        findsNothing,
+      );
+      expect(controller.preparation.overview!.progress.percentage, 75);
+      await _tap(tester, find.text('Concluir preparação'));
+      expect(find.text('Preparação concluída'), findsOneWidget);
+      expect(find.text('4 de 4 etapas • 100%'), findsOneWidget);
+      await _capture(tester, capture, 'preparacao-concluida-390');
+      expect(controller.text, original);
+      await _tap(tester, find.text('Voltar ao início'));
+      expect(find.text('4 de 4 etapas'), findsOneWidget);
+      expect(find.text('100%'), findsOneWidget);
+      await _capture(tester, capture, 'home-preparacao-100-390');
+      await _tap(tester, find.text('Revisão final'));
+      expect(find.text('Preparação concluída'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('review-edit-summary')));
+      await _tap(tester, find.byKey(const ValueKey('edit-reason')));
+      await tester.enterText(
+        find.byKey(const ValueKey('report-edit-field')),
+        'Nova revisão após a conclusão.',
+      );
+      await _tap(tester, find.byKey(const ValueKey('report-edit-save')));
+      _router(tester).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Preparar para a consulta'), findsOneWidget);
+      expect(find.text('3 de 4 etapas • 75%'), findsOneWidget);
+      _router(tester).go(AppRoutes.home);
+      await tester.pumpAndSettle();
+      expect(find.text('75%'), findsOneWidget);
+      expect(find.text('3 de 4 etapas'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Revisão aberta pela Home sem resumo não inventa conteúdo', (
+    tester,
+  ) async {
+    await _size(tester, const Size(320, 568));
+    await _mount(tester);
+    final controller = tester
+        .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
+        .controller;
+    final original = controller.text;
+    _router(tester).go(AppRoutes.home);
+    await tester.pumpAndSettle();
+    await _tap(tester, find.text('Revisão final'));
+    expect(controller.hasSummary, isFalse);
+    expect(
+      find.text(
+        'Você ainda não tem um resumo revisado. Organize seu relato para continuar.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Nenhuma pergunta selecionada. Você pode concluir sem perguntas.',
+      ),
+      findsOneWidget,
+    );
+    final button = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Concluir preparação'),
+    );
+    expect(button.onPressed, isNull);
+    await _tap(tester, find.byKey(const ValueKey('review-edit-summary')));
+    expect(find.byType(PreVisitReportPage), findsOneWidget);
+    expect(controller.text, original);
+  });
+
+  testWidgets(
+    'Revisão permite nenhuma pergunta e mantém os dados da consulta',
+    (tester) async {
+      await _size(tester, const Size(390, 844));
+      await _mount(tester);
+      final controller = tester
+          .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
+          .controller;
+      await tester.runAsync(() => controller.organize());
+      controller.selectAll(false);
+      _router(tester).go(AppRoutes.finalReview);
+      await tester.pumpAndSettle();
+      await _tap(tester, find.byKey(const ValueKey('review-appointment')));
+      expect(find.text('Dra. Ana Beatriz Souza'), findsOneWidget);
+      expect(
+        find.textContaining('9 de outubro de 2026 • 08:00'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('UBS Centro'), findsOneWidget);
+      await _tap(tester, find.text('Concluir preparação'));
+      expect(
+        controller.preparation.overview!.report.suggestedQuestions,
+        isEmpty,
+      );
+      expect(controller.preparation.overview!.progress.percentage, 100);
+      expect(
+        find.textContaining('Você decide o que compartilhar.'),
+        findsWidgets,
+      );
+    },
+  );
+
   for (final dimensions in [
     (const Size(320, 568), 1.5),
     (const Size(320, 568), 2.1),
@@ -456,10 +638,17 @@ void main() {
               AppRoutes.audio,
               AppRoutes.summary,
               AppRoutes.questions,
+              AppRoutes.finalReview,
             ]) {
               _router(tester).go(route);
               await tester.pumpAndSettle();
               expect(find.byType(AppBottomNavigation), findsOneWidget);
+              if (route == AppRoutes.finalReview) {
+                if (!controller.preparation.finalReviewCompleted) {
+                  await _tap(tester, find.text('Concluir preparação'));
+                }
+                expect(find.text('Preparação concluída'), findsOneWidget);
+              }
               final routeContext = tester.element(
                 find.byType(AppBottomNavigation),
               );

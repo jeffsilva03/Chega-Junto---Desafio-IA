@@ -299,6 +299,27 @@ void main() {
     await _tap(tester, find.text('Falar com o suporte'));
     expect(find.textContaining('ainda não está disponível'), findsOneWidget);
     await _tap(tester, find.text('Fechar'));
+    await _tap(tester, find.text('Perguntas frequentes (FAQ)'));
+    expect(
+      find.textContaining('A organização do relato é simulada'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('o fluxo de IA ainda não está disponível'),
+      findsNothing,
+    );
+    await _tap(tester, find.text('Fechar'));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Rota desconhecida permite retornar à Home', (tester) async {
+    await _prepare(tester, const Size(390, 844));
+    await _mount(tester, '/rota-inexistente');
+    expect(find.text('Página não encontrada'), findsOneWidget);
+    expect(find.textContaining('Não encontramos esta página.'), findsOneWidget);
+    await _tap(tester, find.text('Voltar ao início'));
+    expect(find.text('Olá, Maria'), findsOneWidget);
+    expect(find.byType(AppBottomNavigation), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

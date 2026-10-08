@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/appointment.dart';
 import '../../data/models/appointment_reminder.dart';
+import '../../data/models/checklist_item.dart';
 import '../../data/models/organized_report.dart';
 import '../../data/models/pre_visit_report.dart';
 import '../../data/models/preparation_overview.dart';
@@ -16,12 +17,51 @@ class PreparationController extends ChangeNotifier {
   bool failed = false;
   bool saving = false;
   bool _disposed = false;
+  Future<void> _pendingFinalReview = Future<void>.value();
+  bool _finalReviewInvalidated = false;
+
+  bool get finalReviewCompleted =>
+      overview?.progress.completed.contains(PreparationStage.finalReview) ??
+      false;
+
+  void invalidateFinalReview() {
+    if (!finalReviewCompleted) return;
+    final appointmentId = overview!.nextAppointment.id;
+    _finalReviewInvalidated = true;
+    overview = overview!.withFinalReview(false);
+    notifyListeners();
+    // Keep local invalidation immediate; serialize it before another conclusion.
+    _pendingFinalReview = _pendingFinalReview.then((_) async {
+      try {
+        await repository.setFinalReview(appointmentId, false);
+      } catch (_) {
+        // The session stays pending even if a future repository cannot persist.
+        // A deliberate new conclusion will retry saving its current state.
+      }
+    });
+  }
+
+  Future<void> completeFinalReview() async {
+    await _pendingFinalReview;
+    if (_disposed || overview == null) {
+      throw StateError('Preparo indisponível.');
+    }
+    final updated = await repository.setFinalReview(
+      overview!.nextAppointment.id,
+      true,
+    );
+    if (_disposed) return;
+    _finalReviewInvalidated = false;
+    overview = updated;
+    notifyListeners();
+  }
 
   Future<void> saveReportReview(
     String text,
     List<ReportSection> sections,
     List<ConsultationQuestion> questions,
   ) async {
+    await _pendingFinalReview;
     if (overview == null) throw StateError('Preparo indisponível.');
     final updated = await repository.saveReport(
       PreVisitReport(
@@ -39,7 +79,9 @@ class PreparationController extends ChangeNotifier {
       ),
     );
     if (_disposed) return;
-    overview = updated;
+    overview = _finalReviewInvalidated
+        ? updated.withFinalReview(false)
+        : updated;
     notifyListeners();
   }
 
@@ -48,6 +90,7 @@ class PreparationController extends ChangeNotifier {
     failed = false;
     notifyListeners();
     try {
+      await _pendingFinalReview;
       final overviewFuture = repository.loadOverview();
       final appointmentsFuture = repository.loadAppointments();
       final remindersFuture = repository.loadReminders();
@@ -58,6 +101,7 @@ class PreparationController extends ChangeNotifier {
       ]);
       if (_disposed) return;
       overview = results[0] as PreparationOverview;
+      if (_finalReviewInvalidated) overview = overview!.withFinalReview(false);
       appointments = results[1] as List<Appointment>;
       reminders = results[2] as List<AppointmentReminder>;
     } catch (_) {

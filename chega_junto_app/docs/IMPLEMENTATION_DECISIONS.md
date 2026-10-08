@@ -81,3 +81,25 @@
 - Permanecem os três avisos do dry run de WebAssembly de flutter_tts; CupertinoIcons não voltou a apresentar aviso. O doctor continua indicando licenças Android pendentes e Visual Studio incompleto, sem impedir o build Android. Não houve suporte a Windows Desktop ou trabalho de WebAssembly.
 - O novo protótipo revisao Final.png, detectado durante a revisão, foi preservado fora deste checkpoint. Não foi implementada nova tela nem alterada a regra de progresso da Revisão final.
 - Checkpoint na branch main com a mensagem feat: implementa fluxo de relato e ia simulada. A tag V1 permanece intacta. Builds, capturas e configurações de máquina continuam fora do Git.
+
+## Revisão final — 8 de outubro de 2026
+
+- O novo protótipo revisao Final.png foi analisado antes de implementar. Composição preservada: cabeçalho, consulta expansível, resumo e perguntas abertos inicialmente, documentos opcionais recolhidos, ação principal e navegação oficial Início | Agenda | Preparo | Perfil.
+- Preparar para a consulta é o título antes da conclusão. Preparação concluída aparece após concluir as quatro macroetapas. A tela não apresenta conclusão prematura só porque o PNG mostra esse título.
+- Conteúdo vem exclusivamente do estado da sessão. O resumo exibe os textos revisados das seções, sem gerar nova organização. Perguntas incluem somente as selecionadas. Os exemplos clínicos do PNG não são copiados. Documentos reutilizam o checklist existente; não há upload ou compartilhamento.
+- Continuar nas perguntas salva o relato e abre a Revisão final. Editar resumo abre a tela já existente; voltar preserva as alterações. Editar perguntas permite retornar diretamente à revisão após salvar. A Home abre a nova rota pela quarta macroetapa.
+- Concluir preparação salva a versão atual e marca somente PreparationStage.finalReview no repositório em memória. Com as outras três etapas concluídas, o progresso passa de 75% para 100% na Home e na revisão. Documentos ou presença pendentes não são concluídos automaticamente.
+- Decisão explícita do usuário: alterar relato, resumo ou perguntas reabre a revisão. Reabrir telas ou salvar valores idênticos não invalida a conclusão. O rascunho continua disponível e uma nova conclusão exige ação deliberada.
+- A mensagem Você decide o que compartilhar permanece na interface. Concluir não envia ao profissional, UBS ou SUS, não confirma atendimento clínico e não compartilha automaticamente.
+- Não houve nova dependência, biblioteca de estado ou integração externa. O contrato do repositório foi estendido e os controladores existentes mantêm o estado compartilhado.
+- Validação: 91 arquivos formatados/verificados, análise sem problemas, 75 testes aprovados, builds Web JavaScript e APK debug concluídos. A matriz de temas, contraste, fonte ampliada, semântica e áreas de toque inclui Revisão final e seu estado concluído.
+- O teste de integração Android foi atualizado, mas não executado nesta entrega. As novas prévias de widgets ficam em .local/qa/, ignoradas pelo Git. Alterações permanecem locais, aguardando aprovação; a tag V1 não foi modificada.
+
+## Checkpoint oficial V2 — 8 de outubro de 2026
+
+- Após aprovação da Revisão final, o MVP funcional principal foi declarado concluído pelo usuário. Novas funcionalidades dependem de nova autorização.
+- Jornada completa conferida manualmente no emulador Android 16/API 36: entrada, agenda, preparo, relato/áudio, organização simulada, revisão e Home 100%. Alterar o relato reabriu a revisão e retornou a 75%, sem perder o original. Teclado, rolagem, menu, tema escuro, alto contraste e fonte grande foram inspecionados.
+- Correções restritas a bugs: FAQ desatualizada sobre IA, texto de recuperação de rota desconhecida, legibilidade/transparência da marca no tema escuro e texto de envio incorporado à ilustração da Splash, agora 2 de 2 prontos. Referências originais preservadas.
+- A recuperação de URL inválida foi mantida, com teste de retorno à Home. Não houve remoção arriscada de rotas, redesenho ou refatoração ampla.
+- Validação final: 91 arquivos Dart, análise sem problemas, 76 testes aprovados, builds Web JavaScript e APK debug concluídos. Capturas nativas deste checkpoint em .local/v2-android/ ficam fora do Git. Resultado detalhado e limites no relatório RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md.
+- Checkpoint na branch main, mensagem feat: conclui fluxo principal do mvp, tag V2 no commit correspondente. V1 preservada. Sem novas dependências, Windows Desktop ou trabalho de suporte a Wasm.

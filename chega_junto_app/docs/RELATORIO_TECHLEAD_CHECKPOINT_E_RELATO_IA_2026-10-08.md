@@ -1,5 +1,7 @@
 # Chega Junto — relatório para o tech lead
 
+**Atualização posterior:** a Revisão final foi implementada após este checkpoint, conforme novo protótipo e autorização. Este documento preserva o registro das duas entregas anteriores. Veja o [status atual](RELATORIO_STATUS_2026-10-08.md) e o [relatório de Revisão final](RELATORIO_REVISAO_FINAL_2026-10-08.md).
+
 **Data:** 8 de outubro de 2026.
 **Escopo:** checkpoint de Perfil/Notificações/Acessibilidade/Ajuda e implementação subsequente do fluxo de relato com IA mockada.
 

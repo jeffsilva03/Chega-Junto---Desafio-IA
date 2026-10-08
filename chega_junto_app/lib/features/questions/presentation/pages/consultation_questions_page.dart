@@ -9,8 +9,13 @@ import '../../../../data/models/organized_report.dart';
 import '../../../../features/pre_visit_report/presentation/widgets/report_components.dart';
 
 class ConsultationQuestionsPage extends StatefulWidget {
-  const ConsultationQuestionsPage({super.key, required this.controller});
+  const ConsultationQuestionsPage({
+    super.key,
+    required this.controller,
+    this.returnToReview = false,
+  });
   final ReportController controller;
+  final bool returnToReview;
   @override
   State<ConsultationQuestionsPage> createState() =>
       _ConsultationQuestionsPageState();
@@ -33,11 +38,12 @@ class _ConsultationQuestionsPageState extends State<ConsultationQuestionsPage> {
     try {
       await widget.controller.finishReview();
       if (!mounted) return;
-      context.go(AppRoutes.checklist);
-      reportMessage(
-        context,
-        'Relato e perguntas salvos nesta sessão. Nada foi enviado à unidade.',
-      );
+      setState(() => _saving = false);
+      if (widget.returnToReview && context.canPop()) {
+        context.pop();
+      } else {
+        context.push(AppRoutes.finalReview);
+      }
     } catch (_) {
       if (mounted) {
         setState(() => _saving = false);

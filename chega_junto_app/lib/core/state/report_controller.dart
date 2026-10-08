@@ -26,12 +26,21 @@ class ReportController extends ChangeNotifier {
   AudioDraftStatus audioStatus = AudioDraftStatus.idle;
   int seconds = 0;
   bool _initialized = false, _disposed = false;
-  int _generation = 0, _questionSequence = 0;
+  int _generation = 0, _questionSequence = 0, _revision = 0;
   Timer? _timer;
   bool get hasSummary => sections.isNotEmpty;
   bool get summaryOutdated => hasSummary && processedText != text;
   bool get hasContent =>
       sections.any((section) => section.text.trim().isNotEmpty);
+  List<ConsultationQuestion> get selectedQuestions =>
+      List.unmodifiable(questions.where((question) => question.selected));
+
+  void _markChanged() {
+    _revision++;
+    reviewed = false;
+    preparation.invalidateFinalReview();
+  }
+
   String get clock =>
       '${(seconds ~/ 60).toString().padLeft(2, '0')}:${(seconds % 60).toString().padLeft(2, '0')}';
 
@@ -45,7 +54,7 @@ class ReportController extends ChangeNotifier {
   void setText(String value) {
     if (text == value) return;
     text = value;
-    reviewed = false;
+    _markChanged();
     failed = false;
     notifyListeners();
   }
@@ -63,7 +72,7 @@ class ReportController extends ChangeNotifier {
       sections = result.sections;
       questions = result.questions;
       processedText = source;
-      reviewed = false;
+      _markChanged();
       processing = false;
       notifyListeners();
       return true;
@@ -83,11 +92,14 @@ class ReportController extends ChangeNotifier {
   }
 
   void editSection(String id, String value) {
+    if (!sections.any((section) => section.id == id && section.text != value)) {
+      return;
+    }
     sections = List.unmodifiable([
       for (final section in sections)
         section.id == id ? section.withText(value) : section,
     ]);
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
@@ -96,29 +108,41 @@ class ReportController extends ChangeNotifier {
       for (final section in sections) section.withText(''),
     ]);
     questions = const [];
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
   void selectQuestion(String id, bool selected) {
+    if (!questions.any(
+      (question) => question.id == id && question.selected != selected,
+    )) {
+      return;
+    }
     questions = List.unmodifiable([
       for (final question in questions)
         question.id == id ? question.copyWith(selected: selected) : question,
     ]);
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
   void selectAll(bool selected) {
+    if (questions.every((question) => question.selected == selected)) return;
     questions = List.unmodifiable([
       for (final question in questions) question.copyWith(selected: selected),
     ]);
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
   void saveQuestion(String text, {String? id}) {
     if (text.trim().isEmpty) return;
+    if (id != null &&
+        !questions.any(
+          (question) => question.id == id && question.text != text.trim(),
+        )) {
+      return;
+    }
     questions = List.unmodifiable([
       for (final question in questions)
         question.id == id ? question.copyWith(text: text.trim()) : question,
@@ -128,15 +152,16 @@ class ReportController extends ChangeNotifier {
           text: text.trim(),
         ),
     ]);
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
   void removeQuestion(String id) {
+    if (!questions.any((question) => question.id == id)) return;
     questions = List.unmodifiable(
       questions.where((question) => question.id != id),
     );
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
@@ -147,7 +172,7 @@ class ReportController extends ChangeNotifier {
     if (index < 0 || target < 0 || target >= items.length) return;
     items.insert(target, items.removeAt(index));
     questions = List.unmodifiable(items);
-    reviewed = false;
+    _markChanged();
     notifyListeners();
   }
 
@@ -235,10 +260,28 @@ class ReportController extends ChangeNotifier {
     if (!hasContent || summaryOutdated) {
       throw StateError('Revise o relato atualizado.');
     }
+    final revision = _revision;
     await preparation.saveReportReview(text, sections, questions);
     if (_disposed) return;
+    if (revision != _revision) {
+      throw StateError('O relato mudou durante a revisão.');
+    }
     reviewed = true;
     notifyListeners();
+  }
+
+  Future<void> completePreparation() async {
+    final revision = _revision;
+    await finishReview();
+    if (_disposed) return;
+    if (revision != _revision) {
+      throw StateError('O relato mudou durante a revisão.');
+    }
+    await preparation.completeFinalReview();
+    if (!_disposed && revision != _revision) {
+      preparation.invalidateFinalReview();
+      throw StateError('O relato mudou durante a revisão.');
+    }
   }
 
   @override

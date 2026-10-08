@@ -95,6 +95,22 @@ class MockPreparationRepository implements PreparationRepository {
   Future<PreparationOverview> loadOverview() async => _overview;
 
   @override
+  Future<PreparationOverview> setFinalReview(
+    String appointmentId,
+    bool completed,
+  ) async {
+    if (appointmentId != _overview.nextAppointment.id) {
+      throw StateError('Atendimento não encontrado.');
+    }
+    if (completed &&
+        (_overview.report.organizedSummary?.trim().isEmpty ?? true)) {
+      throw StateError('Revise seu resumo antes de concluir.');
+    }
+    _overview = _overview.withFinalReview(completed);
+    return _overview;
+  }
+
+  @override
   Future<PreparationOverview> saveReport(PreVisitReport report) async {
     if (report.appointmentId != _next.id) {
       throw StateError('Atendimento não encontrado.');

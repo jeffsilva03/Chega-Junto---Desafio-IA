@@ -12,6 +12,7 @@ abstract final class AppRoutes {
   static const audio = '/atendimentos/consulta-demo-01/relato/audio';
   static const processing = '/atendimentos/consulta-demo-01/relato/organizando';
   static const questions = '/atendimentos/consulta-demo-01/perguntas';
+  static const finalReview = '/atendimentos/consulta-demo-01/revisao-final';
   static const notifications = '/notificacoes';
   static const personalData = '/perfil/dados-pessoais';
   static const medications = '/perfil/medicamentos-alergias';

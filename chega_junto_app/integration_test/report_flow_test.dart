@@ -110,7 +110,12 @@ void main() {
     final router = GoRouter.of(
       tester.element(find.byType(AppBottomNavigation)),
     );
-    expect(router.routeInformationProvider.value.uri.path, AppRoutes.checklist);
+    expect(router.state.uri.path, AppRoutes.finalReview);
+    await shot('07-revisao-final-android');
+    await tap(find.text('Concluir preparação'));
+    expect(find.text('Preparação concluída'), findsOneWidget);
+    expect(find.text('4 de 4 etapas • 100%'), findsOneWidget);
+    await shot('08-preparacao-concluida-android');
     router.go(AppRoutes.accessibility);
     await tester.pumpAndSettle();
     final profile = tester

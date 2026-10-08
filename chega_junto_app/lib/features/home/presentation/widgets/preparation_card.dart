@@ -16,7 +16,7 @@ class PreparationCard extends StatelessWidget {
       AppRoutes.attendance,
     ),
     (PreparationStage.report, 'Relato pré-consulta', AppRoutes.report),
-    (PreparationStage.finalReview, 'Revisão final', AppRoutes.summary),
+    (PreparationStage.finalReview, 'Revisão final', AppRoutes.finalReview),
   ];
 
   @override

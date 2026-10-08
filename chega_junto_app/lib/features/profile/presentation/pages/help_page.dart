@@ -45,7 +45,7 @@ class _HelpPageState extends State<HelpPage> {
   void _faq() => profileInformation(
     context,
     'Perguntas frequentes (FAQ)',
-    'Os dados são reais?\nNão. Esta demonstração usa dados fictícios.\n\nAs alterações ficam salvas?\nElas duram apenas a sessão. Reiniciar restaura os exemplos.\n\nO aplicativo envia informações à unidade?\nNão há integração com unidades ou profissionais.\n\nA IA interpreta exames?\nNão. O projeto prevê apenas organização de relatos; o fluxo de IA ainda não está disponível.',
+    'Os dados são reais?\nNão. Esta demonstração usa dados fictícios.\n\nAs alterações ficam salvas?\nElas duram apenas a sessão. Reiniciar restaura os exemplos.\n\nO aplicativo envia informações à unidade?\nNão há integração com unidades ou profissionais.\n\nA IA interpreta exames?\nNão. A organização do relato é simulada e utiliza somente o que você informou. Você pode revisar, editar e excluir o conteúdo; nada é enviado automaticamente.',
   );
   Widget _tutorial(
     String title,

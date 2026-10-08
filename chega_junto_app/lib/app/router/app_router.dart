@@ -6,6 +6,7 @@ import '../../features/pre_visit_report/presentation/pages/audio_report_page.dar
 import '../../features/ai_summary/presentation/pages/report_processing_page.dart';
 import '../../features/ai_summary/presentation/pages/ai_summary_page.dart';
 import '../../features/questions/presentation/pages/consultation_questions_page.dart';
+import '../../features/final_review/presentation/pages/final_review_page.dart';
 import '../../core/state/profile_controller.dart';
 import '../../core/state/speech_controller.dart';
 import '../../features/profile/presentation/pages/personal_data_page.dart';
@@ -146,8 +147,14 @@ GoRouter createAppRouter({
     ),
     GoRoute(
       path: AppRoutes.questions,
-      builder: (context, state) =>
-          ConsultationQuestionsPage(controller: report),
+      builder: (context, state) => ConsultationQuestionsPage(
+        controller: report,
+        returnToReview: state.uri.queryParameters['from'] == 'review',
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.finalReview,
+      builder: (context, state) => FinalReviewPage(controller: report),
     ),
   ],
   errorBuilder: (context, state) =>

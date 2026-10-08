@@ -1,92 +1,72 @@
 # Relatório de status — Chega Junto
 
 **Data:** 8 de outubro de 2026.
-**Marco:** checkpoint após aprovação estrutural do fluxo de relato e IA simulada.
-**Plataformas:** Android como principal e Flutter Web como complementar.
+**Marco atual:** checkpoint oficial **V2 — MVP funcional principal concluído**.
+**Branch:** `main`. **Tag:** `V2` no commit deste checkpoint; `V1` preservada.
+**Plataformas:** Android principal, Flutter Web complementar.
 
-## Situação geral
+## Produto disponível
 
-O aplicativo possui **20 telas implementadas, além do estado transitório de processamento**, e o card Novo Lembrete. O fluxo Relato → Áudio opcional → Processamento → Resumo → Perguntas foi aprovado estruturalmente e passou pela revisão final deste checkpoint, sem redesenho ou refatoração ampla.
+São **21 telas**, além do estado de processamento e do card Novo Lembrete: Splash, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade, Ajuda, Relato pré-consulta, Áudio demonstrativo, Resumo organizado, Perguntas e Revisão final.
 
-As telas disponíveis são: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico de saúde, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade, Ajuda, Relato pré-consulta, Gravação de áudio simulada, Resumo organizado e Perguntas para a consulta.
+Todas as telas internas mantêm **Início | Agenda | Preparo | Perfil**. Preparo abre o checklist existente. Não há aba IA. Splash e Login preservam o fluxo de entrada aprovado.
 
-Todas as telas internas mantêm **Início | Agenda | Preparo | Perfil**. Preparo abre o checklist do próximo atendimento. Splash e Login preservam o fluxo de entrada aprovado.
+```text
+Splash → Login → Home → Agenda → Detalhes → Checklist → Confirmação
+→ Relato → Áudio demonstrativo → Processamento → Resumo → Perguntas
+→ Revisão final → Preparação concluída → Home 100%
+```
 
-## Fluxo de relato e controle do usuário
+O relato original é preservado durante a sessão. A transcrição somente entra por ação explícita do usuário. Resumo e perguntas continuam editáveis/removíveis; somente perguntas selecionadas aparecem na revisão. A organização mockada utiliza literalmente os parágrafos informados, sem inferência clínica. A revisão utiliza exclusivamente dados existentes.
 
-Entrada pela Home, pelos Detalhes ou pelo Preparo → relato escrito e/ou transcrição demonstrativa → organização mockada → revisão do resumo → seleção/edição das perguntas → salvar na sessão e retornar ao checklist.
+A próxima consulta compartilhada é **9 de outubro de 2026, sexta-feira, 08:00, Consulta clínica / Clínica geral, Dra. Ana Beatriz Souza, UBS Centro**. A data fictícia de referência da demonstração é 7 de outubro de 2026. O histórico contém eventos passados distintos; diagnósticos ali exibidos são registros preexistentes.
 
-- O relato original permanece disponível ao voltar, trocar de aba ou recarregar os dados do preparo. Editar ou remover o resumo não apaga o original. Textos maiores que a referência visual de 500 caracteres não são truncados.
-- Áudio demonstra iniciar, pausar, continuar e finalizar, sem acessar microfone, gravar arquivos ou enviar conteúdo. A transcrição pode ser editada e só entra no relato mediante **Usar transcrição no relato**. Usa o texto já informado ou uma frase fictícia neutra, identificada como exemplo.
-- Processamento informa **Organizando seu relato...**. Sair cancela a operação de interface; resultados atrasados são ignorados. Entrada vazia retorna ao relato com orientação.
-- A organização separa literalmente os parágrafos fornecidos, sem acrescentar fatos, fazer classificação clínica, interpretar exames ou propor tratamento. Seções sem conteúdo permanecem vazias e editáveis.
-- O resumo permite editar e remover conteúdo. Alterar o original sinaliza a versão organizada como desatualizada. Reorganização pede confirmação antes de substituir edições e perguntas.
-- Perguntas neutras permanecem editáveis, selecionáveis e removíveis. É possível adicionar perguntas próprias, alterar a ordem ou continuar sem selecionar nenhuma.
-- Salvar grava somente o resumo revisado e as perguntas selecionadas no repositório em memória. Não há envio a profissionais, unidades, SUS ou serviços externos.
+Quatro macroetapas: documentos/preparo, presença, relato e revisão final. O mock inicia em **75% / 3 de 4**. Concluir a revisão com as demais concluídas atualiza para **100% / 4 de 4**, inclusive na Home. Alterar relato, resumo ou perguntas reabre a revisão e retorna a 75% nesse cenário. Documentos/presença pendentes não são concluídos por essa ação. Checklist possui progresso próprio sobre itens obrigatórios.
 
-Não foi criada uma tela de Relato final nem iniciada outra funcionalidade. A macroetapa Revisão final não é concluída automaticamente. O novo protótipo `revisao Final.png`, detectado durante este checkpoint, foi preservado e não implementado nem incluído neste commit.
+## Arquitetura e acessibilidade
 
-## Consistência e estado
+A estrutura `app/`, `core/`, `data/` e `features/` mantém UI, modelos, serviços e repositórios separados. Controladores `ChangeNotifier` da sessão compartilham preparação, perfil, relato e voz; não há biblioteca adicional de estado. `AiAssistantService`, `AudioDraftService` e contratos de repositório permitem futuras substituições. Estado dura somente a sessão, sem persistência durável.
 
-A data fictícia de referência permanece **7 de outubro de 2026**. A mesma próxima consulta é compartilhada entre Home, Agenda, Detalhes, Checklist e relato: **9 de outubro, 08:00, Clínica geral, Dra. Ana Beatriz Souza, UBS Centro**.
+Temas claro/escuro/sistema, alto contraste, escala de texto, redução de animações, descrições, linguagem simples em telas de apoio, feedback tátil e leitura por voz local estão disponíveis. A reprodução depende de voz local em português e ainda não teve validação audível completa no Android. Testes cobrem semântica, toque e layouts com fonte ampliada; não constituem auditoria integral de acessibilidade.
 
-O progresso geral utiliza Documentos e preparo, Confirmação de presença, Relato pré-consulta e Revisão final. O mock começa em **3 de 4 = 75%**. O checklist calcula seu percentual somente com itens obrigatórios. Nenhuma resposta de presença cancela, remarca ou comunica a unidade.
+Dependências permanecem `go_router 17.5.0`, `flutter_tts 4.2.5`, `cupertino_icons 1.0.9`, localização e ferramentas do SDK, além de `flutter_lints 6.0.0`. Fonte Nunito Sans local. Nenhuma nova dependência ou serviço pago foi adicionado no checkpoint.
 
-Dados pessoais, medicamentos, alergias, presença, checklist, lembretes, notificações, preferências e relato duram somente a sessão. Reiniciar o app ou recarregar a Web restaura os mocks; não há persistência durável.
-
-Em Histórico, diagnóstico significa **informação histórica já registrada**, nunca diagnóstico produzido pelo Chega Junto ou pela IA. Tema claro/escuro/sistema, alto contraste, escala de texto, redução de animações e leitura por voz local continuam disponíveis.
-
-## Arquitetura e dependências
-
-A organização `app/`, `core/`, `data/` e `features/` foi mantida. `ReportController`, baseado em ChangeNotifier e criado fora das rotas, preserva original, transcrição, áudio, processamento, resumo e perguntas.
-
-`AiAssistantService` e `AudioDraftService` são contratos injetáveis, implementados por `MockAiAssistantService` e `MockAudioDraftService`. O salvamento reutiliza o repositório de preparação. Tema, tokens, componentes e navegação existentes foram reutilizados.
-
-Não houve nova dependência de execução. `integration_test`, do SDK Flutter, foi acrescentado somente para desenvolvimento e validação Android. Permanecem `go_router 17.5.0`, `flutter_tts 4.2.5` e `cupertino_icons 1.0.9`. Nenhuma biblioteca de estado, infraestrutura cloud ou serviço pago foi adicionado.
-
-## Revisão e validação deste checkpoint
-
-Foram revisados código, rotas, preservação de estado e capturas Android já produzidas na implementação. Não foi identificada necessidade de alterar a composição aprovada. Os comandos abaixo foram executados novamente neste checkpoint:
+## Validação V2
 
 | Verificação | Resultado |
 | --- | --- |
-| `dart format .` | 88 arquivos verificados; nenhuma mudança necessária |
+| `dart format .` | 91 arquivos verificados |
 | `flutter analyze` | Sem problemas |
-| `flutter test` | **66 testes aprovados** |
+| `flutter test` | **76 testes aprovados** |
 | `flutter build web` | Build JavaScript concluído |
-| `flutter build apk --debug` | APK de debug normal gerado com sucesso |
-| Checagem complementar `flutter test --platform chrome` | Inconclusiva: runner permaneceu no carregamento, inclusive na tentativa de diagnóstico; execuções interrompidas sem resultado de testes |
+| `flutter build apk --debug` | Build Android concluído |
+| Android nativo | Jornada completa executada manualmente no emulador Android 16/API 36 |
 
-Os testes verificam navegação, cancelamento, erros de serviço, preservação do original e das edições, uso explícito da transcrição, perguntas, semântica e áreas de toque. Layouts cobertos: **320×568** com escalas **1,5 e 2,1**, **390×844** e **1366×900**, nos temas claro/escuro, com e sem alto contraste, incluindo diálogos e teclado.
+A execução manual confirmou Home em 100%, retorno a 75% após alterar relato, preservação de texto/seleção, navegação, checklist/presença compartilhados, teclado e rolagem. Tema escuro, alto contraste e fonte grande foram inspecionados. Nenhum overflow foi encontrado nas telas conferidas. Capturas nativas locais em `.local/v2-android/`, ignoradas pelo Git.
 
-Na implementação anterior, a jornada completa passou no emulador Android 16/API 36. Capturas nativas de 1080×2400 estão em `.local/android-qa/`, ignoradas pelo Git. O APK x86_64 foi instalado e iniciado. A integração nativa não foi repetida neste checkpoint; o build APK foi repetido. A revisão não equivale a auditoria completa de acessibilidade ou teste em aparelho físico.
+A matriz automatizada inclui 320×568 com escalas 1,5 e 2,1, 390×844 e 1366×900, temas claro/escuro com e sem alto contraste, estado concluído e teclado. A suíte de integração Android existente foi atualizada na implementação da Revisão final; neste checkpoint, a jornada nativa foi manual, sem nova execução dessa suíte.
+
+Foram corrigidos quatro problemas pontuais: FAQ desatualizada sobre IA, texto de recuperação de rota inválida, marca pouco legível no tema escuro e mensagem de envio incorporada à ilustração da Splash. Rotas e atalhos foram revisados; a recuperação de URL inválida foi preservada e testada. Não houve redesenho, refatoração ampla ou nova funcionalidade.
 
 ## Avisos e limites
 
-- O build Web mantém **três avisos no dry run WebAssembly** de `flutter_tts 4.2.5`, por casts JS/Dart. A compilação JavaScript passa; Wasm não é alvo prioritário.
-- O aviso de CupertinoIcons foi resolvido no checkpoint anterior e não retornou. A fonte continua reduzida por tree shaking a 1.472 bytes.
-- A última resolução registrou 11 pacotes com versões mais recentes fora das restrições atuais. Não houve atualização ampla de dependências.
-- O `flutter doctor` foi repetido neste checkpoint: Flutter 3.41.4/Dart 3.11.1, licenças Android pendentes e Visual Studio incompleto. Os builds Android passam; Windows Desktop permanece fora do escopo.
-- O APK universal deste checkpoint possui aproximadamente **153 MB** e não teve instalação repetida. O emulador possui pouco espaço livre. Na implementação anterior, o APK universal então gerado não coube na instalação; o APK x86_64 de aproximadamente 69 MB funcionou.
-- A checagem complementar de widgets no Chrome não concluiu o carregamento do runner. Não foi contada como teste aprovado, nem há diagnóstico confirmado da causa. O build Web JavaScript passou; nenhuma configuração do aplicativo foi alterada para contornar o runner.
+- Três avisos de compatibilidade WebAssembly do `flutter_tts` permanecem no dry run. Build JavaScript aprovado; Wasm não é alvo deste MVP. Aviso de fonte CupertinoIcons ausente não retornou.
+- Doctor: Flutter 3.41.4/Dart 3.11.1, licenças Android parcialmente pendentes e Visual Studio incompleto. Android compilou e executou; Windows Desktop está fora do escopo.
+- Há 11 dependências com versões mais recentes fora das restrições atuais, conforme resolução anterior. Não foi feita atualização ampla.
+- A instalação inicial no emulador encontrou código de versão maior e pouco espaço; o APK x64 com código de build local maior permitiu instalar sem apagar dados. A versão do projeto não foi alterada.
+- Não houve validação em aparelho físico ou auditoria completa de TalkBack/voz. O runner complementar de widgets no Chrome não concluiu no checkpoint anterior; isso não é contado como aprovação atual. O build Web passou.
 
-Não há IA real, backend, MySQL, autenticação real, gravação/transcrição reais, uploads, compartilhamento automático ou integração com serviços de saúde. Notificações e lembretes não programam push ou alarmes do sistema. A leitura em voz alta utiliza mecanismos locais; a reprodução nativa ainda não teve validação manual completa.
+Sem IA real, backend, MySQL, autenticação real, gravação/transcrição reais, uploads ou integração com serviços de saúde. Login, documentos, suporte, cartão SUS e áudio têm comportamentos demonstrativos. Lembretes/notificações não programam alarmes/push. Presença não avisa unidade nem cancela/remarca consultas. Concluir não compartilha dados: **o usuário decide o que compartilhar**.
 
 ## Versionamento e documentação
 
-Repositório: https://github.com/jeffsilva03/Chega-Junto---Desafio-IA
+Repositório: https://github.com/jeffsilva03/Chega-Junto---Desafio-IA. Mensagem do checkpoint: `feat: conclui fluxo principal do mvp`, na branch `main`. A tag anotada `V2` identifica o commit que contém este relatório; consulte o SHA com `git rev-parse 'V2^{}'`.
 
-Branch do checkpoint: **main**. Mensagem: **feat: implementa fluxo de relato e ia simulada**. O SHA deste checkpoint pode ser consultado no histórico Git após o commit, evitando autorreferência dentro do próprio commit.
+A tag `V1` permanece em `05cb43ece8f864f7d748d6e12f99e2b51f3795d3` (objeto anotado `2046752354033eb6cda3b6d468e4f59f0fd8dffd`). Referências e Landing Page não foram modificadas. O novo PNG de Revisão final fornecido pelo usuário é incluído no versionamento sem alteração. Builds, capturas, caches e segredos continuam ignorados.
 
-O checkpoint anterior de Perfil é `edb06f3`. A tag anotada **V1** permanece preservada, apontando para `05cb43e`; objeto da tag `2046752354033eb6cda3b6d468e4f59f0fd8dffd`.
+- [Relatório oficial V2, com escopo, arquitetura, validações e limitações](RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md).
+- [Registro da implementação da Revisão final](RELATORIO_REVISAO_FINAL_2026-10-08.md).
+- [Entrega de relato e IA simulada](RELATORIO_RELATO_IA_2026-10-08.md).
+- [Decisões de implementação e checkpoints](IMPLEMENTATION_DECISIONS.md).
 
-As referências oficiais, protótipos e Landing Page não foram alterados nesta revisão. O novo protótipo de Revisão final permanece fora deste checkpoint. Builds, capturas, caches, configurações de máquina e segredos continuam ignorados.
-
-Registros complementares:
-
-- [Entrega de relato e IA mockada](RELATORIO_RELATO_IA_2026-10-08.md).
-- [Relatório para o tech lead](RELATORIO_TECHLEAD_CHECKPOINT_E_RELATO_IA_2026-10-08.md).
-- [Checkpoint anterior de Perfil e acessibilidade](RELATORIO_PERFIL_ACESSIBILIDADE_2026-10-08.md).
-- [Decisões de implementação](IMPLEMENTATION_DECISIONS.md).
-
-Esta entrega encerra o bloco aprovado. Novas funcionalidades aguardam nova instrução.
+**Desenvolvimento encerrado neste marco. Novas funcionalidades dependem de nova autorização.**

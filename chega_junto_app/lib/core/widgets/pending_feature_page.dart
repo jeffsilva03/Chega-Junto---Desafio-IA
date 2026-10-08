@@ -4,7 +4,7 @@ import '../../app/demo_session.dart';
 import '../../app/router/app_routes.dart';
 import 'app_bottom_navigation.dart';
 
-/// Technical route only; replaced when the next screen is approved.
+/// Recovery page for an unknown route.
 class PendingFeaturePage extends StatelessWidget {
   const PendingFeaturePage({
     super.key,
@@ -33,7 +33,7 @@ class PendingFeaturePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Esta etapa será implementada no próximo conjunto de telas.',
+              'Não encontramos esta página. Volte ao início para continuar.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),

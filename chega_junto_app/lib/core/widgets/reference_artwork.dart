@@ -117,11 +117,11 @@ class _RegionPainter extends CustomPainter {
                 1,
                 0,
                 0,
-                -1,
-                -1,
-                -1,
+                -1.2,
+                -1.2,
+                -1.2,
                 0,
-                765,
+                894,
               ])
             : null,
     );
@@ -149,6 +149,30 @@ class _RegionPainter extends CustomPainter {
       )..layout();
       text.paint(canvas, const Offset(3, 4));
       canvas.restore();
+
+      // The illustration represents local preparation, never document upload.
+      canvas.save();
+      canvas.translate(destination.left, destination.top);
+      canvas.scale(destination.width / region.width);
+      canvas.translate(410 - region.left, 1198 - region.top);
+      canvas.rotate(.11);
+      canvas.drawRect(
+        const Rect.fromLTWH(-2, -2, 135, 26),
+        Paint()..color = const Color(0xFFF6FAFF),
+      );
+      final documents = TextPainter(
+        text: const TextSpan(
+          text: '2 de 2 prontos',
+          style: TextStyle(
+            fontFamily: 'NunitoSans',
+            fontSize: 16,
+            color: Color(0xFF627FA7),
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      documents.paint(canvas, Offset.zero);
+      canvas.restore();
     }
   }
 
@@ -170,15 +194,20 @@ class BrandLogo extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: width,
     height: stacked ? width * .78 : width * .285,
-    child: ReferenceArtwork(
-      asset: stacked
-          ? 'assets/images/welcome_reference.png'
-          : 'assets/images/brand_reference.png',
-      region: stacked
-          ? const Rect.fromLTWH(278, 111, 391, 302)
-          : const Rect.fromLTWH(134, 110, 339, 94),
-      semanticLabel: 'Chega Junto. Saúde mais perto de você.',
-      transparentBackground: true,
+    child: ColorFiltered(
+      colorFilter: Theme.of(context).brightness == Brightness.dark
+          ? const ColorFilter.mode(Colors.white, BlendMode.srcIn)
+          : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+      child: ReferenceArtwork(
+        asset: stacked
+            ? 'assets/images/welcome_reference.png'
+            : 'assets/images/brand_reference.png',
+        region: stacked
+            ? const Rect.fromLTWH(278, 111, 391, 302)
+            : const Rect.fromLTWH(134, 110, 339, 94),
+        semanticLabel: 'Chega Junto. Saúde mais perto de você.',
+        transparentBackground: true,
+      ),
     ),
   );
 }

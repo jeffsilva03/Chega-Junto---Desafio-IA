@@ -45,7 +45,7 @@ As capturas ficam em `.local/qa/`, fora do Git.
 - Ajuda com busca, respostas, tutoriais e suporte demonstrativo.
 - Novo Lembrete conforme `novoLembrete.png`: card flutuante com título e opções 1 dia antes, 2 horas antes e No horário, relativas à próxima consulta.
 
-Relato pré-consulta, áudio simulado, processamento demonstrativo, resumo editável e perguntas selecionáveis estão implementados. O fluxo pode ser aberto pela Home, pelos Detalhes da consulta ou pelo Preparo. Concluir salva o relato e as perguntas na sessão e retorna ao checklist, sem tela adicional de Relato final. O cartão SUS não possui tela de detalhes própria. Não há integração com serviços de saúde.
+Relato pré-consulta, áudio simulado, processamento demonstrativo, resumo editável, perguntas selecionáveis e Revisão final estão implementados. O fluxo pode ser aberto pela Home, pelos Detalhes da consulta ou pelo Preparo. Continuar nas perguntas abre a Revisão final; Concluir preparação salva o estado da sessão e conclui a quarta macroetapa, refletindo 100% na Home quando as demais estão concluídas. Editar relato, resumo ou perguntas reabre a revisão. Nada é enviado; o usuário decide o que compartilhar. O cartão SUS não possui tela de detalhes própria. Não há integração com serviços de saúde.
 
 ## Dados e limites
 
@@ -79,11 +79,11 @@ Fonte local: Nunito Sans, licença SIL Open Font License em `assets/fonts/OFL.tx
 
 Dependências de execução: `go_router 17.5.0`, para navegação centralizada e URLs Web; [`flutter_tts 4.2.5`](https://pub.dev/packages/flutter_tts), licença MIT, para leitura pelo mecanismo de voz Android; e `cupertino_icons 1.0.9`, licença MIT, para fornecer a fonte de ícones referenciada internamente pelo SDK. São gratuitas. A inclusão da fonte corrige o aviso de família ausente sem alterar o design das telas. `flutter_localizations` pertence ao SDK; `flutter_lints` e `flutter_test` são usados na validação. `integration_test`, também do SDK, foi acrescentado apenas como dependência de desenvolvimento para executar o fluxo e obter screenshots no emulador Android; não integra o aplicativo de produção. Não há bibliotecas de estado ou carregamento remoto de fontes.
 
-Checkpoint de 8 de outubro de 2026: fluxo de relato aprovado estruturalmente e revisado, análise sem problemas, 66 testes aprovados e builds Web/Android repetidos com sucesso. O build Web JavaScript permanece com avisos no dry run de WebAssembly do `flutter_tts`; Wasm não é alvo deste MVP. Consulte `docs/RELATORIO_RELATO_IA_2026-10-08.md` e `docs/RELATORIO_STATUS_2026-10-08.md` para os resultados e limites da revisão.
+Checkpoint oficial **V2**, de 8 de outubro de 2026: as 21 telas e o fluxo principal estão concluídos e aprovados estruturalmente. Foram aprovados 76 testes, análise e builds Web/Android. A jornada completa passou manualmente no emulador Android 16/API 36, incluindo 100% na Home e invalidação para 75% após editar o relato. O build Web JavaScript mantém três avisos do dry run WebAssembly de `flutter_tts`; Wasm não é alvo deste MVP. Consulte [o relatório oficial da V2](docs/RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md) e [o status atual](docs/RELATORIO_STATUS_2026-10-08.md). Nenhuma nova funcionalidade está autorizada.
 
 ## Git
 
-O repositório abrange a pasta principal do projeto, incluindo este aplicativo e as referências, conforme decisão posterior do projeto. Builds, caches, capturas locais, configurações de máquina e segredos são ignorados. `pubspec.lock` deve ser versionado. A tag `V1` identifica a primeira versão salva.
+O repositório abrange a pasta principal do projeto, incluindo este aplicativo e as referências, conforme decisão posterior do projeto. Builds, caches, capturas locais, configurações de máquina e segredos são ignorados. `pubspec.lock` deve ser versionado. A tag `V1` identifica a primeira versão salva e permanece intacta. A tag `V2` identifica o checkpoint do MVP funcional principal.
 
 ## Validar o fluxo de relato no Android
 
