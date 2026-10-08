@@ -20,6 +20,16 @@ class PreparationOverview {
   final String reminder;
   final DateTime referenceDate;
 
+  PreparationOverview withReport(PreVisitReport value) => PreparationOverview(
+    firstName: firstName,
+    nextAppointment: nextAppointment,
+    progress: progress,
+    checklist: checklist,
+    report: value,
+    reminder: reminder,
+    referenceDate: referenceDate,
+  );
+
   PreparationOverview withAttendance(ConfirmationStatus status) {
     final stages = {...progress.completed};
     if (status == ConfirmationStatus.confirmed) {

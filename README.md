@@ -12,11 +12,11 @@ Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, a documenta�
 
 ## Aplicativo
 
-O aplicativo possui 16 telas: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade e Ajuda. Também permite criar lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O estado dura apenas a sessão.
+O aplicativo possui 20 telas e um estado de processamento: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade, Ajuda, Relato pré-consulta, Gravação de áudio simulada, Resumo organizado pela IA mockada e Perguntas para a consulta. Também permite criar lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O estado dura apenas a sessão.
 
-Tema escuro, alto contraste, escala de texto e leitura por voz local estão disponíveis. Não há backend, autenticação real, IA real nem integração com serviços de saúde. O fluxo de relato/IA aguarda implementação autorizada.
+Tema escuro, alto contraste, escala de texto e leitura por voz local estão disponíveis. Não há backend, autenticação real, IA real nem integração com serviços de saúde. O fluxo de relato/IA utiliza serviços mockados, com revisão, edição e seleção de perguntas durante a sessão, sem envio externo.
 
-Checkpoint de 8 de outubro de 2026: análise sem problemas, 42 testes aprovados e builds Web/Android concluídos. Veja o [relatório de status](chega_junto_app/docs/RELATORIO_STATUS_2026-10-08.md).
+Checkpoint de 8 de outubro de 2026: fluxo de relato aprovado estruturalmente e revisado, análise sem problemas, 66 testes aprovados e builds Web/Android concluídos. Veja o [relatório de status](chega_junto_app/docs/RELATORIO_STATUS_2026-10-08.md).
 
 ```powershell
 cd chega_junto_app

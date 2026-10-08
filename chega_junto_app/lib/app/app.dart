@@ -4,6 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import '../core/widgets/mobile_frame.dart';
 import '../core/state/preparation_controller.dart';
+import '../core/state/report_controller.dart';
+import '../core/services/ai_assistant_service.dart';
+import '../core/services/audio_draft_service.dart';
+import '../data/mock/mock_ai_assistant_service.dart';
+import '../data/mock/mock_audio_draft_service.dart';
 import '../core/state/profile_controller.dart';
 import '../core/state/speech_controller.dart';
 import '../core/services/speech_engine.dart';
@@ -26,12 +31,16 @@ class ChegaJuntoApp extends StatefulWidget {
     this.initialLocation,
     this.profileRepository,
     this.speechEngine,
+    this.aiAssistant,
+    this.audioDraftService,
   });
   final DemoSession? session;
   final PreparationRepository? repository;
   final String? initialLocation;
   final ProfileRepository? profileRepository;
   final SpeechEngine? speechEngine;
+  final AiAssistantService? aiAssistant;
+  final AudioDraftService? audioDraftService;
   @override
   State<ChegaJuntoApp> createState() => _ChegaJuntoAppState();
 }
@@ -40,6 +49,7 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
   late final DemoSession _session;
   late final GoRouter _router;
   late final PreparationController _preparation;
+  late final ReportController _report;
   late final ProfileController _profile;
   late final SpeechController _speech;
   @override
@@ -49,6 +59,11 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
     _preparation = PreparationController(
       widget.repository ?? MockPreparationRepository(),
     )..load();
+    _report = ReportController(
+      _preparation,
+      widget.aiAssistant ?? const MockAiAssistantService(),
+      widget.audioDraftService ?? const MockAudioDraftService(),
+    );
     _profile = ProfileController(
       widget.profileRepository ?? MockProfileRepository(),
     )..load();
@@ -58,6 +73,7 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
       preparation: _preparation,
       profile: _profile,
       speech: _speech,
+      report: _report,
       initialLocation: widget.initialLocation,
     );
     _router.routeInformationProvider.addListener(_stopReading);
@@ -65,12 +81,14 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
 
   void _stopReading() {
     _speech.stop();
+    _report.pauseAudio();
   }
 
   @override
   void dispose() {
     _router.routeInformationProvider.removeListener(_stopReading);
     _router.dispose();
+    _report.dispose();
     _preparation.dispose();
     _profile.dispose();
     _speech.dispose();

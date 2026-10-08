@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/appointment.dart';
 import '../../data/models/appointment_reminder.dart';
+import '../../data/models/organized_report.dart';
+import '../../data/models/pre_visit_report.dart';
 import '../../data/models/preparation_overview.dart';
 import '../../data/repositories/preparation_repository.dart';
 
@@ -14,6 +16,32 @@ class PreparationController extends ChangeNotifier {
   bool failed = false;
   bool saving = false;
   bool _disposed = false;
+
+  Future<void> saveReportReview(
+    String text,
+    List<ReportSection> sections,
+    List<ConsultationQuestion> questions,
+  ) async {
+    if (overview == null) throw StateError('Preparo indisponível.');
+    final updated = await repository.saveReport(
+      PreVisitReport(
+        appointmentId: overview!.nextAppointment.id,
+        originalText: text,
+        updatedAt: DateTime.now(),
+        organizedSummary: sections
+            .where((s) => s.text.trim().isNotEmpty)
+            .map((s) => '${s.title}\n${s.text}')
+            .join('\n\n'),
+        suggestedQuestions: questions
+            .where((q) => q.selected)
+            .map((q) => q.text)
+            .toList(),
+      ),
+    );
+    if (_disposed) return;
+    overview = updated;
+    notifyListeners();
+  }
 
   Future<void> load() async {
     loading = true;

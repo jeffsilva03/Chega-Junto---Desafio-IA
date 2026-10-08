@@ -1,5 +1,11 @@
 import 'package:go_router/go_router.dart';
 import '../../core/state/preparation_controller.dart';
+import '../../core/state/report_controller.dart';
+import '../../features/pre_visit_report/presentation/pages/pre_visit_report_page.dart';
+import '../../features/pre_visit_report/presentation/pages/audio_report_page.dart';
+import '../../features/ai_summary/presentation/pages/report_processing_page.dart';
+import '../../features/ai_summary/presentation/pages/ai_summary_page.dart';
+import '../../features/questions/presentation/pages/consultation_questions_page.dart';
 import '../../core/state/profile_controller.dart';
 import '../../core/state/speech_controller.dart';
 import '../../features/profile/presentation/pages/personal_data_page.dart';
@@ -27,6 +33,7 @@ GoRouter createAppRouter({
   required PreparationController preparation,
   required ProfileController profile,
   required SpeechController speech,
+  required ReportController report,
   String? initialLocation,
 }) => GoRouter(
   initialLocation: initialLocation ?? AppRoutes.welcome,
@@ -121,15 +128,27 @@ GoRouter createAppRouter({
       builder: (context, state) =>
           NotificationSettingsPage(controller: profile),
     ),
-    for (final entry in {
-      AppRoutes.report: 'Relato pré-consulta',
-      AppRoutes.summary: 'Revisão do relato',
-    }.entries)
-      GoRoute(
-        path: entry.key,
-        builder: (context, state) =>
-            PendingFeaturePage(title: entry.value, selectedIndex: 2),
-      ),
+    GoRoute(
+      path: AppRoutes.report,
+      builder: (context, state) => PreVisitReportPage(controller: report),
+    ),
+    GoRoute(
+      path: AppRoutes.audio,
+      builder: (context, state) => AudioReportPage(controller: report),
+    ),
+    GoRoute(
+      path: AppRoutes.processing,
+      builder: (context, state) => ReportProcessingPage(controller: report),
+    ),
+    GoRoute(
+      path: AppRoutes.summary,
+      builder: (context, state) => AiSummaryPage(controller: report),
+    ),
+    GoRoute(
+      path: AppRoutes.questions,
+      builder: (context, state) =>
+          ConsultationQuestionsPage(controller: report),
+    ),
   ],
   errorBuilder: (context, state) =>
       const PendingFeaturePage(title: 'Página não encontrada'),

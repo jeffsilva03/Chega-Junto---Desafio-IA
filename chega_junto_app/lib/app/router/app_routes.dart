@@ -9,6 +9,9 @@ abstract final class AppRoutes {
   static const attendance = '/atendimentos/consulta-demo-01/presenca';
   static const report = '/atendimentos/consulta-demo-01/relato';
   static const summary = '/atendimentos/consulta-demo-01/resumo';
+  static const audio = '/atendimentos/consulta-demo-01/relato/audio';
+  static const processing = '/atendimentos/consulta-demo-01/relato/organizando';
+  static const questions = '/atendimentos/consulta-demo-01/perguntas';
   static const notifications = '/notificacoes';
   static const personalData = '/perfil/dados-pessoais';
   static const medications = '/perfil/medicamentos-alergias';

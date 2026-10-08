@@ -297,6 +297,11 @@ class AppointmentDetailsPage extends StatelessWidget {
                       onPressed: () => context.push(AppRoutes.attendance),
                       child: const Text('Confirmar presença'),
                     ),
+                    TextButton.icon(
+                      onPressed: () => context.push(AppRoutes.report),
+                      icon: const Icon(Icons.edit_note_rounded),
+                      label: const Text('Relato pré-consulta'),
+                    ),
                   ] else
                     AppButton(
                       label: 'Voltar à agenda',

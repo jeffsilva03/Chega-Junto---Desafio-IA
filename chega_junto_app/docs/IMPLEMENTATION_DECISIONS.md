@@ -22,7 +22,7 @@
 - Regra atual de progresso (submetida à decisão de produto): Vou comparecer conclui a etapa de presença; Ainda não sei e Não poderei comparecer mantêm essa etapa pendente. Nenhuma resposta cancela ou remarca a consulta.
 - Ver como remarcar e Orientações para avisar a unidade abrem explicações em diálogos; não criam integração nem nova tela de barreiras sem protótipo.
 - Menu inferior obrigatório em todas as telas internas. Detalhes destaca Agenda; Checklist e Confirmação destacam Preparo. As telas de entrada aprovadas permanecem sem navegação de sessão.
-- Relato permanece na rota técnica existente, aguardando implementação autorizada.
+- Relato passou a ter telas próprias no bloco autorizado de 8 de outubro de 2026; veja as decisões abaixo.
 - O logo recebe transparência no momento da renderização, sem redesenho da marca nem alteração de arquivos de referência.
 - Textos e layouts suportam rolagem, largura mobile limitada na Web e fonte ampliada. Molduras de aparelhos e barras de sistema desenhadas nos protótipos não são recriadas como UI.
 
@@ -56,3 +56,28 @@
 - Diagnósticos aparecem como "Diagnósticos registrados" no filtro e "Diagnóstico registrado" nos registros. O exemplo informa explicitamente que é histórico preexistente e não produzido pelo Chega Junto ou pela IA.
 - A revisão preservou a composição das telas aprovadas. Não houve redesenho ou refatoração ampla, implementação de Windows desktop, trabalho de suporte a Wasm ou avanço no fluxo de relato/IA.
 - A suíte passou a verificar também o retorno visual ao salvar dados e medicamentos/alergias, a origem histórica do diagnóstico e os quatro destinos oficiais do menu inferior a partir das oito novas telas.
+
+## Relato e organização demonstrativa — 8 de outubro de 2026
+
+- Quatro protótipos orientam Relato, Áudio, Resumo e Perguntas. O processamento é um estado transitório simples, sem novo design de produto ou robô 3D. Todos usam Início, Agenda, Preparo e Perfil, com Preparo destacado.
+- Relato usa Etapa 3 de 4, em vez de 4 de 5, conforme a decisão oficial. O contador conserva a referência visual de 500 caracteres, sem truncar textos maiores ou transcrições. Tópicos orientam a escrita, sem inserir fatos no campo.
+- `ReportController` existe na sessão da aplicação, separado dos widgets e da navegação. Voltar, trocar de aba ou recarregar o preparo não reinicializa o rascunho. Reiniciar o app restaura o mock, como nas demais funcionalidades.
+- `AiAssistantService` e `AudioDraftService` são contratos injetáveis; `MockAiAssistantService` e `MockAudioDraftService` são as implementações desta etapa. Nenhuma biblioteca de estado foi adicionada.
+- O mock de organização divide parágrafos literalmente, conservando todo o texto fornecido. Não faz classificação clínica, inferência de sintomas, tratamentos, medicamentos ou histórico. Os títulos clínicos do protótipo foram adaptados para Pontos relatados e Contexto informado; se faltarem dados, a seção permanece vazia e editável.
+- Perguntas são neutras sobre a conversa no próximo atendimento. Não é sugerido preparo de exame sem contexto, nem é presumido diagnóstico ou tratamento. É possível selecionar, desmarcar, adicionar, editar, remover e mudar a ordem das perguntas.
+- O áudio é explicitamente demonstrativo: não solicita permissão nem acessa o microfone. Tem início, relógio, pausa, retomada, conclusão e transcrição editável. A transcrição usa o relato existente como fonte ou, se estiver vazio, uma frase fictícia neutra identificada como exemplo. Só é incorporada após Usar transcrição; não substitui o relato anterior nem o duplica quando for igual.
+- Sair da tela de áudio pausa o relógio. Sair do processamento cancela a operação de interface; uma resposta atrasada não abre outra tela nem substitui o trabalho atual.
+- Ao mudar o texto original, o resumo anterior é preservado e sinalizado como desatualizado. Reorganizar exige confirmação porque substituirá edições e perguntas. Remover o resumo mantém o texto original, com informação explícita ao usuário, e permite organizar novamente por ação deliberada.
+- Continuar nas perguntas grava somente o resumo revisado e as perguntas selecionadas no repositório em memória e retorna ao checklist. Não há compartilhamento ou envio automático. O progresso geral mantém a regra já aprovada: revisão final permanece pendente enquanto seu fluxo próprio não for implementado; revisar o relato não finge concluir uma etapa adicional.
+- A mesma consulta de 9 de outubro de 2026 às 08:00, Dra. Ana Beatriz Souza, UBS Centro, é reutilizada. Home e Preparo já possuíam entradas para relato/resumo; Detalhes recebeu o acesso Relato pré-consulta.
+- `integration_test` do SDK foi incluído apenas para validação Android e screenshots. Não há nova dependência de execução, serviço externo, gravação real, transcrição paga ou API de IA.
+- Validação: 66 testes unitários/widgets, abrangendo estado, serviços, edição, exclusão, áudio, processamento, cancelamento, navegação, teclado, semântica, áreas de toque Android, temas e as dimensões já utilizadas. O teste de integração executa o fluxo completo no Android 16/API 36 e gera capturas locais.
+
+## Checkpoint do relato após aprovação estrutural — 8 de outubro de 2026
+
+- A revisão final não exigiu mudança de código, refatoração ou redesenho. O original, o uso explícito da transcrição, a edição/exclusão do resumo e a seleção/edição das perguntas foram conferidos no código e na suíte existente.
+- `dart format .` verificou 88 arquivos sem alterações; `flutter analyze` não encontrou problemas; os 66 testes passaram novamente. Builds Web JavaScript e APK de debug foram repetidos com sucesso.
+- Uma checagem complementar de widgets no Chrome ficou no carregamento do runner, inclusive na tentativa de diagnóstico, e foi interrompida sem resultado. Não foi contada como aprovação; a causa não foi confirmada. O build Web JavaScript passou e não houve alteração do aplicativo para contornar o runner.
+- Permanecem os três avisos do dry run de WebAssembly de flutter_tts; CupertinoIcons não voltou a apresentar aviso. O doctor continua indicando licenças Android pendentes e Visual Studio incompleto, sem impedir o build Android. Não houve suporte a Windows Desktop ou trabalho de WebAssembly.
+- O novo protótipo revisao Final.png, detectado durante a revisão, foi preservado fora deste checkpoint. Não foi implementada nova tela nem alterada a regra de progresso da Revisão final.
+- Checkpoint na branch main com a mensagem feat: implementa fluxo de relato e ia simulada. A tag V1 permanece intacta. Builds, capturas e configurações de máquina continuam fora do Git.

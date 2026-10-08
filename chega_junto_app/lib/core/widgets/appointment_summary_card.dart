@@ -11,10 +11,12 @@ class AppointmentSummaryCard extends StatelessWidget {
     required this.appointment,
     this.compact = false,
     this.attendance = false,
+    this.preVisit = false,
   });
   final Appointment appointment;
   final bool compact;
   final bool attendance;
+  final bool preVisit;
   @override
   Widget build(BuildContext context) => AppSurface(
     border: true,
@@ -25,7 +27,7 @@ class AppointmentSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             IconTile(
-              icon: compact || attendance
+              icon: compact || attendance || preVisit
                   ? Icons.calendar_month_rounded
                   : appointment.type == AppointmentType.exam
                   ? Icons.science_rounded
@@ -57,21 +59,26 @@ class AppointmentSummaryCard extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
+                    if (preVisit)
+                      Text(
+                        appointment.facilityName,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     Text(
                       appointment.professionalName,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: context.appColors.textSecondary,
                       ),
                     ),
-                    if (!attendance)
+                    if (!attendance && !preVisit)
                       Text(
                         appointment.specialty,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: context.appColors.muted,
                         ),
                       ),
-                    if (!attendance) const SizedBox(height: 8),
-                    if (!attendance)
+                    if (!attendance && !preVisit) const SizedBox(height: 8),
+                    if (!attendance && !preVisit)
                       ConfirmationChip(
                         status: appointment.confirmationStatus,
                         exam: appointment.type == AppointmentType.exam,
@@ -93,8 +100,12 @@ class AppointmentSummaryCard extends StatelessWidget {
             children: [
               _Detail(
                 icon: Icons.calendar_today_outlined,
-                title: AppointmentDate.fullDate(appointment.dateTime),
-                subtitle: AppointmentDate.weekday(appointment.dateTime),
+                title: preVisit
+                    ? '${AppointmentDate.shortDate(appointment.dateTime)} ${appointment.dateTime.year}'
+                    : AppointmentDate.fullDate(appointment.dateTime),
+                subtitle: preVisit
+                    ? 'Data'
+                    : AppointmentDate.weekday(appointment.dateTime),
               ),
               _Detail(
                 icon: Icons.schedule_rounded,
@@ -102,9 +113,13 @@ class AppointmentSummaryCard extends StatelessWidget {
                 subtitle: 'Horário',
               ),
               _Detail(
-                icon: Icons.location_on_outlined,
-                title: appointment.facilityName,
-                subtitle: 'Unidade',
+                icon: preVisit
+                    ? Icons.medical_services_outlined
+                    : Icons.location_on_outlined,
+                title: preVisit
+                    ? appointment.specialty
+                    : appointment.facilityName,
+                subtitle: preVisit ? 'Especialidade' : 'Unidade',
               ),
             ],
           ),
