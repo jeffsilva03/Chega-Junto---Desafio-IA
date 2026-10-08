@@ -104,6 +104,100 @@ Future<void> _organize(WidgetTester tester) async {
 
 void main() {
   testWidgets(
+    'Novo card preserva conteúdo longo e descarta o rascunho ao fechar',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      await _size(tester, const Size(390, 844));
+      final capture = GlobalKey();
+      await _mount(tester, capture: capture);
+      await tester.enterText(
+        find.byKey(const ValueKey('report-text')),
+        'Quero lembrar de conversar sobre como tenho dormido e tirar minhas dúvidas durante a consulta.',
+      );
+      await _organize(tester);
+      final controller = tester
+          .widget<AiSummaryPage>(find.byType(AiSummaryPage))
+          .controller;
+      final original = controller.text;
+      await _tap(tester, find.byKey(const ValueKey('edit-reason')));
+      final inputSemantics = tester.getSemantics(
+        find.byKey(const ValueKey('report-edit-field')),
+      );
+      expect(
+        RegExp('Conteúdo informado').allMatches(inputSemantics.label).length,
+        1,
+      );
+      expect(tester, meetsGuideline(androidTapTargetGuideline));
+      expect(tester, meetsGuideline(labeledTapTargetGuideline));
+      await _capture(tester, capture, 'writing-dialog-390');
+      await tester.enterText(
+        find.byKey(const ValueKey('report-edit-field')),
+        'Rascunho descartado.',
+      );
+      await _tap(tester, find.byTooltip('Fechar janela'));
+      expect(controller.sections.first.text, original);
+      for (final section in controller.sections) {
+        await _tap(tester, find.byKey(ValueKey('edit-${section.id}')));
+        final longText = List.filled(30, 'Informação do usuário.').join(' ');
+        await tester.enterText(
+          find.byKey(const ValueKey('report-edit-field')),
+          longText,
+        );
+        await _tap(tester, find.byKey(const ValueKey('report-edit-save')));
+        expect(
+          controller.sections.firstWhere((s) => s.id == section.id).text,
+          longText,
+        );
+      }
+      expect(controller.text, original);
+      expect(tester.takeException(), isNull);
+      semantics.dispose();
+    },
+  );
+
+  testWidgets(
+    'Card de escrita mantém ações acessíveis nos temas e no teclado pequeno',
+    (tester) async {
+      await _size(tester, const Size(320, 568), 2.1);
+      await _mount(tester);
+      final controller = tester
+          .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
+          .controller;
+      await tester.runAsync(() => controller.organize());
+      _router(tester).go(AppRoutes.accessibility);
+      await tester.pumpAndSettle();
+      final profile = tester
+          .widget<AccessibilityPage>(find.byType(AccessibilityPage))
+          .controller;
+      for (final dark in [false, true]) {
+        for (final contrast in [false, true]) {
+          profile.setAccessibility(
+            profile.accessibility.copyWith(
+              appearance: dark ? AppAppearance.dark : AppAppearance.light,
+              highContrast: contrast,
+            ),
+          );
+          _router(tester).go(AppRoutes.summary);
+          await tester.pumpAndSettle();
+          await _tap(tester, find.byKey(const ValueKey('edit-reason')));
+          tester.view.viewInsets = const FakeViewPadding(bottom: 200);
+          addTearDown(tester.view.resetViewInsets);
+          await tester.pumpAndSettle();
+          await tester.enterText(
+            find.byKey(const ValueKey('report-edit-field')),
+            'Texto conferido.',
+          );
+          await _tap(tester, find.byKey(const ValueKey('report-edit-save')));
+          expect(controller.sections.first.text, 'Texto conferido.');
+          expect(tester.takeException(), isNull);
+          tester.view.resetViewInsets();
+          await tester.pumpAndSettle();
+        }
+      }
+    },
+  );
+
+  testWidgets(
     'Relato, abas, processamento, edição, remoção e perguntas preservam o trabalho',
     (tester) async {
       await _size(tester, const Size(390, 844));

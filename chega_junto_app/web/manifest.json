@@ -1,12 +1,12 @@
 {
-    "name": "chega_junto_app",
-    "short_name": "chega_junto_app",
+    "name": "Chega Junto",
+    "short_name": "Chega Junto",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "description": "Organize seus atendimentos e prepare-se para consultas e exames. Demonstração com dados fictícios.",
+    "orientation": "portrait",
     "prefer_related_applications": false,
     "icons": [
         {

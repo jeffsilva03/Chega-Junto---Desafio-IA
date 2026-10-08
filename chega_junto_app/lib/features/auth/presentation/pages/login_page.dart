@@ -4,6 +4,7 @@ import '../../../../app/demo_session.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/reference_artwork.dart';
 
 class LoginPage extends StatefulWidget {
@@ -58,54 +59,47 @@ class _LoginPageState extends State<LoginPage> {
     await showDialog<void>(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, update) => AlertDialog(
-          title: Text(
-            completed ? 'Demonstração concluída' : 'Recuperar acesso',
-          ),
+        builder: (context, update) => AppDialog(
+          title: completed ? 'Demonstração concluída' : 'Recuperar acesso',
+          subtitle: completed
+              ? null
+              : 'Use um e-mail fictício para conhecer o fluxo.',
           content: completed
               ? const Text(
                   'Em uma versão com autenticação real, você receberá orientações para recuperar o acesso. Nesta demonstração, nenhum e-mail foi enviado.',
                 )
               : Form(
                   key: form,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Use um e-mail fictício para conhecer o fluxo.',
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: identity,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'E-mail fictício',
-                        ),
-                        validator: (value) =>
-                            (value?.contains('@') ?? false) &&
-                                (value?.contains('.') ?? false)
-                            ? null
-                            : 'Informe um e-mail fictício válido.',
-                      ),
-                    ],
+                  child: AppWritingField(
+                    fieldKey: const ValueKey('recovery-email'),
+                    controller: identity,
+                    label: 'E-mail fictício',
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) =>
+                        (value?.contains('@') ?? false) &&
+                            (value?.contains('.') ?? false)
+                        ? null
+                        : 'Informe um e-mail fictício válido.',
                   ),
                 ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(completed ? 'Fechar' : 'Voltar'),
-            ),
-            if (!completed)
-              TextButton(
-                onPressed: () {
-                  if (form.currentState!.validate()) {
-                    update(() => completed = true);
-                  }
-                },
-                child: const Text('Ver demonstração'),
-              ),
-          ],
+          actions: completed
+              ? Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Fechar'),
+                  ),
+                )
+              : AppDialogActions(
+                  secondaryLabel: 'Voltar',
+                  onSecondary: () => Navigator.pop(context),
+                  primaryLabel: 'Ver demonstração',
+                  onPrimary: () {
+                    if (form.currentState!.validate()) {
+                      update(() => completed = true);
+                    }
+                  },
+                ),
         ),
       ),
     );

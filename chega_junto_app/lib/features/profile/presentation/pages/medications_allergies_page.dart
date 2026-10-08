@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/profile_controller.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/medication_icon.dart';
 import '../../../../data/models/health_record.dart';
@@ -249,55 +250,47 @@ class _HealthItemEditorState extends State<_HealthItemEditor> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    scrollable: true,
-    title: Text(
-      '${widget.item == null ? 'Adicionar' : 'Editar'} ${widget.medication ? 'medicamento' : 'alergia'}',
-    ),
+  Widget build(BuildContext context) => AppDialog(
+    title:
+        '${widget.item == null ? 'Adicionar' : 'Editar'} ${widget.medication ? 'medicamento' : 'alergia'}',
+    subtitle: 'Preencha somente informações que você já possui.',
     content: Form(
       key: _form,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextFormField(
-            key: const ValueKey('health-item-name'),
+          AppWritingField(
+            fieldKey: const ValueKey('health-item-name'),
             controller: _name,
             maxLength: 80,
-            decoration: const InputDecoration(labelText: 'Nome'),
+            label: 'Nome',
             validator: (v) =>
                 (v ?? '').trim().isEmpty ? 'Informe o nome.' : null,
           ),
           const SizedBox(height: 12),
-          TextFormField(
-            key: const ValueKey('health-item-details'),
+          AppWritingField(
+            fieldKey: const ValueKey('health-item-details'),
             controller: _details,
             maxLength: 160,
             maxLines: 3,
-            decoration: InputDecoration(
-              labelText: widget.medication
-                  ? 'Uso informado por você'
-                  : 'Reação informada por você',
-            ),
+            label: widget.medication
+                ? 'Uso informado por você'
+                : 'Reação informada por você',
             validator: (v) => (v ?? '').trim().isEmpty
                 ? 'Informe os detalhes do registro.'
                 : null,
           ),
-          const Text('Preencha somente informações que você já possui.'),
         ],
       ),
     ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancelar'),
-      ),
-      TextButton(
-        key: const ValueKey('health-item-save'),
-        onPressed: _save,
-        child: const Text('Concluir'),
-      ),
-    ],
+    actions: AppDialogActions(
+      secondaryLabel: 'Cancelar',
+      onSecondary: () => Navigator.pop(context),
+      primaryKey: const ValueKey('health-item-save'),
+      primaryLabel: 'Concluir',
+      onPrimary: _save,
+    ),
   );
   @override
   void dispose() {

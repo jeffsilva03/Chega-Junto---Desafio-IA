@@ -4,6 +4,7 @@ import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/profile_controller.dart';
 import '../../../../core/widgets/app_surface.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../widgets/profile_components.dart';
 
 class HelpPage extends StatefulWidget {
@@ -42,8 +43,25 @@ class _HelpPageState extends State<HelpPage> {
       'O Perfil mostra um cartão fictício para demonstração. Ele não substitui seu documento e não está conectado ao SUS.',
     ),
   ];
-  void _faq() => profileInformation(
-    context,
+  void _information(String title, String content, {String? subtitle}) =>
+      showDialog<void>(
+        context: context,
+        builder: (context) => AppDialog(
+          title: title,
+          subtitle:
+              subtitle ?? 'Confira as orientações para usar o aplicativo.',
+          roundClose: true,
+          content: Text(content, style: Theme.of(context).textTheme.bodyLarge),
+          actions: AppDialogActions(
+            secondaryLabel: 'Fechar',
+            onSecondary: () => Navigator.pop(context),
+            secondaryOutlined: false,
+            primaryLabel: 'Entendi',
+            onPrimary: () => Navigator.pop(context),
+          ),
+        ),
+      );
+  void _faq() => _information(
     'Perguntas frequentes (FAQ)',
     'Os dados são reais?\nNão. Esta demonstração usa dados fictícios.\n\nAs alterações ficam salvas?\nElas duram apenas a sessão. Reiniciar restaura os exemplos.\n\nO aplicativo envia informações à unidade?\nNão há integração com unidades ou profissionais.\n\nA IA interpreta exames?\nNão. A organização do relato é simulada e utiliza somente o que você informou. Você pode revisar, editar e excluir o conteúdo; nada é enviado automaticamente.',
   );
@@ -136,12 +154,14 @@ class _HelpPageState extends State<HelpPage> {
                 SettingsOptionTile(
                   icon: entry.$2.$1,
                   title: entry.$2.$2,
-                  onTap: () => profileInformation(
-                    context,
+                  onTap: () => _information(
                     entry.$2.$2,
                     widget.controller.accessibility.simpleLanguage
                         ? entry.$2.$3
                         : '${entry.$2.$3}\n\nOs dados utilizados neste fluxo são demonstrativos e não são transmitidos a serviços de saúde.',
+                    subtitle: entry.$2.$2 == 'Como acompanhar uma consulta'
+                        ? 'Veja como acompanhar seu atendimento pelo aplicativo.'
+                        : null,
                   ),
                 ),
               ],
@@ -160,8 +180,7 @@ class _HelpPageState extends State<HelpPage> {
                 context.appColors.primary,
                 context.appColors.blueSoft,
                 '2 min',
-                () => profileInformation(
-                  context,
+                () => _information(
                   'Conheça o app',
                   '1. Confira o próximo atendimento na Home.\n2. Abra Agenda e veja os detalhes.\n3. Use Preparo para conferir os documentos.\n4. Registre sua resposta de presença.\n5. Consulte seus dados no Perfil.',
                 ),
@@ -205,8 +224,7 @@ class _HelpPageState extends State<HelpPage> {
               icon: Icons.chat_bubble_outline_rounded,
               title: 'Falar com o suporte',
               description: 'Informações sobre suporte nesta versão.',
-              onTap: () => profileInformation(
-                context,
+              onTap: () => _information(
                 'Falar com o suporte',
                 'O atendimento externo de suporte ainda não está disponível nesta demonstração. Consulte os tópicos e as perguntas frequentes para conhecer o aplicativo.',
               ),

@@ -104,6 +104,56 @@ Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
 
 void main() {
   testWidgets(
+    'Cards de Ajuda fecham sem perder a busca e funcionam nos temas',
+    (tester) async {
+      await _prepare(tester, const Size(390, 844));
+      final capture = GlobalKey();
+      await _mount(tester, AppRoutes.accessibility, capture: capture);
+      final profile = tester
+          .widget<AccessibilityPage>(find.byType(AccessibilityPage))
+          .controller;
+      for (final dark in [false, true]) {
+        for (final contrast in [false, true]) {
+          profile.setAccessibility(
+            profile.accessibility.copyWith(
+              appearance: dark ? AppAppearance.dark : AppAppearance.light,
+              highContrast: contrast,
+            ),
+          );
+          _router(tester).go(AppRoutes.help);
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byType(TextField), 'consulta');
+          await tester.pumpAndSettle();
+          await _tap(tester, find.text('Como acompanhar uma consulta'));
+          expect(find.textContaining('não agenda nem remarca'), findsOneWidget);
+          if (!dark && !contrast) {
+            await _capture(tester, capture, 'help-dialog-390');
+          }
+          await _tap(tester, find.text('Entendi'));
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller!.text,
+            'consulta',
+          );
+          await _tap(tester, find.text('Como acompanhar uma consulta'));
+          await _tap(tester, find.byTooltip('Fechar janela'));
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller!.text,
+            'consulta',
+          );
+          await _tap(tester, find.byTooltip('Limpar busca'));
+          expect(tester.takeException(), isNull);
+        }
+      }
+      tester.view.physicalSize = const Size(320, 568);
+      tester.platformDispatcher.textScaleFactorTestValue = 2.1;
+      await tester.pumpAndSettle();
+      await _tap(tester, find.text('Perguntas frequentes (FAQ)'));
+      await _tap(tester, find.text('Entendi'));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'Dados pessoais edita, valida e mantém Perfil e Home consistentes',
     (tester) async {
       await _prepare(tester, const Size(390, 844));

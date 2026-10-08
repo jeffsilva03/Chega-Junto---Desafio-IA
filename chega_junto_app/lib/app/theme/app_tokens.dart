@@ -36,11 +36,13 @@ abstract final class AppRadii {
   static const medium = 12.0;
   static const large = 16.0;
   static const sheet = 24.0;
+  static const dialog = 20.0;
 }
 
 abstract final class AppLayout {
   static const maxWidth = 430.0;
   static const controlHeight = 48.0;
+  static const dialogMaxWidth = 400.0;
 }
 
 @immutable

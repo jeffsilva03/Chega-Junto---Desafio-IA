@@ -129,7 +129,7 @@ void main() {
     await tester.tap(find.text('Esqueci minha senha?'));
     await tester.pumpAndSettle();
     await tester.enterText(
-      find.widgetWithText(TextFormField, 'E-mail fictício'),
+      find.byKey(const ValueKey('recovery-email')),
       'maria@example.test',
     );
     await tester.tap(find.text('Ver demonstração'));

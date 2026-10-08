@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 void reportMessage(BuildContext context, String message) =>
     ScaffoldMessenger.of(context)
@@ -131,44 +132,37 @@ class _ReportTextDialogState extends State<_ReportTextDialog> {
   @override
   Widget build(BuildContext context) {
     final question = widget.question;
-    return AlertDialog(
-      title: Text(widget.title),
-      scrollable: true,
-      content: TextField(
-        key: const ValueKey('report-edit-field'),
+    return AppDialog(
+      title: widget.title,
+      subtitle: question
+          ? 'Revise ou edite sua pergunta para levar à consulta.'
+          : 'Revise ou edite este conteúdo antes da consulta.',
+      content: AppWritingField(
+        fieldKey: const ValueKey('report-edit-field'),
         controller: controller,
         autofocus: true,
         minLines: question ? 2 : 4,
         maxLines: question ? 4 : 10,
         maxLength: question ? 250 : null,
-        decoration: InputDecoration(
-          errorText: _error,
-          labelText: question ? 'Pergunta' : 'Conteúdo informado',
-          alignLabelWithHint: true,
-        ),
+        counterReference: question ? 250 : 500,
+        errorText: _error,
+        label: question ? 'Pergunta' : 'Conteúdo informado',
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        if (!question)
-          TextButton(
-            onPressed: () => Navigator.pop(context, ''),
-            child: const Text('Remover conteúdo'),
-          ),
-        TextButton(
-          key: const ValueKey('report-edit-save'),
-          onPressed: () {
-            if (question && controller.text.trim().isEmpty) {
-              setState(() => _error = 'Escreva sua pergunta.');
-              return;
-            }
-            Navigator.pop(context, controller.text.trim());
-          },
-          child: const Text('Salvar'),
-        ),
-      ],
+      actions: AppDialogActions(
+        secondaryLabel: 'Cancelar',
+        onSecondary: () => Navigator.pop(context),
+        destructiveLabel: question ? null : 'Remover conteúdo',
+        onDestructive: () => Navigator.pop(context, ''),
+        primaryLabel: 'Salvar',
+        primaryKey: const ValueKey('report-edit-save'),
+        onPrimary: () {
+          if (question && controller.text.trim().isEmpty) {
+            setState(() => _error = 'Escreva sua pergunta.');
+            return;
+          }
+          Navigator.pop(context, controller.text.trim());
+        },
+      ),
     );
   }
 }
