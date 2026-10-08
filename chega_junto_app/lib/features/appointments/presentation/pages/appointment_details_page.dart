@@ -72,7 +72,7 @@ class AppointmentDetailsPage extends StatelessWidget {
     bottomNavigationBar: const AppBottomNavigation(selectedIndex: 1),
     appBar: AppBar(
       toolbarHeight: MediaQuery.textScalerOf(context).scale(56),
-      backgroundColor: Colors.white,
+      backgroundColor: context.appColors.surface,
       surfaceTintColor: Colors.transparent,
       title: Text(
         'Detalhes da consulta',
@@ -88,9 +88,9 @@ class AppointmentDetailsPage extends StatelessWidget {
         IconButton(
           onPressed: () => context.push(AppRoutes.notifications),
           tooltip: 'Notificações',
-          icon: const Badge(
+          icon: Badge(
             smallSize: 6,
-            backgroundColor: AppColors.primary,
+            backgroundColor: context.appColors.primary,
             child: Icon(Icons.notifications_none_rounded),
           ),
         ),
@@ -156,7 +156,7 @@ class AppointmentDetailsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
                         Material(
-                          color: AppColors.blueSoft,
+                          color: context.appColors.blueSoft,
                           borderRadius: BorderRadius.circular(AppRadii.small),
                           child: InkWell(
                             onTap: () => _location(context, appointment),
@@ -168,9 +168,9 @@ class AppointmentDetailsPage extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.near_me_rounded,
-                                    color: AppColors.primary,
+                                    color: context.appColors.primary,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -179,12 +179,14 @@ class AppointmentDetailsPage extends StatelessWidget {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
-                                          ?.copyWith(color: AppColors.primary),
+                                          ?.copyWith(
+                                            color: context.appColors.primary,
+                                          ),
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.chevron_right_rounded,
-                                    color: AppColors.primary,
+                                    color: context.appColors.primary,
                                   ),
                                 ],
                               ),
@@ -217,8 +219,8 @@ class AppointmentDetailsPage extends StatelessWidget {
                                         ? Icons.check_circle_rounded
                                         : Icons.radio_button_unchecked_rounded,
                                     color: entry.$2.isCompleted
-                                        ? AppColors.tealDark
-                                        : AppColors.muted,
+                                        ? context.appColors.tealDark
+                                        : context.appColors.muted,
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
@@ -243,10 +245,10 @@ class AppointmentDetailsPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SectionHeading(
+                        SectionHeading(
                           title: 'Orientações',
                           icon: Icons.info_rounded,
-                          color: AppColors.primaryDark,
+                          color: context.appColors.primaryDark,
                         ),
                         const SizedBox(height: 12),
                         for (final instruction in appointment.instructions)
@@ -255,9 +257,9 @@ class AppointmentDetailsPage extends StatelessWidget {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.info_outline_rounded,
-                                  color: AppColors.primaryDark,
+                                  color: context.appColors.primaryDark,
                                   size: 22,
                                 ),
                                 const SizedBox(width: 12),
@@ -287,7 +289,7 @@ class AppointmentDetailsPage extends StatelessWidget {
                     AppButton(
                       label: 'Ver checklist completo',
                       icon: Icons.chevron_right_rounded,
-                      color: AppColors.primaryDark,
+                      color: context.appColors.primaryDark,
                       onPressed: () => context.push(AppRoutes.checklist),
                     ),
                     const SizedBox(height: 8),
@@ -319,18 +321,20 @@ class _MapPreview extends StatelessWidget {
     image: true,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(AppRadii.medium),
-      child: const CustomPaint(painter: _MapPainter()),
+      child: CustomPaint(painter: _MapPainter(context.appColors)),
     ),
   );
 }
 
 class _MapPainter extends CustomPainter {
-  const _MapPainter();
+  const _MapPainter(this.colors);
+  final AppPalette colors;
   @override
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(
       Offset.zero & size,
-      Paint()..color = const Color(0xFFF0F3F6),
+      Paint()
+        ..color = colors.dark ? colors.background : const Color(0xFFF0F3F6),
     );
     canvas.drawRect(
       Rect.fromLTWH(size.width * .7, 3, 22, 26),
@@ -369,7 +373,7 @@ class _MapPainter extends CustomPainter {
         size.width * .5,
         size.height * .73,
       );
-    canvas.drawPath(pin, Paint()..color = AppColors.primary);
+    canvas.drawPath(pin, Paint()..color = colors.primary);
     canvas.drawCircle(
       Offset(size.width * .5, size.height * .46),
       4,
@@ -378,5 +382,5 @@ class _MapPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MapPainter oldDelegate) => false;
+  bool shouldRepaint(_MapPainter oldDelegate) => colors != oldDelegate.colors;
 }

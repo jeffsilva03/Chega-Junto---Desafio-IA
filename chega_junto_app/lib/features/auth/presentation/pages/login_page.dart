@@ -139,7 +139,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFFF0F5FA),
+    backgroundColor: context.appColors.dark
+        ? context.appColors.background
+        : const Color(0xFFF0F5FA),
     body: SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
@@ -215,8 +217,8 @@ class _LoginPageState extends State<LoginPage> {
                   offset: const Offset(0, -12),
                   child: Container(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(AppRadii.sheet),
                       ),
@@ -318,13 +320,15 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Text(
                                 _failure!,
-                                style: const TextStyle(color: AppColors.error),
+                                style: TextStyle(
+                                  color: context.appColors.error,
+                                ),
                               ),
                             ),
                           AppButton(
                             key: const Key('login-submit'),
                             label: _busy ? 'Entrando...' : 'Entrar',
-                            color: AppColors.primaryDark,
+                            color: context.appColors.primaryDark,
                             busy: _busy,
                             onPressed: _signIn,
                           ),
@@ -351,7 +355,7 @@ class _LoginPageState extends State<LoginPage> {
                                 : () => _signIn(google: true),
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 48),
-                              foregroundColor: AppColors.ink,
+                              foregroundColor: context.appColors.ink,
                               side: const BorderSide(color: Color(0xFFCAD6E6)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(

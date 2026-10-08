@@ -10,7 +10,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: DecoratedBox(
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: context.appColors.surface),
       child: Stack(
         children: [
           const Positioned.fill(
@@ -31,12 +31,14 @@ class WelcomePage extends StatelessWidget {
                         const BrandLogo(width: 178, stacked: true),
                         const SizedBox(height: 24),
                         Text.rich(
-                          const TextSpan(
+                          TextSpan(
                             children: [
                               TextSpan(text: 'Seu cuidado\n'),
                               TextSpan(
                                 text: 'começa antes\n',
-                                style: TextStyle(color: AppColors.primary),
+                                style: TextStyle(
+                                  color: context.appColors.primary,
+                                ),
                               ),
                               TextSpan(text: 'da consulta'),
                             ],
@@ -54,7 +56,9 @@ class WelcomePage extends StatelessWidget {
                           'Organize documentos, confirme presença e chegue mais preparado para consultas e exames do SUS.',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(color: AppColors.textSecondary),
+                              ?.copyWith(
+                                color: context.appColors.textSecondary,
+                              ),
                         ),
                         const SizedBox(height: 12),
                         const SizedBox(
@@ -107,7 +111,9 @@ class _PageIndicators extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index == 0 ? AppColors.primary : const Color(0xFFD1DDEE),
+            color: index == 0
+                ? context.appColors.primary
+                : const Color(0xFFD1DDEE),
           ),
         ),
       ),

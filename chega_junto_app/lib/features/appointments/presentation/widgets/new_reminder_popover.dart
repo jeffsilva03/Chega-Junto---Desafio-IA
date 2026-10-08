@@ -118,12 +118,12 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
                   Container(
                     key: const Key('new-reminder-card'),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.appColors.surface,
                       borderRadius: BorderRadius.circular(AppRadii.sheet),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.appColors.border),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.ink.withValues(alpha: .12),
+                          color: context.appColors.ink.withValues(alpha: .12),
                           blurRadius: 16,
                           offset: const Offset(0, 6),
                         ),
@@ -163,10 +163,12 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
                     Positioned(
                       bottom: -10,
                       left: pointer,
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 20,
                         height: 12,
-                        child: CustomPaint(painter: _PointerPainter()),
+                        child: CustomPaint(
+                          painter: _PointerPainter(context.appColors),
+                        ),
                       ),
                     ),
                 ],
@@ -186,16 +188,16 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
       const SizedBox(height: 5),
       Text(
         'Crie um lembrete rápido para este compromisso.',
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: context.appColors.textSecondary,
+        ),
       ),
       const SizedBox(height: 16),
       Text(
         'Título',
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: context.appColors.textSecondary,
+        ),
       ),
       const SizedBox(height: 5),
       TextFormField(
@@ -213,9 +215,9 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
               : IconButton(
                   tooltip: 'Limpar título',
                   onPressed: _saving ? null : () => setState(_title.clear),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.cancel_rounded,
-                    color: AppColors.muted,
+                    color: context.appColors.muted,
                     size: 20,
                   ),
                 ),
@@ -240,11 +242,13 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
                   ? null
                   : (_) => setState(() => _timing = timing),
               showCheckmark: false,
-              selectedColor: AppColors.blueSoft,
-              backgroundColor: AppColors.surface,
+              selectedColor: context.appColors.blueSoft,
+              backgroundColor: context.appColors.surface,
               surfaceTintColor: Colors.transparent,
               side: BorderSide(
-                color: _timing == timing ? AppColors.primary : AppColors.border,
+                color: _timing == timing
+                    ? context.appColors.primary
+                    : context.appColors.border,
               ),
               shape: const StadiumBorder(),
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
@@ -252,8 +256,8 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
                 fontFamily: 'NunitoSans',
                 fontSize: 13,
                 color: _timing == timing
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
+                    ? context.appColors.primary
+                    : context.appColors.textSecondary,
                 fontWeight: _timing == timing
                     ? FontWeight.w800
                     : FontWeight.w400,
@@ -263,7 +267,7 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
       ),
       if (_error != null) ...[
         const SizedBox(height: 8),
-        Text(_error!, style: const TextStyle(color: AppColors.error)),
+        Text(_error!, style: TextStyle(color: context.appColors.error)),
       ],
     ],
   );
@@ -301,7 +305,8 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
 }
 
 class _PointerPainter extends CustomPainter {
-  const _PointerPainter();
+  const _PointerPainter(this.colors);
+  final AppPalette colors;
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path()
@@ -309,18 +314,19 @@ class _PointerPainter extends CustomPainter {
       ..lineTo(size.width / 2, size.height)
       ..lineTo(size.width, 0)
       ..close();
-    canvas.drawPath(path, Paint()..color = AppColors.surface);
+    canvas.drawPath(path, Paint()..color = colors.surface);
     canvas.drawPath(
       Path()
         ..moveTo(0, 1)
         ..lineTo(size.width / 2, size.height)
         ..lineTo(size.width, 1),
       Paint()
-        ..color = AppColors.border
+        ..color = colors.border
         ..style = PaintingStyle.stroke,
     );
   }
 
   @override
-  bool shouldRepaint(_PointerPainter oldDelegate) => false;
+  bool shouldRepaint(_PointerPainter oldDelegate) =>
+      colors != oldDelegate.colors;
 }

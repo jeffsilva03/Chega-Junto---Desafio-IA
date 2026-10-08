@@ -2,22 +2,45 @@ import 'package:flutter/material.dart';
 import 'app_tokens.dart';
 
 abstract final class AppTheme {
-  static ThemeData get light {
-    const base = TextStyle(
+  static ThemeData get light => create();
+  static ThemeData create({
+    bool dark = false,
+    bool highContrast = false,
+    bool reduceMotion = false,
+  }) {
+    final colors = AppPalette(dark: dark, highContrast: highContrast);
+    final base = TextStyle(
       fontFamily: 'NunitoSans',
-      color: AppColors.ink,
+      color: colors.ink,
       height: 1.35,
     );
     return ThemeData(
       useMaterial3: true,
+      brightness: dark ? Brightness.dark : Brightness.light,
+      extensions: [colors],
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: _AccessibleTransitions(),
+          TargetPlatform.iOS: _AccessibleTransitions(),
+          TargetPlatform.windows: _AccessibleTransitions(),
+          TargetPlatform.macOS: _AccessibleTransitions(),
+          TargetPlatform.linux: _AccessibleTransitions(),
+        },
+      ),
+      splashFactory: reduceMotion
+          ? NoSplash.splashFactory
+          : InkRipple.splashFactory,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
-        primary: AppColors.primary,
-        secondary: AppColors.teal,
-        surface: AppColors.surface,
-        error: AppColors.error,
+        brightness: dark ? Brightness.dark : Brightness.light,
+        primary: colors.primary,
+        onPrimary: colors.onPrimary,
+        secondary: colors.teal,
+        surface: colors.surface,
+        onSurface: colors.ink,
+        error: colors.error,
       ),
-      scaffoldBackgroundColor: AppColors.surface,
+      scaffoldBackgroundColor: colors.surface,
       fontFamily: 'NunitoSans',
       textTheme: TextTheme(
         headlineLarge: base.copyWith(
@@ -40,41 +63,41 @@ abstract final class AppTheme {
         titleMedium: base.copyWith(fontSize: 16, fontWeight: FontWeight.w800),
         bodyLarge: base.copyWith(fontSize: 16),
         bodyMedium: base.copyWith(fontSize: 14),
-        bodySmall: base.copyWith(fontSize: 12, color: AppColors.textSecondary),
+        bodySmall: base.copyWith(fontSize: 12, color: colors.textSecondary),
         labelLarge: base.copyWith(fontSize: 16, fontWeight: FontWeight.w800),
         labelMedium: base.copyWith(fontSize: 12, fontWeight: FontWeight.w700),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
-        hintStyle: base.copyWith(color: AppColors.muted, fontSize: 14),
+        fillColor: colors.surface,
+        hintStyle: base.copyWith(color: colors.muted, fontSize: 14),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.medium),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: colors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.medium),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: colors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.medium),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: colors.primary, width: 1.5),
         ),
         errorMaxLines: 2,
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: colors.primary,
           textStyle: base.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
-      iconTheme: const IconThemeData(color: AppColors.textSecondary, size: 24),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.border,
+      iconTheme: IconThemeData(color: colors.textSecondary, size: 24),
+      dividerTheme: DividerThemeData(
+        color: colors.border,
         thickness: 1,
         space: 1,
       ),
@@ -83,4 +106,24 @@ abstract final class AppTheme {
       ),
     );
   }
+}
+
+class _AccessibleTransitions extends PageTransitionsBuilder {
+  const _AccessibleTransitions();
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => MediaQuery.disableAnimationsOf(context)
+      ? child
+      : const FadeUpwardsPageTransitionsBuilder().buildTransitions(
+          route,
+          context,
+          animation,
+          secondaryAnimation,
+          child,
+        );
 }

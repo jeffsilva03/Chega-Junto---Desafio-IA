@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/widgets/app_surface.dart';
+import '../../../../core/widgets/medication_icon.dart';
 
 class ProfileMenuGroup extends StatelessWidget {
   const ProfileMenuGroup({
@@ -41,13 +42,13 @@ class ProfileMenuGroup extends StatelessWidget {
                   child: Row(
                     children: [
                       if (entry.$2.$1 == Icons.medication_outlined)
-                        const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CustomPaint(painter: _CapsulePainter()),
-                        )
+                        MedicationIcon(color: context.appColors.primary)
                       else
-                        Icon(entry.$2.$1, color: AppColors.primary, size: 24),
+                        Icon(
+                          entry.$2.$1,
+                          color: context.appColors.primary,
+                          size: 24,
+                        ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Text(
@@ -67,28 +68,4 @@ class ProfileMenuGroup extends StatelessWidget {
       ),
     ],
   );
-}
-
-class _CapsulePainter extends CustomPainter {
-  const _CapsulePainter();
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(.785398);
-    final paint = Paint()
-      ..color = AppColors.primary
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-5.5, -11, 11, 22),
-        const Radius.circular(5.5),
-      ),
-      paint,
-    );
-    canvas.drawLine(const Offset(-5.5, 0), const Offset(5.5, 0), paint);
-  }
-
-  @override
-  bool shouldRepaint(_CapsulePainter oldDelegate) => false;
 }

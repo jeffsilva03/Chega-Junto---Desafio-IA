@@ -36,16 +36,22 @@ As capturas ficam em `.local/qa/`, fora do Git.
 - Estado compartilhado: checklist e progresso geral permanecem consistentes ao navegar.
 - Confirmação de presença com três respostas, salvamento local e orientações para procurar a unidade.
 - Menu inferior fixo em todas as telas internas, incluindo Detalhes, Checklist e Confirmação. Splash e Login mantêm o fluxo de entrada aprovado.
-- Perfil conforme `perfil.png`, com cartão SUS fictício, grupos de opções e saída pela engrenagem. Os destinos dos atalhos aguardam protótipos próprios, por decisão do projeto.
+- Perfil conforme `perfil.png`, com cartão SUS fictício e saída pela engrenagem.
+- Dados pessoais editáveis: identificação, endereço e contato de emergência na mesma tela.
+- Medicamentos e alergias: adicionar, editar e remover registros, com salvamento explícito.
+- Histórico com filtros, detalhes por registro e prévias textuais de documentos demonstrativos.
+- Notificações com filtros, leitura e configurações aplicadas à lista local.
+- Acessibilidade: tamanho do texto, tema claro/escuro/sistema, alto contraste, leitura em voz alta, descrições de imagens, linguagem simples nas telas de apoio, feedback tátil e redução de animações.
+- Ajuda com busca, respostas, tutoriais e suporte demonstrativo.
 - Novo Lembrete conforme `novoLembrete.png`: card flutuante com título e opções 1 dia antes, 2 horas antes e No horário, relativas à próxima consulta.
 
-Relato, IA e notificações possuem somente rotas técnicas temporárias. Não há integração com serviços de saúde.
+Relato e IA possuem somente rotas técnicas temporárias. O cartão SUS não possui tela de detalhes própria. Não há integração com serviços de saúde.
 
 ## Dados e limites
 
 Use um e-mail fictício e senha fictícia com pelo menos quatro caracteres, ou o botão de Google simulado. Nenhuma credencial é enviada, validada por servidor ou persistida. A recuperação de acesso é uma demonstração e não envia e-mail.
 
-Os dados e endereços são fictícios. A data de referência da demonstração é 7 de outubro de 2026, com próxima consulta em 9 de outubro às 08:00. Os lembretes, respostas de presença e alterações do checklist duram apenas a sessão; reiniciar o aplicativo restaura os mocks. Adicionar lembrete não programa uma notificação do sistema. Salvar presença não avisa a unidade nem altera a consulta.
+Os dados e endereços são fictícios. A data de referência da demonstração é 7 de outubro de 2026, com próxima consulta em 9 de outubro às 08:00. Os lembretes, respostas de presença, checklist, dados do perfil, medicamentos, alergias, avisos lidos e preferências duram apenas a sessão; reiniciar o aplicativo restaura os mocks. Adicionar lembrete não programa uma notificação do sistema. Salvar presença não avisa a unidade nem altera a consulta.
 
 Não há backend, banco remoto, IA real, autenticação real, mapas externos ou serviços pagos. Orientações exibidas são conteúdo fictício previamente definido, não recomendações geradas por IA.
 
@@ -61,7 +67,9 @@ assets/         recursos locais e licença da fonte
 test/           navegação, responsividade, progresso e estado compartilhado
 ```
 
-`PreparationRepository` permite futura troca por API. `PreparationController` mantém o estado da sessão para todas as telas. UI e modelos não dependem de um backend específico.
+`PreparationRepository` e `ProfileRepository` permitem futura troca por APIs. `PreparationController` e `ProfileController` mantêm os dados compartilhados; salvar o nome atualiza Perfil e Home. `SpeechController` depende de `SpeechEngine`, com implementações Android e Web substituíveis por fake nos testes. UI e modelos não dependem de um backend específico.
+
+A leitura Android usa `flutter_tts` e o mecanismo instalado no aparelho. Na Web utiliza Web Speech API via Dart/JavaScript, selecionando somente vozes locais. Em ambas é necessária uma voz local em português. Sem ela, o aplicativo informa a indisponibilidade; não utiliza serviços remotos como alternativa. Nenhum conteúdo é enviado para uma API de voz. As preferências de notificação controlam a central interna e não programam notificações Android.
 
 ## Referências e identidade
 
@@ -69,7 +77,9 @@ As pastas externas de documentação, protótipos e Landing Page são fontes de 
 
 Fonte local: Nunito Sans, licença SIL Open Font License em `assets/fonts/OFL.txt`. A família é uma aproximação visual, pois não foi fornecido o arquivo tipográfico dos protótipos. A fotografia do login deriva do PNG de baixa resolução disponível; um original em alta resolução permitirá refinamento futuro.
 
-Dependência adicional de execução: `go_router 17.5.0`, compatível com Dart 3.11.1, para navegação centralizada e URLs Web. `flutter_localizations` pertence ao SDK; `flutter_lints` e `flutter_test` são usados na validação. Não há bibliotecas de estado ou carregamento remoto de fontes.
+Dependências de execução: `go_router 17.5.0`, para navegação centralizada e URLs Web; [`flutter_tts 4.2.5`](https://pub.dev/packages/flutter_tts), licença MIT, para leitura pelo mecanismo de voz Android; e `cupertino_icons 1.0.9`, licença MIT, para fornecer a fonte de ícones referenciada internamente pelo SDK. São gratuitas. A inclusão da fonte corrige o aviso de família ausente sem alterar o design das telas. `flutter_localizations` pertence ao SDK; `flutter_lints` e `flutter_test` são usados na validação. Não há bibliotecas de estado ou carregamento remoto de fontes.
+
+Checkpoint de 8 de outubro de 2026: análise sem problemas, 42 testes aprovados e builds Web/Android concluídos. O build Web JavaScript permanece com avisos no dry run de WebAssembly do `flutter_tts`; Wasm não é alvo deste MVP. Consulte `docs/RELATORIO_STATUS_2026-10-08.md` para os resultados e limites da revisão.
 
 ## Git
 

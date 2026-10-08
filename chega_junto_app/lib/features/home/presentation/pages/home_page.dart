@@ -6,13 +6,16 @@ import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/reference_artwork.dart';
 import '../../../../core/state/preparation_controller.dart';
+import '../../../../core/state/profile_controller.dart';
+import '../../../../data/mock/mock_notifications.dart';
 import '../../../../core/widgets/appointment_card.dart';
 import '../widgets/preparation_card.dart';
 import '../widgets/quick_access_tile.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.controller});
+  const HomePage({super.key, required this.controller, required this.profile});
   final PreparationController controller;
+  final ProfileController profile;
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -22,12 +25,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
+    backgroundColor: context.appColors.background,
     bottomNavigationBar: const AppBottomNavigation(),
     body: SafeArea(
       bottom: false,
       child: ListenableBuilder(
-        listenable: _controller,
+        listenable: Listenable.merge([_controller, widget.profile]),
         builder: (context, _) {
           if (_controller.loading) {
             return const Center(child: CircularProgressIndicator());
@@ -51,6 +54,22 @@ class _HomePageState extends State<HomePage> {
             );
           }
           final overview = _controller.overview!;
+          final unread =
+              demoNotifications(
+                    overview,
+                    _controller.appointments,
+                    _controller.reminders,
+                  )
+                  .where(
+                    (item) =>
+                        notificationVisible(
+                          item,
+                          widget.profile.notifications,
+                        ) &&
+                        item.unread &&
+                        !widget.profile.isRead(item.id),
+                  )
+                  .length;
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -74,12 +93,13 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () =>
                               context.push(AppRoutes.notifications),
                           style: IconButton.styleFrom(
-                            backgroundColor: AppColors.blueSoft,
-                            foregroundColor: AppColors.ink,
+                            backgroundColor: context.appColors.blueSoft,
+                            foregroundColor: context.appColors.ink,
                           ),
-                          icon: const Badge(
+                          icon: Badge(
+                            isLabelVisible: unread > 0,
                             smallSize: 6,
-                            backgroundColor: AppColors.primary,
+                            backgroundColor: context.appColors.primary,
                             child: Icon(
                               Icons.notifications_none_rounded,
                               size: 26,
@@ -91,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Olá, ${overview.firstName}',
+                    'Olá, ${widget.profile.profile?.fullName.split(' ').first ?? overview.firstName}',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 3),
@@ -102,12 +122,12 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         'Seu cuidado começa aqui',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.appColors.textSecondary,
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.favorite_rounded,
-                        color: AppColors.primary,
+                        color: context.appColors.primary,
                         size: 20,
                       ),
                     ],
@@ -128,13 +148,13 @@ class _HomePageState extends State<HomePage> {
                   _QuickAccessGrid(),
                   const SizedBox(height: 12),
                   AppSurface(
-                    color: AppColors.warningSoft,
+                    color: context.appColors.warningSoft,
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       children: [
-                        const IconTile(
+                        IconTile(
                           icon: Icons.notifications_rounded,
-                          color: AppColors.warning,
+                          color: context.appColors.warning,
                           background: Color(0xFFFFE8BD),
                           size: 36,
                         ),
@@ -151,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 overview.reminder,
                                 style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: AppColors.ink),
+                                    ?.copyWith(color: context.appColors.ink),
                               ),
                             ],
                           ),
@@ -183,8 +203,8 @@ class _QuickAccessGrid extends StatelessWidget {
         title: 'Checklist',
         description: 'Prepare-se para suas consultas',
         icon: Icons.check_box_rounded,
-        color: AppColors.tealDark,
-        background: AppColors.tealSoft,
+        color: context.appColors.tealDark,
+        background: context.appColors.tealSoft,
         onTap: () => context.push(AppRoutes.checklist),
       ),
       QuickAccessTile(
@@ -197,8 +217,8 @@ class _QuickAccessGrid extends StatelessWidget {
         title: 'Resumo com IA',
         description: 'Organize seus exames e anotações',
         icon: Icons.notes_rounded,
-        color: AppColors.purple,
-        background: AppColors.purpleSoft,
+        color: context.appColors.purple,
+        background: context.appColors.purpleSoft,
         onTap: () => context.push(AppRoutes.summary),
       ),
     ];

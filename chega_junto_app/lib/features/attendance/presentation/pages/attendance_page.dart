@@ -108,7 +108,7 @@ class _AttendancePageState extends State<AttendancePage> {
     bottomNavigationBar: const AppBottomNavigation(selectedIndex: 2),
     appBar: AppBar(
       toolbarHeight: MediaQuery.textScalerOf(context).scale(76),
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.appColors.surface,
       surfaceTintColor: Colors.transparent,
       leading: IconButton(
         tooltip: 'Voltar',
@@ -147,7 +147,7 @@ class _AttendancePageState extends State<AttendancePage> {
                   Text(
                     'Sua resposta ajuda a organizar melhor sua preparação.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.appColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -188,14 +188,14 @@ class _AttendancePageState extends State<AttendancePage> {
                   ],
                   const SizedBox(height: 4),
                   AppSurface(
-                    color: AppColors.blueSoft,
+                    color: context.appColors.blueSoft,
                     padding: const EdgeInsets.all(14),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.info_outline_rounded,
-                          color: AppColors.primary,
+                          color: context.appColors.primary,
                           size: 25,
                         ),
                         const SizedBox(width: 14),
@@ -291,7 +291,7 @@ class _HelpTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+          Icon(Icons.chevron_right_rounded, color: context.appColors.primary),
         ],
       ),
     ),

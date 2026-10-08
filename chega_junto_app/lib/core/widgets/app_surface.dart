@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_tokens.dart';
+import 'medication_icon.dart';
 
 class AppSurface extends StatelessWidget {
   const AppSurface({
@@ -17,9 +18,9 @@ class AppSurface extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: padding,
     decoration: BoxDecoration(
-      color: color,
+      color: context.appColors.resolve(color),
       borderRadius: BorderRadius.circular(AppRadii.large),
-      border: border ? Border.all(color: AppColors.border) : null,
+      border: border ? Border.all(color: context.appColors.border) : null,
     ),
     child: child,
   );
@@ -42,9 +43,16 @@ class IconTile extends StatelessWidget {
     width: size,
     height: size,
     decoration: BoxDecoration(
-      color: background,
+      color: context.appColors.resolve(background),
       borderRadius: BorderRadius.circular(AppRadii.medium),
     ),
-    child: Icon(icon, color: color, size: size * .56),
+    child: icon == Icons.medication_outlined
+        ? Center(
+            child: MedicationIcon(
+              color: context.appColors.resolve(color),
+              size: size * .56,
+            ),
+          )
+        : Icon(icon, color: context.appColors.resolve(color), size: size * .56),
   );
 }

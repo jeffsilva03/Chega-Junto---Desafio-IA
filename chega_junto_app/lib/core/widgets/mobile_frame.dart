@@ -6,7 +6,9 @@ class MobileFrame extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: const Color(0xFFEAF4F9),
+    color: context.appColors.dark
+        ? context.appColors.background
+        : const Color(0xFFEAF4F9),
     child: Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: AppLayout.maxWidth),

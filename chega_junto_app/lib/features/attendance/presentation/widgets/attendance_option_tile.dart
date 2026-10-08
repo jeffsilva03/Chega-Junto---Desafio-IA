@@ -25,11 +25,13 @@ class AttendanceOptionTile extends StatelessWidget {
     enabled: onTap != null,
     excludeSemantics: true,
     child: Material(
-      color: selected ? AppColors.blueSoft : AppColors.surface,
+      color: selected ? context.appColors.blueSoft : context.appColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.medium),
         side: BorderSide(
-          color: selected ? AppColors.primary : AppColors.border,
+          color: selected
+              ? context.appColors.primary
+              : context.appColors.border,
           width: selected ? 1.5 : 1,
         ),
       ),
@@ -48,7 +50,9 @@ class AttendanceOptionTile extends StatelessWidget {
                   selected
                       ? Icons.radio_button_checked_rounded
                       : Icons.radio_button_unchecked_rounded,
-                  color: selected ? AppColors.primary : AppColors.textSecondary,
+                  color: selected
+                      ? context.appColors.primary
+                      : context.appColors.textSecondary,
                   size: 27,
                 ),
               ),
@@ -62,7 +66,7 @@ class AttendanceOptionTile extends StatelessWidget {
                     Text(
                       description,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                       ),
                     ),
                   ],

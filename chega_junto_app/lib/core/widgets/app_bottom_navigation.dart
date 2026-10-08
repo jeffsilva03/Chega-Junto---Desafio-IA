@@ -27,9 +27,9 @@ class AppBottomNavigation extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) => Container(
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      border: Border(top: BorderSide(color: AppColors.border)),
+    decoration: BoxDecoration(
+      color: context.appColors.surface,
+      border: Border(top: BorderSide(color: context.appColors.border)),
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
     ),
     child: SafeArea(
@@ -57,8 +57,8 @@ class AppBottomNavigation extends StatelessWidget {
                       Icon(
                         selected ? _activeIcons[index] : _icons[index],
                         color: selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
+                            ? context.appColors.primary
+                            : context.appColors.textSecondary,
                         size: 27,
                       ),
                       const SizedBox(height: 3),
@@ -66,8 +66,8 @@ class AppBottomNavigation extends StatelessWidget {
                         _labels[index],
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: selected
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
+                              ? context.appColors.primary
+                              : context.appColors.textSecondary,
                           fontWeight: selected
                               ? FontWeight.w800
                               : FontWeight.w600,
@@ -79,7 +79,7 @@ class AppBottomNavigation extends StatelessWidget {
                         height: 3,
                         decoration: BoxDecoration(
                           color: selected
-                              ? AppColors.primary
+                              ? context.appColors.primary
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(2),
                         ),

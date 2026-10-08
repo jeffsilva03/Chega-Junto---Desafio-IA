@@ -36,7 +36,7 @@ class ChecklistPage extends StatelessWidget {
     bottomNavigationBar: const AppBottomNavigation(selectedIndex: 2),
     appBar: AppBar(
       toolbarHeight: MediaQuery.textScalerOf(context).scale(56),
-      backgroundColor: Colors.white,
+      backgroundColor: context.appColors.surface,
       surfaceTintColor: Colors.transparent,
       title: Text(
         'Checklist de preparo',
@@ -90,8 +90,8 @@ class ChecklistPage extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: percentage == 100
-                                    ? AppColors.tealSoft
-                                    : AppColors.warningSoft,
+                                    ? context.appColors.tealSoft
+                                    : context.appColors.warningSoft,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Row(
@@ -103,8 +103,8 @@ class ChecklistPage extends StatelessWidget {
                                         : Icons.schedule_rounded,
                                     size: 18,
                                     color: percentage == 100
-                                        ? AppColors.tealDark
-                                        : AppColors.warning,
+                                        ? context.appColors.tealDark
+                                        : context.appColors.warning,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -113,8 +113,8 @@ class ChecklistPage extends StatelessWidget {
                                         : 'Quase pronto',
                                     style: TextStyle(
                                       color: percentage == 100
-                                          ? AppColors.tealDark
-                                          : AppColors.textSecondary,
+                                          ? context.appColors.tealDark
+                                          : context.appColors.textSecondary,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -125,7 +125,9 @@ class ChecklistPage extends StatelessWidget {
                               '$percentage% concluído',
                               key: const Key('checklist-percentage'),
                               style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: AppColors.textSecondary),
+                                  ?.copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
@@ -135,8 +137,8 @@ class ChecklistPage extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: fraction,
                             minHeight: 8,
-                            color: AppColors.primary,
-                            backgroundColor: AppColors.border,
+                            color: context.appColors.primary,
+                            backgroundColor: context.appColors.border,
                             semanticsLabel: 'Itens obrigatórios concluídos',
                             semanticsValue: '$percentage',
                           ),
@@ -171,7 +173,7 @@ class ChecklistPage extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.blueSoft,
+                                  color: context.appColors.blueSoft,
                                   borderRadius: BorderRadius.circular(
                                     AppRadii.small,
                                   ),
@@ -179,9 +181,9 @@ class ChecklistPage extends StatelessWidget {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.info_outline_rounded,
-                                      color: AppColors.primary,
+                                      color: context.appColors.primary,
                                     ),
                                     const SizedBox(width: 10),
                                     Expanded(
@@ -194,7 +196,9 @@ class ChecklistPage extends StatelessWidget {
                                             .textTheme
                                             .bodyMedium
                                             ?.copyWith(
-                                              color: AppColors.textSecondary,
+                                              color: context
+                                                  .appColors
+                                                  .textSecondary,
                                             ),
                                       ),
                                     ),
@@ -230,7 +234,9 @@ class ChecklistPage extends StatelessWidget {
                     const SizedBox(height: 18),
                   ],
                   AppSurface(
-                    color: const Color(0xFFF0F4F9),
+                    color: context.appColors.dark
+                        ? context.appColors.background
+                        : const Color(0xFFF0F4F9),
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +247,9 @@ class ChecklistPage extends StatelessWidget {
                           child: Text(
                             'Você pode editar este checklist a qualquer momento. Itens opcionais não alteram o percentual.',
                             style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: AppColors.textSecondary),
+                                ?.copyWith(
+                                  color: context.appColors.textSecondary,
+                                ),
                           ),
                         ),
                       ],
@@ -304,8 +312,8 @@ class _ChecklistRow extends StatelessWidget {
                   ? Icons.check_box_rounded
                   : Icons.check_box_outline_blank_rounded,
               color: item.isCompleted
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
+                  ? context.appColors.primary
+                  : context.appColors.textSecondary,
               size: 25,
             ),
             const SizedBox(width: 14),

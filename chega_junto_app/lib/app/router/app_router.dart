@@ -1,5 +1,15 @@
 import 'package:go_router/go_router.dart';
 import '../../core/state/preparation_controller.dart';
+import '../../core/state/profile_controller.dart';
+import '../../core/state/speech_controller.dart';
+import '../../features/profile/presentation/pages/personal_data_page.dart';
+import '../../features/profile/presentation/pages/medications_allergies_page.dart';
+import '../../features/profile/presentation/pages/health_history_page.dart';
+import '../../features/profile/presentation/pages/health_history_details_page.dart';
+import '../../features/profile/presentation/pages/accessibility_page.dart';
+import '../../features/profile/presentation/pages/help_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/notifications/presentation/pages/notification_settings_page.dart';
 import '../../core/widgets/pending_feature_page.dart';
 import '../../features/appointments/presentation/pages/agenda_page.dart';
 import '../../features/appointments/presentation/pages/appointment_details_page.dart';
@@ -15,6 +25,8 @@ import 'app_routes.dart';
 GoRouter createAppRouter({
   required DemoSession session,
   required PreparationController preparation,
+  required ProfileController profile,
+  required SpeechController speech,
   String? initialLocation,
 }) => GoRouter(
   initialLocation: initialLocation ?? AppRoutes.welcome,
@@ -40,7 +52,8 @@ GoRouter createAppRouter({
     ),
     GoRoute(
       path: AppRoutes.home,
-      builder: (context, state) => HomePage(controller: preparation),
+      builder: (context, state) =>
+          HomePage(controller: preparation, profile: profile),
     ),
     GoRoute(
       path: AppRoutes.agenda,
@@ -63,20 +76,59 @@ GoRouter createAppRouter({
     ),
     GoRoute(
       path: AppRoutes.profile,
+      builder: (context, state) => ProfilePage(
+        controller: preparation,
+        session: session,
+        profileController: profile,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.personalData,
+      builder: (context, state) => PersonalDataPage(controller: profile),
+    ),
+    GoRoute(
+      path: AppRoutes.medications,
       builder: (context, state) =>
-          ProfilePage(controller: preparation, session: session),
+          MedicationsAllergiesPage(controller: profile),
+    ),
+    GoRoute(
+      path: AppRoutes.healthHistory,
+      builder: (context, state) => HealthHistoryPage(controller: profile),
+    ),
+    GoRoute(
+      path: '/perfil/historico/:id',
+      builder: (context, state) => HealthHistoryDetailsPage(
+        controller: profile,
+        recordId: state.pathParameters['id']!,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.accessibility,
+      builder: (context, state) =>
+          AccessibilityPage(controller: profile, speech: speech),
+    ),
+    GoRoute(
+      path: AppRoutes.help,
+      builder: (context, state) => HelpPage(controller: profile),
+    ),
+    GoRoute(
+      path: AppRoutes.notifications,
+      builder: (context, state) =>
+          NotificationsPage(profile: profile, preparation: preparation),
+    ),
+    GoRoute(
+      path: AppRoutes.notificationSettings,
+      builder: (context, state) =>
+          NotificationSettingsPage(controller: profile),
     ),
     for (final entry in {
       AppRoutes.report: 'Relato pré-consulta',
       AppRoutes.summary: 'Revisão do relato',
-      AppRoutes.notifications: 'Notificações',
     }.entries)
       GoRoute(
         path: entry.key,
-        builder: (context, state) => PendingFeaturePage(
-          title: entry.value,
-          selectedIndex: entry.key == AppRoutes.notifications ? 0 : 2,
-        ),
+        builder: (context, state) =>
+            PendingFeaturePage(title: entry.value, selectedIndex: 2),
       ),
   ],
   errorBuilder: (context, state) =>

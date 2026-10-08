@@ -19,6 +19,7 @@ class AppButton extends StatelessWidget {
   final Color color;
   @override
   Widget build(BuildContext context) {
+    final color = context.appColors.resolve(this.color);
     final content = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -28,7 +29,7 @@ class AppButton extends StatelessWidget {
             height: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: outlined ? color : Colors.white,
+              color: outlined ? color : context.appColors.onPrimary,
             ),
           ),
           const SizedBox(width: 12),
@@ -60,7 +61,9 @@ class AppButton extends StatelessWidget {
                   ? color.withValues(alpha: .45)
                   : color,
             ),
-      foregroundColor: WidgetStatePropertyAll(outlined ? color : Colors.white),
+      foregroundColor: WidgetStatePropertyAll(
+        outlined ? color : context.appColors.onPrimary,
+      ),
       side: outlined ? WidgetStatePropertyAll(BorderSide(color: color)) : null,
       elevation: const WidgetStatePropertyAll(0),
     );

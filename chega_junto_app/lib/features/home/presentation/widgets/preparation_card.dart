@@ -39,8 +39,8 @@ class PreparationCard extends StatelessWidget {
                         value: progress.fraction,
                         strokeWidth: 6,
                         strokeCap: StrokeCap.round,
-                        backgroundColor: AppColors.border,
-                        color: AppColors.teal,
+                        backgroundColor: context.appColors.border,
+                        color: context.appColors.teal,
                       ),
                     ),
                     Text(
@@ -67,18 +67,20 @@ class PreparationCard extends StatelessWidget {
                         child: Text(
                           '${progress.completedCount} de ${progress.totalCount} etapas',
                           style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary),
+                              ?.copyWith(
+                                color: context.appColors.textSecondary,
+                              ),
                         ),
                       ),
                       const SizedBox(width: 5),
                       InkWell(
                         onTap: () => context.push(AppRoutes.checklist),
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 14),
                           child: Text(
                             'Ver tudo ›',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: context.appColors.primary,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -93,8 +95,8 @@ class PreparationCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress.fraction,
                       minHeight: 7,
-                      backgroundColor: AppColors.border,
-                      color: AppColors.teal,
+                      backgroundColor: context.appColors.border,
+                      color: context.appColors.teal,
                     ),
                   ),
                 ],
@@ -129,7 +131,7 @@ class PreparationCard extends StatelessWidget {
                               ? Icons.check_box_rounded
                               : Icons.radio_button_unchecked_rounded,
                           color: complete
-                              ? AppColors.teal
+                              ? context.appColors.teal
                               : const Color(0xFFBDCBDF),
                           size: 25,
                         ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../app/router/app_routes.dart';
+import '../../../../core/state/profile_controller.dart';
 import '../../../../app/demo_session.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/preparation_controller.dart';
@@ -6,9 +9,7 @@ import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/preparation_view.dart';
 import '../../../../core/widgets/reference_artwork.dart';
-import '../../../../data/mock/mock_profile_repository.dart';
 import '../../../../data/models/user_profile.dart';
-import '../../../../data/repositories/profile_repository.dart';
 import '../widgets/profile_menu_group.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,11 +17,11 @@ class ProfilePage extends StatefulWidget {
     super.key,
     required this.session,
     required this.controller,
-    this.repository = const MockProfileRepository(),
+    required this.profileController,
   });
   final DemoSession session;
   final PreparationController controller;
-  final ProfileRepository repository;
+  final ProfileController profileController;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -31,7 +32,35 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _profile = widget.repository.loadProfile();
+    _profile = widget.profileController.repository.loadProfile();
+    widget.profileController.addListener(_refreshProfile);
+  }
+
+  void _refreshProfile() {
+    if (mounted && widget.profileController.profile != null) {
+      setState(() {
+        _profile = Future.value(widget.profileController.profile!);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.profileController.removeListener(_refreshProfile);
+    super.dispose();
+  }
+
+  void _select(String title) {
+    final path = switch (title) {
+      'Dados pessoais' => AppRoutes.personalData,
+      'Medicamentos e alergias' => AppRoutes.medications,
+      'Histórico' => AppRoutes.healthHistory,
+      'Notificações' => AppRoutes.notifications,
+      'Acessibilidade' => AppRoutes.accessibility,
+      'Ajuda' => AppRoutes.help,
+      _ => null,
+    };
+    if (path != null) context.push(path);
   }
 
   void _pending(String title) {
@@ -62,7 +91,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     const Text('Não foi possível carregar seu perfil.'),
                     TextButton(
                       onPressed: () => setState(() {
-                        _profile = widget.repository.loadProfile();
+                        _profile = widget.profileController.repository
+                            .loadProfile();
                       }),
                       child: const Text('Tentar novamente'),
                     ),
@@ -91,8 +121,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         PopupMenuButton<String>(
                           tooltip: 'Configurações do perfil',
                           icon: const Icon(Icons.settings_outlined, size: 28),
-                          onSelected: (_) => widget.session.signOut(),
+                          onSelected: (value) {
+                            if (value == 'sign-out') {
+                              widget.session.signOut();
+                            } else {
+                              context.push(AppRoutes.notificationSettings);
+                            }
+                          },
                           itemBuilder: (_) => const [
+                            PopupMenuItem(
+                              value: 'notifications',
+                              child: Text('Configurações de notificações'),
+                            ),
                             PopupMenuItem(
                               value: 'sign-out',
                               child: Text('Sair da demonstração'),
@@ -108,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       onTap: () => _pending('Cartão do SUS'),
                       borderRadius: BorderRadius.circular(AppRadii.large),
                       child: AppSurface(
-                        color: AppColors.blueSoft,
+                        color: context.appColors.blueSoft,
                         padding: const EdgeInsets.all(12),
                         child: Row(
                           children: [
@@ -172,7 +212,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       items: const [
                         (Icons.person_outline_rounded, 'Dados pessoais'),
                       ],
-                      onSelect: _pending,
+                      onSelect: _select,
                     ),
                     const SizedBox(height: 20),
                     ProfileMenuGroup(
@@ -181,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         (Icons.medication_outlined, 'Medicamentos e alergias'),
                         (Icons.article_outlined, 'Histórico'),
                       ],
-                      onSelect: _pending,
+                      onSelect: _select,
                     ),
                     const SizedBox(height: 20),
                     ProfileMenuGroup(
@@ -191,18 +231,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         (Icons.accessibility_new_rounded, 'Acessibilidade'),
                         (Icons.help_outline_rounded, 'Ajuda'),
                       ],
-                      onSelect: _pending,
+                      onSelect: _select,
                     ),
                     const SizedBox(height: 18),
                     AppSurface(
-                      color: AppColors.blueSoft,
+                      color: context.appColors.blueSoft,
                       padding: const EdgeInsets.all(14),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.info_outline_rounded,
-                            color: AppColors.primaryDark,
+                            color: context.appColors.primaryDark,
                             size: 24,
                           ),
                           const SizedBox(width: 14),
@@ -210,7 +250,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: Text(
                               'Seus dados ajudam a organizar sua preparação para o atendimento.',
                               style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: AppColors.textSecondary),
+                                  ?.copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                             ),
                           ),
                         ],
@@ -234,13 +276,13 @@ class _Identity extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const CircleAvatar(
+      CircleAvatar(
         radius: 35,
-        backgroundColor: AppColors.blueSoft,
+        backgroundColor: context.appColors.blueSoft,
         child: Icon(
           Icons.person_rounded,
           size: 64,
-          color: AppColors.primaryDark,
+          color: context.appColors.primaryDark,
         ),
       ),
       const SizedBox(width: 14),
@@ -256,15 +298,15 @@ class _Identity extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(
-                color: AppColors.tealSoft,
+                color: context.appColors.tealSoft,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
-                    color: AppColors.tealDark,
+                    color: context.appColors.tealDark,
                     size: 17,
                   ),
                   const SizedBox(width: 6),
@@ -272,7 +314,7 @@ class _Identity extends StatelessWidget {
                     child: Text(
                       'Cadastro atualizado',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppColors.tealDark,
+                        color: context.appColors.tealDark,
                       ),
                     ),
                   ),

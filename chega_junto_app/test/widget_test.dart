@@ -412,7 +412,7 @@ void main() {
     },
   );
 
-  testWidgets('Perfil reproduz grupos e aguarda protótipos dos destinos', (
+  testWidgets('Perfil reproduz grupos e navega para os destinos', (
     tester,
   ) async {
     await _prepare(tester, const Size(390, 844));
@@ -448,10 +448,10 @@ void main() {
       await tester.ensureVisible(find.text(title));
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
-      expect(
-        find.text('$title ainda não está disponível nesta versão.'),
-        findsOneWidget,
-      );
+      expect(find.text(title), findsOneWidget);
+      expect(find.byType(AppBottomNavigation), findsOneWidget);
+      await tester.tap(find.byTooltip('Voltar'));
+      await tester.pumpAndSettle();
       expect(find.text('Maria da Silva'), findsOneWidget);
     }
     await tester.drag(

@@ -1,6 +1,6 @@
-# Chega Junto — V1
+# Chega Junto
 
-Versão inicial do projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, a documentação oficial, os protótipos aprovados, a identidade visual e o código-fonte da landing page.
+Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, a documentação oficial, os protótipos aprovados, a identidade visual e o código-fonte da landing page. A tag `V1` preserva a versão inicial.
 
 ## Organização
 
@@ -12,9 +12,11 @@ Versão inicial do projeto para o Desafio Salte com a IA. Reúne o aplicativo Fl
 
 ## Aplicativo
 
-O aplicativo possui Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil e criação de lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O estado dura apenas a sessão.
+O aplicativo possui 16 telas: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade e Ajuda. Também permite criar lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O estado dura apenas a sessão.
 
-Não há backend, autenticação real, IA real nem integração com serviços de saúde. Os destinos internos do Perfil e o restante da jornada aguardam implementação aprovada.
+Tema escuro, alto contraste, escala de texto e leitura por voz local estão disponíveis. Não há backend, autenticação real, IA real nem integração com serviços de saúde. O fluxo de relato/IA aguarda implementação autorizada.
+
+Checkpoint de 8 de outubro de 2026: análise sem problemas, 42 testes aprovados e builds Web/Android concluídos. Veja o [relatório de status](chega_junto_app/docs/RELATORIO_STATUS_2026-10-08.md).
 
 ```powershell
 cd chega_junto_app

@@ -1,5 +1,13 @@
 enum ConfirmationStatus { confirmed, undecided, unable }
 
+extension ConfirmationStatusText on ConfirmationStatus {
+  String get responseLabel => switch (this) {
+    ConfirmationStatus.confirmed => 'Vou comparecer',
+    ConfirmationStatus.undecided => 'Ainda não sei',
+    ConfirmationStatus.unable => 'Não poderei comparecer',
+  };
+}
+
 enum AppointmentType { consultation, exam }
 
 class Appointment {

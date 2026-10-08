@@ -9,11 +9,15 @@ class ConfirmationChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final confirmed = status == ConfirmationStatus.confirmed;
-    final color = confirmed ? AppColors.tealDark : AppColors.primary;
+    final color = confirmed
+        ? context.appColors.tealDark
+        : context.appColors.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: confirmed ? AppColors.tealSoft : AppColors.blueSoft,
+        color: confirmed
+            ? context.appColors.tealSoft
+            : context.appColors.blueSoft,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(

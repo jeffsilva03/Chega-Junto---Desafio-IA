@@ -46,28 +46,28 @@ class AppointmentSummaryCard extends StatelessWidget {
                     Text(
                       '${AppointmentDate.groupDate(appointment.dateTime)} · ${AppointmentDate.time(appointment.dateTime)}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       appointment.facilityName,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                       ),
                     ),
                   ] else ...[
                     Text(
                       appointment.professionalName,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                       ),
                     ),
                     if (!attendance)
                       Text(
                         appointment.specialty,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.muted,
+                          color: context.appColors.muted,
                         ),
                       ),
                     if (!attendance) const SizedBox(height: 8),
@@ -128,7 +128,7 @@ class _Detail extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Icon(icon, color: AppColors.primaryDark, size: 23),
+      Icon(icon, color: context.appColors.primaryDark, size: 23),
       const SizedBox(width: 9),
       Flexible(
         child: Column(

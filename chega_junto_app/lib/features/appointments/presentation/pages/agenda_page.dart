@@ -102,7 +102,7 @@ class _AgendaPageState extends State<AgendaPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
+    backgroundColor: context.appColors.background,
     bottomNavigationBar: AppBottomNavigation(
       key: _navigationAnchor,
       selectedIndex: 1,
@@ -146,11 +146,11 @@ class _AgendaPageState extends State<AgendaPage> {
                         onPressed: () => context.push(AppRoutes.notifications),
                         tooltip: 'Notificações',
                         style: IconButton.styleFrom(
-                          backgroundColor: AppColors.blueSoft,
+                          backgroundColor: context.appColors.blueSoft,
                         ),
-                        icon: const Badge(
+                        icon: Badge(
                           smallSize: 6,
-                          backgroundColor: AppColors.primary,
+                          backgroundColor: context.appColors.primary,
                           child: Icon(Icons.notifications_none_rounded),
                         ),
                       ),
@@ -165,13 +165,15 @@ class _AgendaPageState extends State<AgendaPage> {
                   Text(
                     'Seus próximos atendimentos e lembretes.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.appColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF0F7),
+                      color: context.appColors.dark
+                          ? context.appColors.blueSoft
+                          : const Color(0xFFEAF0F7),
                       borderRadius: BorderRadius.circular(28),
                     ),
                     padding: const EdgeInsets.all(3),
@@ -191,7 +193,7 @@ class _AgendaPageState extends State<AgendaPage> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: _upcoming == tab.$2
-                                        ? AppColors.primary
+                                        ? context.appColors.primary
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(28),
                                   ),
@@ -200,8 +202,8 @@ class _AgendaPageState extends State<AgendaPage> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: _upcoming == tab.$2
-                                          ? Colors.white
-                                          : AppColors.textSecondary,
+                                          ? context.appColors.onPrimary
+                                          : context.appColors.textSecondary,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -259,14 +261,14 @@ class _AgendaPageState extends State<AgendaPage> {
                               : Icon(filter.$3, size: 16),
                           selected: _filter == filter.$1,
                           showCheckmark: false,
-                          selectedColor: AppColors.blueSoft,
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: AppColors.border),
+                          selectedColor: context.appColors.blueSoft,
+                          backgroundColor: context.appColors.surface,
+                          side: BorderSide(color: context.appColors.border),
                           labelStyle: TextStyle(
                             fontSize: 12,
                             color: _filter == filter.$1
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
+                                ? context.appColors.primary
+                                : context.appColors.textSecondary,
                             fontWeight: _filter == filter.$1
                                 ? FontWeight.w800
                                 : FontWeight.w600,
@@ -385,15 +387,15 @@ class _AgendaTile extends StatelessWidget {
                         ? Icons.science_rounded
                         : Icons.calendar_month_rounded,
                     color: reminder
-                        ? AppColors.warning
+                        ? context.appColors.warning
                         : exam
-                        ? AppColors.purple
-                        : AppColors.primary,
+                        ? context.appColors.purple
+                        : context.appColors.primary,
                     background: reminder
-                        ? AppColors.warningSoft
+                        ? context.appColors.warningSoft
                         : exam
-                        ? AppColors.purpleSoft
-                        : AppColors.blueSoft,
+                        ? context.appColors.purpleSoft
+                        : context.appColors.blueSoft,
                     size: 40,
                   ),
                   const SizedBox(width: 12),
@@ -447,7 +449,7 @@ class _AgendaTile extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.purpleSoft,
+                    color: context.appColors.purpleSoft,
                     borderRadius: BorderRadius.circular(AppRadii.small),
                   ),
                   child: Column(

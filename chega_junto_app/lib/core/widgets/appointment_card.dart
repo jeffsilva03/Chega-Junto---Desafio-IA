@@ -62,7 +62,9 @@ class AppointmentCard extends StatelessWidget {
                             child: Text(
                               appointment.facilityName,
                               style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: AppColors.textSecondary),
+                                  ?.copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                             ),
                           ),
                           const Icon(Icons.chevron_right_rounded, size: 25),
@@ -90,7 +92,7 @@ class AppointmentCard extends StatelessWidget {
                 Container(
                   height: 32,
                   width: 1,
-                  color: AppColors.border,
+                  color: context.appColors.border,
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 Expanded(
@@ -122,7 +124,7 @@ class _Metadata extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Icon(icon, size: 23, color: AppColors.primaryDark),
+      Icon(icon, size: 23, color: context.appColors.primaryDark),
       const SizedBox(width: 9),
       Expanded(
         child: Column(

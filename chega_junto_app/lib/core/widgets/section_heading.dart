@@ -15,7 +15,7 @@ class SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       if (icon != null) ...[
-        Icon(icon, color: color, size: 25),
+        Icon(icon, color: context.appColors.resolve(color), size: 25),
         const SizedBox(width: 12),
       ],
       Expanded(
