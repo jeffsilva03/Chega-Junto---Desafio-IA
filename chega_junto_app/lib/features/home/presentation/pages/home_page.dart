@@ -7,7 +7,7 @@ import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/reference_artwork.dart';
 import '../../../../core/state/preparation_controller.dart';
 import '../../../../core/state/profile_controller.dart';
-import '../../../../data/mock/mock_notifications.dart';
+import '../../../../core/widgets/network_feedback.dart';
 import '../../../../core/widgets/appointment_card.dart';
 import '../widgets/preparation_card.dart';
 import '../widgets/quick_access_tile.dart';
@@ -36,40 +36,13 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (_controller.failed || _controller.overview == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Não foi possível carregar seu preparo.'),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: _controller.load,
-                      child: const Text('Tentar novamente'),
-                    ),
-                  ],
-                ),
-              ),
+            return NetworkFeedback(
+              error: _controller.error,
+              onRetry: _controller.load,
             );
           }
           final overview = _controller.overview!;
-          final unread =
-              demoNotifications(
-                    overview,
-                    _controller.appointments,
-                    _controller.reminders,
-                  )
-                  .where(
-                    (item) =>
-                        notificationVisible(
-                          item,
-                          widget.profile.notifications,
-                        ) &&
-                        item.unread &&
-                        !widget.profile.isRead(item.id),
-                  )
-                  .length;
+          final unread = widget.profile.inbox.unreadCount;
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -86,7 +59,9 @@ class _HomePageState extends State<HomePage> {
                       const BrandLogo(width: 185),
                       const Spacer(),
                       Semantics(
-                        label: 'Notificações, há um lembrete',
+                        label: unread == 0
+                            ? 'Notificações, nenhuma não lida'
+                            : 'Notificações, $unread não lidas',
                         button: true,
                         excludeSemantics: true,
                         child: IconButton.filledTonal(
@@ -133,12 +108,22 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   const SizedBox(height: 18),
-                  AppointmentCard(
-                    appointment: overview.nextAppointment,
-                    onTap: () => context.push(AppRoutes.details),
-                  ),
-                  const SizedBox(height: 12),
-                  PreparationCard(progress: overview.progress),
+                  if (overview.hasNextAppointment) ...[
+                    AppointmentCard(
+                      appointment: overview.nextAppointment,
+                      onTap: () => context.push(
+                        AppRoutes.appointmentDetails(
+                          overview.nextAppointment.id,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    PreparationCard(progress: overview.progress),
+                  ] else
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Text('Nenhum próximo atendimento agendado.'),
+                    ),
                   const SizedBox(height: 20),
                   Text(
                     'Acessos rápidos',
@@ -147,38 +132,39 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 10),
                   _QuickAccessGrid(),
                   const SizedBox(height: 12),
-                  AppSurface(
-                    color: context.appColors.warningSoft,
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        IconTile(
-                          icon: Icons.notifications_rounded,
-                          color: context.appColors.warning,
-                          background: Color(0xFFFFE8BD),
-                          size: 36,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Lembrete',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                              Text(
-                                overview.reminder,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: context.appColors.ink),
-                              ),
-                            ],
+                  if (overview.reminder.isNotEmpty)
+                    AppSurface(
+                      color: context.appColors.warningSoft,
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          IconTile(
+                            icon: Icons.notifications_rounded,
+                            color: context.appColors.warning,
+                            background: Color(0xFFFFE8BD),
+                            size: 36,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lembrete',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.w800),
+                                ),
+                                Text(
+                                  overview.reminder,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: context.appColors.ink),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

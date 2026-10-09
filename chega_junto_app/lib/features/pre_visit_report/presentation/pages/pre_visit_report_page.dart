@@ -88,6 +88,7 @@ class _PreVisitReportPageState extends State<PreVisitReportPage> {
     builder: (context) => ListenableBuilder(
       listenable: widget.controller,
       builder: (context, _) => ReportScaffold(
+        controller: widget.controller,
         title: 'Relato pré-consulta',
         eyebrow: 'Etapa 3 de 4',
         backTo: AppRoutes.checklist,

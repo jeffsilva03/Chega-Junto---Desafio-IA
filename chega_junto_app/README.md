@@ -1,23 +1,69 @@
-# Chega Junto — MVP Flutter
+# Chega Junto — Flutter V3
 
-Aplicativo local para apoiar a preparação antes de consultas e exames. Plataforma principal: Android. Flutter Web é complementar.
+Aplicativo para apoiar a preparação antes de consultas e exames, com modos **mock** (sem backend) e **api** (FastAPI local → Aiven MySQL). Plataformas: Android e Flutter Web. A interface da V2 foi preservada. Consulte [o relatório da integração V3](docs/RELATORIO_INTEGRACAO_API_V3.md) para arquitetura, testes, limites e procedimento manual de persistência.
+
+## Cadastro e autenticação — Fase 4
+
+No modo **api**, “Criar conta” abre Cadastro com nome, e-mail, senha e confirmação, reutilizando fotografia, marca, formulário e estilos do Login. Use somente dados fictícios e e-mail de teste. Senha de 8–128 caracteres; confirmação fica somente na UI. O cadastro entra automaticamente na Home; o Login envia e-mail/senha ao FastAPI e usa JWT Bearer. Google fica desabilitado e recuperação de senha informa que ainda não está disponível.
+
+`AuthRepository` possui MockAuthRepository e ApiAuthRepository. A sessão (`DemoSession`, nome histórico mantido) resolve estado inicial, identidade autenticada e saída. `AuthTokenStore` usa memória no Android e Web: fechar/reiniciar ou recarregar a página exige login novamente. Não há senha, token, segredo JWT ou credencial Aiven em assets/dart-defines/arquivos locais do Flutter. JWT expira em 60 minutos; não há refresh nesta fase.
+
+No Perfil, engrenagem → **Sair da conta** remove token, cancela pedidos/autosave/TTS e descarta controllers/repositories/caches de perfil, saúde, preparo, relato, notificações e preferências. 401 de produto faz o mesmo e mostra “Sua sessão expirou. Entre novamente.” Requisições de uma sessão antiga não usam o token da próxima conta. 401 de Login mostra credenciais inválidas; não há fallback para mock.
+
+Conta nova começa sem consultas, saúde, histórico, relatos, lembretes ou notificações. Perfil contém nome/e-mail, demais dados opcionais vazios (“Não informado”), SUS sem número e nenhuma unidade agendada. Editar dados pessoais permite manter campos opcionais vazios. Preferências recebem defaults oficiais.
+
+No modo **mock**, Login/Google/recuperação/cadastro são demonstrativos, sem HTTP, token ou backend. Nenhuma conta é criada no Aiven. Leia o [relatório de autenticação backend](../chega_junto_backend/docs/RELATORIO_AUTENTICACAO_V3.md).
 
 ## Executar
 
 ```powershell
 flutter pub get
-flutter run -d chrome
-flutter run -d emulator-5554
+flutter run -d chrome --dart-define=DATA_SOURCE=mock
 ```
 
 Abra esta pasta como projeto no Android Studio. O identificador do emulador pode variar; consulte `flutter devices`.
+
+O padrão é `mock`. O modo é escolhido ao iniciar; API indisponível não provoca fallback. No modo API, `API_BASE_URL` é obrigatório e contém somente a origem HTTP/HTTPS do FastAPI, nunca credenciais de banco.
+
+Backend, em outro terminal a partir da raiz do projeto:
+
+```powershell
+cd chega_junto_backend
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Flutter, a partir desta pasta:
+
+```powershell
+# Web no PC: incluir http://127.0.0.1:5173 no CORS_ALLOWED_ORIGINS do .env local do backend
+flutter run -d chrome --web-hostname 127.0.0.1 --web-port 5173 --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=http://127.0.0.1:8000
+# Android Emulator: escolher o device retornado por flutter devices
+flutter run -d emulator-5554 --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
+
+Para iPhone/Web na mesma rede, usar estes comandos nas respectivas pastas:
+
+```powershell
+# chega_junto_backend
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+# chega_junto_app, outro terminal
+flutter run -d web-server --release --web-hostname 0.0.0.0 --web-port 8080 --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=http://IP_DO_PC:8000
+```
+
+Substituir `IP_DO_PC` pelo IPv4 do PC na rede local, acrescentar `http://IP_DO_PC:8080` à lista JSON `CORS_ALLOWED_ORIGINS` somente no `.env` local do backend e reiniciar o servidor. No Safari, abrir `http://IP_DO_PC:8080`. Não usar wildcard, não versionar IP particular nem credenciais. Nenhuma alteração automática de firewall é necessária à implementação; a rede precisa permitir acesso às portas utilizadas.
+
+No Safari: Já tenho conta → Criar conta → preencher dados totalmente fictícios → confirmar cadastro → conferir Home/Perfil vazios → engrenagem do Perfil → Sair da conta → entrar com o mesmo e-mail/senha → conferir identidade. Recarregar a página também exige login. Para validar persistência de perfil, editar um campo fictício, salvar, sair/entrar e conferir; depois restaurar o valor original. Não usar dados de saúde reais.
+
+Validação manual posterior da Fase 4, confirmada pelo usuário: Flutter Web aberto no Safari de um iPhone físico, com conexão ao FastAPI local e Aiven. Cadastro e login reais funcionaram, permitindo entrar no fluxo autenticado. O primeiro acesso exibiu uma versão/cache antiga do navegador; após recarregar/reabrir a versão atual, o cadastro funcionou normalmente, sem mudança funcional adicional no código. Esse teste complementa o smoke anterior na Web local; não foram fornecidos logs, tempos ou modelo do aparelho.
 
 ## Validar
 
 ```powershell
 dart format .
 flutter analyze
-flutter test
+flutter test --dart-define=DATA_SOURCE=mock
+flutter build web --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=http://127.0.0.1:8000
+flutter build apk --debug --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
 
 Capturas locais opcionais dos testes de widgets:
@@ -30,7 +76,7 @@ As capturas ficam em `.local/qa/`, fora do Git.
 
 ## Escopo implementado
 
-- Boas-vindas (referência `splash.png`), login demonstrativo e Home.
+- Boas-vindas (referência `splash.png`), Login/Cadastro (demo ou API real) e Home.
 - Agenda com busca, filtros, agrupamento por data e lembretes locais.
 - Detalhes dos três atendimentos fictícios; checklist do próximo atendimento.
 - Estado compartilhado: checklist e progresso geral permanecem consistentes ao navegar.
@@ -45,29 +91,29 @@ As capturas ficam em `.local/qa/`, fora do Git.
 - Ajuda com busca, respostas, tutoriais e suporte demonstrativo.
 - Novo Lembrete conforme `novoLembrete.png`: card flutuante com título e opções 1 dia antes, 2 horas antes e No horário, relativas à próxima consulta.
 
-Relato pré-consulta, áudio simulado, processamento demonstrativo, resumo editável, perguntas selecionáveis e Revisão final estão implementados. O fluxo pode ser aberto pela Home, pelos Detalhes da consulta ou pelo Preparo. Continuar nas perguntas abre a Revisão final; Concluir preparação salva o estado da sessão e conclui a quarta macroetapa, refletindo 100% na Home quando as demais estão concluídas. Editar relato, resumo ou perguntas reabre a revisão. Nada é enviado; o usuário decide o que compartilhar. O cartão SUS não possui tela de detalhes própria. Não há integração com serviços de saúde.
+Relato pré-consulta, áudio simulado, processamento demonstrativo, resumo editável, perguntas selecionáveis e Revisão final estão implementados. O fluxo pode ser aberto pela Home, pelos Detalhes da próxima consulta ou pelo Preparo. Continuar nas perguntas abre a Revisão final; Concluir preparação conclui a quarta macroetapa, refletindo 100% na Home quando as demais estão concluídas. Editar relato, resumo ou perguntas reabre a revisão. Em modo API, os salvamentos confirmados são persistidos e o progresso vem do backend; nada é enviado a profissionais, UBS ou SUS. O cartão SUS não possui tela de detalhes própria. Não há integração com serviços de saúde.
 
 ## Dados e limites
 
-Use um e-mail fictício e senha fictícia com pelo menos quatro caracteres, ou o botão de Google simulado. Nenhuma credencial é enviada, validada por servidor ou persistida. A recuperação de acesso é uma demonstração e não envia e-mail.
+No mock, use e-mail/CPF fictício e senha fictícia de pelo menos quatro caracteres, ou Google simulado; nenhuma credencial sai do app. No API, cadastre uma conta fictícia com senha de 8–128 caracteres; senha é enviada somente ao backend local, que persiste hash Argon2id. Token permanece em memória no Flutter. Recuperação não envia e-mail em nenhum modo. O MVP não está liberado para dados reais sensíveis ou publicação em produção.
 
-Os dados e endereços são fictícios. A data de referência da demonstração é 7 de outubro de 2026, com próxima consulta em 9 de outubro às 08:00. Os lembretes, respostas de presença, checklist, dados do perfil, medicamentos, alergias, avisos lidos, relato, resumo revisado, perguntas e preferências duram apenas a sessão; reiniciar o aplicativo restaura os mocks. Adicionar lembrete não programa uma notificação do sistema. Salvar presença não avisa a unidade nem altera a consulta.
+Os dados e endereços são fictícios. No modo mock, a referência é 7 de outubro de 2026, com próxima consulta em 9 de outubro às 08:00; alterações duram apenas a sessão. No modo API, dados e data de referência vêm do servidor e alterações confirmadas persistem no banco demo. Fechar antes da confirmação, falhas de rede e conflitos podem deixar rascunhos apenas em memória. Em 409, preserve o texto, recarregue e escolha explicitamente como continuar. Em timeout de lembrete, confira a Agenda antes de repetir. Adicionar lembrete não programa notificação do sistema. Salvar presença não avisa a unidade.
 
-Não há backend, banco remoto, IA real, autenticação real, mapas externos ou serviços pagos. Orientações exibidas são conteúdo fictício previamente definido, não recomendações geradas por IA.
+O modo mock funciona sem backend; o modo API requer FastAPI local configurado e usa cadastro/autenticação reais desde a Fase 4. Não há IA real, mapas externos ou deploy Render nesta fase. Orientações exibidas são conteúdo fictício previamente definido, não recomendações geradas por IA. Segredos Aiven e futuras chaves de serviços pertencem somente ao backend; `.env` e `ca.pem` permanecem ignorados pelo Git.
 
 ## Organização
 
 ```text
 lib/
   app/          aplicação, sessão, rotas e tema
-  core/         estado compartilhado, utilitários e componentes
-  data/         modelos, contratos e repositórios mockados
+  core/         configuração, cliente HTTP, estado, utilitários e componentes
+  data/         modelos, contratos, mappers, ApiRepositories e mocks
   features/     páginas e widgets específicos de cada funcionalidade
 assets/         recursos locais e licença da fonte
 test/           navegação, responsividade, progresso e estado compartilhado
 ```
 
-`PreparationRepository` e `ProfileRepository` permitem futura troca por APIs. `PreparationController` e `ProfileController` mantêm os dados compartilhados; salvar o nome atualiza Perfil e Home. `ReportController` mantém o rascunho fora das rotas e recebe `AiAssistantService` e `AudioDraftService`, substituíveis por implementações futuras via backend. Os mocks apenas reorganizam literalmente o texto e demonstram a transcrição, sem acessar o microfone. `SpeechController` depende de `SpeechEngine`, com implementações Android e Web substituíveis por fake nos testes. UI e modelos não dependem de um backend específico.
+`AppDependencies` seleciona as implementações de `PreparationRepository`, `ProfileRepository`, `NotificationRepository` e `PreferencesRepository`. `PreparationController` e `ProfileController` mantêm estado compartilhado. `ReportController` reidrata o agregado completo e conserva revisões do servidor como strings; no modo API, salva alterações com debounce de 600 ms e ao navegar, preservando rascunho em conflito. Recebe `AiAssistantService` e `AudioDraftService`; os mocks reorganizam o texto e demonstram áudio sem acessar o microfone. `SpeechController` depende de `SpeechEngine`, com implementações Android/Web substituíveis por fake. HTTP fica no cliente/repositories, sem chamadas diretas nas telas. O perfil usa respostas canônicas; alterações passam pelo backend, nunca por conexão Flutter/MySQL.
 
 A leitura Android usa `flutter_tts` e o mecanismo instalado no aparelho. Na Web utiliza Web Speech API via Dart/JavaScript, selecionando somente vozes locais. Em ambas é necessária uma voz local em português. Sem ela, o aplicativo informa a indisponibilidade; não utiliza serviços remotos como alternativa. Nenhum conteúdo é enviado para uma API de voz. As preferências de notificação controlam a central interna e não programam notificações Android.
 
@@ -79,7 +125,9 @@ Fonte local: Nunito Sans, licença SIL Open Font License em `assets/fonts/OFL.tx
 
 Dependências de execução: `go_router 17.5.0`, para navegação centralizada e URLs Web; [`flutter_tts 4.2.5`](https://pub.dev/packages/flutter_tts), licença MIT, para leitura pelo mecanismo de voz Android; e `cupertino_icons 1.0.9`, licença MIT, para fornecer a fonte de ícones referenciada internamente pelo SDK. São gratuitas. A inclusão da fonte corrige o aviso de família ausente sem alterar o design das telas. `flutter_localizations` pertence ao SDK; `flutter_lints` e `flutter_test` são usados na validação. `integration_test`, também do SDK, foi acrescentado apenas como dependência de desenvolvimento para executar o fluxo e obter screenshots no emulador Android; não integra o aplicativo de produção. Não há bibliotecas de estado ou carregamento remoto de fontes.
 
-Checkpoint oficial **V2**, de 8 de outubro de 2026: as 21 telas e o fluxo principal estão concluídos e aprovados estruturalmente. Foram aprovados 76 testes, análise e builds Web/Android. A jornada completa passou manualmente no emulador Android 16/API 36, incluindo 100% na Home e invalidação para 75% após editar o relato. O build Web JavaScript mantém três avisos do dry run WebAssembly de `flutter_tts`; Wasm não é alvo deste MVP. Consulte [o relatório oficial da V2](docs/RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md) e [o status atual](docs/RELATORIO_STATUS_2026-10-08.md). Nenhuma nova funcionalidade está autorizada.
+Na V3, [`http 1.6.0`](https://pub.dev/packages/http) foi acrescentado para REST, cancelamento e transporte Web/Android. Testes da integração usam HTTP falso; não necessitam de backend nem fazem mutações no Aiven.
+
+Checkpoint histórico **V2**, de 8 de outubro de 2026: as 21 telas e o fluxo principal foram aprovados estruturalmente, com 76 testes, análise e builds Web/Android. A jornada passou manualmente no emulador Android 16/API 36. O build Web JavaScript mantém três avisos do dry run WebAssembly de `flutter_tts`; Wasm não é alvo deste MVP. Consulte [o relatório oficial da V2](docs/RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md) e [o status daquele checkpoint](docs/RELATORIO_STATUS_2026-10-08.md). A integração autorizada da V3 está documentada no relatório desta fase.
 
 ## Git
 

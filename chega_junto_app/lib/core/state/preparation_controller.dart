@@ -8,8 +8,29 @@ import '../../data/models/preparation_overview.dart';
 import '../../data/repositories/preparation_repository.dart';
 
 class PreparationController extends ChangeNotifier {
-  PreparationController(this.repository);
+  PreparationController(
+    this.repository, {
+    this.persistDraftInvalidation = true,
+  });
   final PreparationRepository repository;
+  final bool persistDraftInvalidation;
+  Future<void> Function()? onChanged;
+  Object? error;
+  Object? reminderRefreshError;
+  final Map<String, Future<Appointment>> _details = {};
+  Future<Appointment> loadAppointment(String id, {bool retry = false}) {
+    if (retry) _details.remove(id);
+    return _details.putIfAbsent(id, () => repository.loadAppointment(id));
+  }
+
+  Future<void> refreshOverview() async {
+    final updated = await repository.loadOverview();
+    if (_disposed) return;
+    _finalReviewInvalidated = false;
+    overview = updated;
+    notifyListeners();
+  }
+
   PreparationOverview? overview;
   List<Appointment> appointments = const [];
   List<AppointmentReminder> reminders = const [];
@@ -31,6 +52,7 @@ class PreparationController extends ChangeNotifier {
     overview = overview!.withFinalReview(false);
     notifyListeners();
     // Keep local invalidation immediate; serialize it before another conclusion.
+    if (!persistDraftInvalidation) return;
     _pendingFinalReview = _pendingFinalReview.then((_) async {
       try {
         await repository.setFinalReview(appointmentId, false);
@@ -41,15 +63,25 @@ class PreparationController extends ChangeNotifier {
     });
   }
 
-  Future<void> completeFinalReview() async {
+  Future<void> completeFinalReview({String? expectedRevision}) async {
     await _pendingFinalReview;
     if (_disposed || overview == null) {
       throw StateError('Preparo indisponível.');
     }
-    final updated = await repository.setFinalReview(
-      overview!.nextAppointment.id,
-      true,
-    );
+    final PreparationOverview updated;
+    if (expectedRevision == null) {
+      updated = await repository.setFinalReview(
+        overview!.nextAppointment.id,
+        true,
+      );
+    } else {
+      await repository.setReportFinalReview(
+        overview!.nextAppointment.id,
+        expectedRevision,
+        true,
+      );
+      updated = await repository.loadOverview();
+    }
     if (_disposed) return;
     _finalReviewInvalidated = false;
     overview = updated;
@@ -88,6 +120,7 @@ class PreparationController extends ChangeNotifier {
   Future<void> load() async {
     loading = true;
     failed = false;
+    error = null;
     notifyListeners();
     try {
       await _pendingFinalReview;
@@ -104,9 +137,11 @@ class PreparationController extends ChangeNotifier {
       if (_finalReviewInvalidated) overview = overview!.withFinalReview(false);
       appointments = results[1] as List<Appointment>;
       reminders = results[2] as List<AppointmentReminder>;
-    } catch (_) {
+      reminderRefreshError = null;
+    } catch (e) {
       if (_disposed) return;
       failed = true;
+      error = e;
     }
     loading = false;
     notifyListeners();
@@ -139,11 +174,23 @@ class PreparationController extends ChangeNotifier {
   }
 
   Future<void> addReminder(AppointmentReminder reminder) async {
-    await repository.addReminder(reminder);
-    final updated = await repository.loadReminders();
+    final created = await repository.addReminder(reminder);
     if (_disposed) return;
-    reminders = updated;
+    reminders = List.unmodifiable([
+      ...reminders.where((r) => r.id != created.id),
+      created,
+    ]);
+    reminderRefreshError = null;
     notifyListeners();
+    try {
+      final updated = await repository.loadReminders();
+      if (!_disposed) reminders = updated;
+    } catch (e) {
+      if (!_disposed) reminderRefreshError = e;
+    }
+    if (_disposed) return;
+    notifyListeners();
+    await onChanged?.call();
   }
 
   Future<void> setAttendance(ConfirmationStatus status) async {
@@ -159,11 +206,13 @@ class PreparationController extends ChangeNotifier {
       overview = updated;
       appointments = List.unmodifiable([
         for (final appointment in appointments)
-          if (appointment.id == updated.nextAppointment.id)
+          if (updated.hasNextAppointment &&
+              appointment.id == updated.nextAppointment.id)
             updated.nextAppointment
           else
             appointment,
       ]);
+      await onChanged?.call();
     } finally {
       if (!_disposed) {
         saving = false;
@@ -175,6 +224,12 @@ class PreparationController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    overview = null;
+    appointments = const [];
+    reminders = const [];
+    _details.clear();
+    onChanged = null;
+    error = reminderRefreshError = null;
     super.dispose();
   }
 }

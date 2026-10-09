@@ -18,7 +18,7 @@ import 'package:chega_junto_app/data/models/profile_preferences.dart';
 import 'package:chega_junto_app/features/profile/presentation/pages/accessibility_page.dart';
 import 'package:chega_junto_app/features/notifications/presentation/pages/notifications_page.dart';
 
-class _Auth implements AuthRepository {
+class _Auth extends AuthRepository {
   @override
   Future<void> signInDemo() async {}
 }
@@ -181,7 +181,7 @@ void main() {
       );
       await _tap(tester, find.text('Salvar alterações'));
       expect((await repo.loadProfile()).fullName, 'Mariana da Silva');
-      expect(find.text('Dados salvos nesta sessão.'), findsOneWidget);
+      expect(find.text('Dados salvos.'), findsOneWidget);
       _router(tester).go(AppRoutes.profile);
       await tester.pumpAndSettle();
       expect(find.text('Mariana da Silva'), findsOneWidget);
@@ -218,10 +218,7 @@ void main() {
       expect(find.text('5 medicamentos cadastrados'), findsOneWidget);
       await _tap(tester, find.text('Salvar alterações'));
       expect((await repo.loadHealth()).medications.length, 5);
-      expect(
-        find.text('Medicamentos e alergias salvos nesta sessão.'),
-        findsOneWidget,
-      );
+      expect(find.text('Medicamentos e alergias salvos.'), findsOneWidget);
       await _tap(tester, find.text('Losartana'));
       await tester.enterText(
         find.byKey(const ValueKey('health-item-details')),

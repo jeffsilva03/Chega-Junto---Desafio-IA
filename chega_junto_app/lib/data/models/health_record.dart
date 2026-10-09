@@ -14,8 +14,10 @@ class HealthItem {
     required this.id,
     required this.name,
     required this.details,
+    this.serverId,
   });
   final String id, name, details;
+  final String? serverId;
 }
 
 class HealthDocument {

@@ -49,6 +49,7 @@ class _ReportProcessingPageState extends State<ReportProcessingPage> {
 
   @override
   Widget build(BuildContext context) => ReportScaffold(
+    controller: widget.controller,
     title: 'Organizando seu relato...',
     subtitle:
         'Estamos reunindo apenas o que você contou. Você poderá revisar e editar o resultado.',

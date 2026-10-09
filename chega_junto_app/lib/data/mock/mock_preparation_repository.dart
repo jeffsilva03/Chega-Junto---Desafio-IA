@@ -6,6 +6,50 @@ import '../models/pre_visit_report.dart';
 import '../repositories/preparation_repository.dart';
 
 class MockPreparationRepository implements PreparationRepository {
+  @override
+  Future<PreVisitReport> setReportFinalReview(
+    String appointmentId,
+    String expectedRevision,
+    bool completed,
+  ) async => (await setFinalReview(appointmentId, completed)).report;
+  @override
+  Future<Appointment> loadAppointment(String id) async =>
+      (await loadAppointments()).firstWhere((a) => a.id == id);
+  @override
+  Future<PreVisitReport?> loadReport(String appointmentId) async =>
+      (await loadOverview()).report;
+  @override
+  Future<PreVisitReport> writeReport(
+    PreVisitReport report, {
+    String intent = 'edit',
+    String? organizationSourceText,
+  }) async => (await saveReport(report)).report;
+  @override
+  Future<PreVisitReport> reviewReport(
+    String appointmentId,
+    String expectedRevision,
+  ) async {
+    final value = (await loadOverview()).report.copyWith(reviewed: true);
+    await saveReport(value);
+    return value;
+  }
+
+  @override
+  Future<PreVisitReport> clearReportSummary(
+    String appointmentId,
+    String expectedRevision,
+  ) async {
+    final old = (await loadOverview()).report;
+    final value = PreVisitReport(
+      appointmentId: appointmentId,
+      originalText: old.originalText,
+      updatedAt: DateTime.now(),
+      sections: [for (final section in old.sections) section.withText('')],
+    );
+    await saveReport(value);
+    return value;
+  }
+
   static final demoToday = DateTime(2026, 10, 7);
   static final _next = Appointment(
     id: 'consulta-demo-01',
@@ -175,8 +219,9 @@ class MockPreparationRepository implements PreparationRepository {
   }
 
   @override
-  Future<void> addReminder(AppointmentReminder reminder) async {
+  Future<AppointmentReminder> addReminder(AppointmentReminder reminder) async {
     _reminders.add(reminder);
+    return reminder;
   }
 
   @override

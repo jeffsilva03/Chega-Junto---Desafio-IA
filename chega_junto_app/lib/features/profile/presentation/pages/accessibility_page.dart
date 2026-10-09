@@ -84,126 +84,136 @@ class AccessibilityPage extends StatelessWidget {
     title: title,
     description: description,
     value: value,
-    onChanged: (value) {
-      controller.setAccessibility(
-        controller.accessibility.change(option, value),
-      );
-      if (option == AccessibilityOption.speech && !value) speech.stop();
-    },
+    onChanged: controller.preferencesSaving
+        ? null
+        : (value) {
+            controller.setAccessibility(
+              controller.accessibility.change(option, value),
+            );
+            if (option == AccessibilityOption.speech && !value) speech.stop();
+          },
   );
   @override
-  Widget build(BuildContext context) => ListenableBuilder(
-    listenable: controller,
-    builder: (context, _) {
-      final prefs = controller.accessibility;
-      return ProfileScaffold(
-        title: 'Acessibilidade',
-        subtitle:
-            'Personalize o aplicativo para uma experiência mais confortável e inclusiva.',
-        children: [
-          Text('Aparência', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 10),
-          ProfileSection(
-            children: [
-              SettingsOptionTile(
-                icon: Icons.text_fields_rounded,
-                title: 'Tamanho do texto',
-                description: 'Ajuste o tamanho da fonte no aplicativo.',
-                trailing: prefs.textSize.label,
-                onTap: () => _textSize(context),
-              ),
-              const Divider(),
-              SettingsOptionTile(
-                icon: Icons.dark_mode_outlined,
-                title: 'Tema do aplicativo',
-                description: 'Escolha entre o tema claro ou escuro.',
-                trailing: prefs.appearance.label,
-                onTap: () => _appearance(context),
-              ),
-              const Divider(),
-              _option(
-                AccessibilityOption.contrast,
-                Icons.contrast_rounded,
-                'Alto contraste',
-                'Aumente o contraste para facilitar a leitura.',
-                prefs.highContrast,
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text('Conteúdo', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 10),
-          ProfileSection(
-            children: [
-              _option(
-                AccessibilityOption.speech,
-                Icons.volume_up_outlined,
-                'Ler textos em voz alta',
-                'Ative o botão de áudio para ouvir o conteúdo da tela.',
-                prefs.speech,
-              ),
-              const Divider(),
-              _option(
-                AccessibilityOption.descriptions,
-                Icons.closed_caption_outlined,
-                'Legendas e descrições',
-                'Inclua descrições de imagens na leitura em voz alta.',
-                prefs.descriptions,
-              ),
-              const Divider(),
-              _option(
-                AccessibilityOption.simpleLanguage,
-                Icons.article_outlined,
-                'Usar linguagem simples',
-                'Use explicações mais curtas nas telas de apoio.',
-                prefs.simpleLanguage,
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text('Navegação', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 10),
-          ProfileSection(
-            children: [
-              _option(
-                AccessibilityOption.haptics,
-                Icons.vibration_rounded,
-                'Feedback tátil',
-                'Vibração ao tocar nos controles, em aparelhos compatíveis.',
-                prefs.haptics,
-              ),
-              const Divider(),
-              _option(
-                AccessibilityOption.reduceMotion,
-                Icons.animation_rounded,
-                'Reduzir animações',
-                'Diminua os efeitos visuais durante a navegação.',
-                prefs.reduceMotion,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const ProfileInfo(
-            'Preferências válidas nesta sessão. A leitura usa uma voz local em português disponível no aparelho.',
-          ),
-          if (prefs.speech)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: TextButton.icon(
-                onPressed: () async {
-                  await speech.speak(
-                    'Chega Junto. Seu cuidado começa aqui. Você pode ouvir as informações das telas usando o botão de áudio.',
-                  );
-                  if (context.mounted && speech.error != null) {
-                    profileMessage(context, speech.error!);
-                  }
-                },
-                icon: const Icon(Icons.volume_up_outlined),
-                label: const Text('Ouvir exemplo'),
-              ),
+  Widget build(BuildContext context) => ProfileView(
+    controller: controller,
+    builder: (context) => ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final prefs = controller.accessibility;
+        return ProfileScaffold(
+          title: 'Acessibilidade',
+          subtitle:
+              'Personalize o aplicativo para uma experiência mais confortável e inclusiva.',
+          children: [
+            PreferenceSaveStatus(controller: controller),
+            Text('Aparência', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            ProfileSection(
+              children: [
+                SettingsOptionTile(
+                  icon: Icons.text_fields_rounded,
+                  title: 'Tamanho do texto',
+                  description: 'Ajuste o tamanho da fonte no aplicativo.',
+                  trailing: prefs.textSize.label,
+                  onTap: controller.preferencesSaving
+                      ? null
+                      : () => _textSize(context),
+                ),
+                const Divider(),
+                SettingsOptionTile(
+                  icon: Icons.dark_mode_outlined,
+                  title: 'Tema do aplicativo',
+                  description: 'Escolha entre o tema claro ou escuro.',
+                  trailing: prefs.appearance.label,
+                  onTap: controller.preferencesSaving
+                      ? null
+                      : () => _appearance(context),
+                ),
+                const Divider(),
+                _option(
+                  AccessibilityOption.contrast,
+                  Icons.contrast_rounded,
+                  'Alto contraste',
+                  'Aumente o contraste para facilitar a leitura.',
+                  prefs.highContrast,
+                ),
+              ],
             ),
-        ],
-      );
-    },
+            const SizedBox(height: 18),
+            Text('Conteúdo', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            ProfileSection(
+              children: [
+                _option(
+                  AccessibilityOption.speech,
+                  Icons.volume_up_outlined,
+                  'Ler textos em voz alta',
+                  'Ative o botão de áudio para ouvir o conteúdo da tela.',
+                  prefs.speech,
+                ),
+                const Divider(),
+                _option(
+                  AccessibilityOption.descriptions,
+                  Icons.closed_caption_outlined,
+                  'Legendas e descrições',
+                  'Inclua descrições de imagens na leitura em voz alta.',
+                  prefs.descriptions,
+                ),
+                const Divider(),
+                _option(
+                  AccessibilityOption.simpleLanguage,
+                  Icons.article_outlined,
+                  'Usar linguagem simples',
+                  'Use explicações mais curtas nas telas de apoio.',
+                  prefs.simpleLanguage,
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text('Navegação', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            ProfileSection(
+              children: [
+                _option(
+                  AccessibilityOption.haptics,
+                  Icons.vibration_rounded,
+                  'Feedback tátil',
+                  'Vibração ao tocar nos controles, em aparelhos compatíveis.',
+                  prefs.haptics,
+                ),
+                const Divider(),
+                _option(
+                  AccessibilityOption.reduceMotion,
+                  Icons.animation_rounded,
+                  'Reduzir animações',
+                  'Diminua os efeitos visuais durante a navegação.',
+                  prefs.reduceMotion,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const ProfileInfo(
+              'A leitura usa uma voz local em português disponível no aparelho.',
+            ),
+            if (prefs.speech)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton.icon(
+                  onPressed: () async {
+                    await speech.speak(
+                      'Chega Junto. Seu cuidado começa aqui. Você pode ouvir as informações das telas usando o botão de áudio.',
+                    );
+                    if (context.mounted && speech.error != null) {
+                      profileMessage(context, speech.error!);
+                    }
+                  },
+                  icon: const Icon(Icons.volume_up_outlined),
+                  label: const Text('Ouvir exemplo'),
+                ),
+              ),
+          ],
+        );
+      },
+    ),
   );
 }

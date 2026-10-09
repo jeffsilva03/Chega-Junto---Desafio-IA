@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/preparation_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_surface.dart';
@@ -60,11 +61,13 @@ class _AttendancePageState extends State<AttendancePage> {
   Future<void> _save(ConfirmationStatus status) async {
     try {
       await widget.controller.setAttendance(status);
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Não foi possível salvar. Tente novamente.'),
+          SnackBar(
+            content: Text(
+              userError(e, 'Não foi possível salvar. Tente novamente.'),
+            ),
           ),
         );
       }

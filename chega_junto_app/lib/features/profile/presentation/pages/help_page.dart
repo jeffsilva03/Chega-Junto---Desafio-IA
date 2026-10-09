@@ -30,7 +30,7 @@ class _HelpPageState extends State<HelpPage> {
     (
       Icons.notifications_none_rounded,
       'Como configurar lembretes',
-      'Na Agenda, toque em Adicionar lembrete. Escreva um título, escolha a antecipação e salve. O registro fica na sessão; não dispara alarmes.',
+      'Na Agenda, toque em Adicionar lembrete. Escreva um título, escolha a antecipação e salve. O registro fica na Agenda; não dispara alarmes.',
     ),
     (
       Icons.medication_outlined,
@@ -63,7 +63,7 @@ class _HelpPageState extends State<HelpPage> {
       );
   void _faq() => _information(
     'Perguntas frequentes (FAQ)',
-    'Os dados são reais?\nNão. Esta demonstração usa dados fictícios.\n\nAs alterações ficam salvas?\nElas duram apenas a sessão. Reiniciar restaura os exemplos.\n\nO aplicativo envia informações à unidade?\nNão há integração com unidades ou profissionais.\n\nA IA interpreta exames?\nNão. A organização do relato é simulada e utiliza somente o que você informou. Você pode revisar, editar e excluir o conteúdo; nada é enviado automaticamente.',
+    'Os dados são reais?\nNão. Esta demonstração usa dados fictícios.\n\nAs alterações ficam salvas?\nNa demonstração local, elas duram apenas a sessão. Com o serviço conectado, as alterações confirmadas ficam salvas.\n\nO aplicativo envia informações à unidade?\nNão há integração com unidades ou profissionais.\n\nA IA interpreta exames?\nNão. A organização do relato é simulada e utiliza somente o que você informou. Você pode revisar, editar e excluir o conteúdo; nada é enviado automaticamente.',
   );
   Widget _tutorial(
     String title,

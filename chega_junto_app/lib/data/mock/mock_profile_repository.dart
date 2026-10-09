@@ -3,6 +3,9 @@ import '../repositories/profile_repository.dart';
 import '../models/health_record.dart';
 
 class MockProfileRepository implements ProfileRepository {
+  @override
+  Future<HealthRecord> loadHealthRecord(String id) async =>
+      _health.history.firstWhere((record) => record.id == id);
   MockProfileRepository();
   UserProfile _profile = const UserProfile(
     fullName: 'Maria da Silva',

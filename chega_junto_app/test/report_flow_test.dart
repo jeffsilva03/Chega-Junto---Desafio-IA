@@ -10,6 +10,7 @@ import 'package:chega_junto_app/app/demo_session.dart';
 import 'package:chega_junto_app/app/router/app_routes.dart';
 import 'package:chega_junto_app/app/theme/app_tokens.dart';
 import 'package:chega_junto_app/core/widgets/app_bottom_navigation.dart';
+import 'package:chega_junto_app/core/state/report_controller.dart';
 import 'package:chega_junto_app/data/mock/mock_ai_assistant_service.dart';
 import 'package:chega_junto_app/data/mock/mock_audio_draft_service.dart';
 import 'package:chega_junto_app/data/mock/mock_profile_repository.dart';
@@ -22,7 +23,7 @@ import 'package:chega_junto_app/features/questions/presentation/pages/consultati
 import 'package:chega_junto_app/features/profile/presentation/pages/accessibility_page.dart';
 import 'package:chega_junto_app/features/final_review/presentation/pages/final_review_page.dart';
 
-class _Auth implements AuthRepository {
+class _Auth extends AuthRepository {
   @override
   Future<void> signInDemo() async {}
 }
@@ -102,6 +103,16 @@ Future<void> _organize(WidgetTester tester) async {
   expect(find.byType(AiSummaryPage), findsOneWidget);
 }
 
+Future<void> _organizeController(
+  WidgetTester tester,
+  ReportController controller,
+) async {
+  final pending = controller.organize();
+  await tester.pump(const Duration(seconds: 2));
+  await tester.pumpAndSettle();
+  await pending;
+}
+
 void main() {
   testWidgets(
     'Novo card preserva conteúdo longo e descarta o rascunho ao fechar',
@@ -163,7 +174,7 @@ void main() {
       final controller = tester
           .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
           .controller;
-      await tester.runAsync(() => controller.organize());
+      await _organizeController(tester, controller);
       _router(tester).go(AppRoutes.accessibility);
       await tester.pumpAndSettle();
       final profile = tester
@@ -379,7 +390,7 @@ void main() {
       final controller = tester
           .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
           .controller;
-      await tester.runAsync(() => controller.organize());
+      await _organizeController(tester, controller);
       for (final route in [
         AppRoutes.report,
         AppRoutes.audio,
@@ -429,7 +440,7 @@ void main() {
       final controller = tester
           .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
           .controller;
-      await tester.runAsync(() => controller.organize());
+      await _organizeController(tester, controller);
       for (final route in [
         AppRoutes.report,
         AppRoutes.audio,
@@ -478,7 +489,7 @@ void main() {
     final controller = tester
         .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
         .controller;
-    await tester.runAsync(() => controller.organize());
+    await _organizeController(tester, controller);
     _router(tester).go(AppRoutes.summary);
     await tester.pumpAndSettle();
     await _tap(tester, find.byKey(const ValueKey('edit-reason')));
@@ -547,7 +558,7 @@ void main() {
           .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
           .controller;
       final original = controller.text;
-      await tester.runAsync(() => controller.organize());
+      await _organizeController(tester, controller);
       controller.editSection(
         'reason',
         'Meu resumo revisado para esta consulta.',
@@ -671,7 +682,7 @@ void main() {
       final controller = tester
           .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
           .controller;
-      await tester.runAsync(() => controller.organize());
+      await _organizeController(tester, controller);
       controller.selectAll(false);
       _router(tester).go(AppRoutes.finalReview);
       await tester.pumpAndSettle();
@@ -710,7 +721,7 @@ void main() {
           final controller = tester
               .widget<PreVisitReportPage>(find.byType(PreVisitReportPage))
               .controller;
-          await tester.runAsync(() => controller.organize());
+          await _organizeController(tester, controller);
           for (final contrast in [false, true]) {
             _router(tester).go(AppRoutes.accessibility);
             await tester.pumpAndSettle();

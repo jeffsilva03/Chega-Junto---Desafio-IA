@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/preparation_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../data/models/appointment_reminder.dart';
 
@@ -24,6 +25,7 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
   late final TextEditingController _title;
   ReminderTiming _timing = ReminderTiming.dayBefore;
   bool _saving = false;
+  bool _uncertain = false;
   String? _error;
 
   @override
@@ -43,6 +45,7 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
   }
 
   Future<void> _save() async {
+    if (_saving || _uncertain) return;
     if (!_form.currentState!.validate()) return;
     setState(() {
       _saving = true;
@@ -59,13 +62,30 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
         ),
       );
       if (mounted) Navigator.pop(context, true);
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         setState(() {
           _saving = false;
-          _error = 'Não foi possível salvar. Tente novamente.';
+          _uncertain = e is NetworkException && e.uncertain;
+          _error = _uncertain
+              ? 'Não foi possível confirmar o salvamento. Confira a Agenda antes de criar outro lembrete.'
+              : userError(e, 'Não foi possível salvar. Tente novamente.');
         });
       }
+    }
+  }
+
+  Future<void> _checkAgenda() async {
+    setState(() => _saving = true);
+    await widget.controller.load();
+    if (!mounted) return;
+    if (widget.controller.failed) {
+      setState(() {
+        _saving = false;
+        _error = 'Não foi possível conferir a Agenda. Tente novamente.';
+      });
+    } else {
+      Navigator.pop(context, false);
     }
   }
 
@@ -287,10 +307,12 @@ class _NewReminderPopoverState extends State<NewReminderPopover> {
           Expanded(
             child: AppButton(
               key: const Key('reminder-save'),
-              label: _saving ? 'Salvando...' : 'Salvar',
+              label: _saving
+                  ? (_uncertain ? 'Carregando...' : 'Salvando...')
+                  : (_uncertain ? 'Conferir Agenda' : 'Salvar'),
               icon: null,
               busy: _saving,
-              onPressed: _save,
+              onPressed: _uncertain ? _checkAgenda : _save,
             ),
           ),
         ],

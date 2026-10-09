@@ -37,6 +37,7 @@ class AudioReportPage extends StatelessWidget {
         final busy = status == AudioDraftStatus.transcribing;
         final review = status == AudioDraftStatus.review;
         return ReportScaffold(
+          controller: controller,
           title: 'Gravação de áudio',
           subtitle:
               'Fale com calma. Depois você poderá revisar antes de continuar.',

@@ -1,6 +1,7 @@
 abstract final class AppRoutes {
   static const welcome = '/';
   static const login = '/login';
+  static const register = '/cadastro';
   static const home = '/inicio';
   static const agenda = '/agenda';
   static const checklist = '/atendimentos/consulta-demo-01/checklist';

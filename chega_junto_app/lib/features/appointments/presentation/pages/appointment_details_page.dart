@@ -9,6 +9,7 @@ import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/appointment_summary_card.dart';
 import '../../../../core/widgets/preparation_view.dart';
+import '../../../../core/widgets/network_feedback.dart';
 import '../../../../core/widgets/section_heading.dart';
 import '../../../../data/models/appointment.dart';
 import '../../../../data/models/checklist_item.dart';
@@ -99,133 +100,182 @@ class AppointmentDetailsPage extends StatelessWidget {
     body: SafeArea(
       top: false,
       child: PreparationView(
+        requiresAppointment: false,
         controller: controller,
-        builder: (context) {
-          final appointment = controller.appointmentById(appointmentId);
-          if (appointment == null) {
-            return const Center(child: Text('Atendimento não encontrado.'));
-          }
-          final next =
-              appointment.id == controller.overview!.nextAppointment.id;
-          final documents = next
-              ? controller.overview!.checklist
-                    .where((item) => item.section == ChecklistSection.documents)
-                    .toList()
-              : const <ChecklistItem>[];
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AppointmentSummaryCard(appointment: appointment),
-                  const SizedBox(height: 12),
-                  AppSurface(
-                    border: true,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SectionHeading(
-                                    title: 'Local do atendimento',
-                                    icon: Icons.location_on_rounded,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    appointment.address,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const SizedBox(
-                              width: 95,
-                              height: 85,
-                              child: _MapPreview(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Material(
-                          color: context.appColors.blueSoft,
-                          borderRadius: BorderRadius.circular(AppRadii.small),
-                          child: InkWell(
-                            onTap: () => _location(context, appointment),
-                            borderRadius: BorderRadius.circular(AppRadii.small),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.near_me_rounded,
-                                    color: context.appColors.primary,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Como chegar',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            color: context.appColors.primary,
-                                          ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right_rounded,
-                                    color: context.appColors.primary,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  if (documents.isNotEmpty) ...[
+        builder: (context) => RemoteDetail<Appointment>(
+          key: ValueKey(appointmentId),
+          load: (retry) =>
+              controller.loadAppointment(appointmentId, retry: retry),
+          builder: (context, appointment) {
+            final next =
+                controller.overview!.hasNextAppointment &&
+                appointment.id == controller.overview!.nextAppointment.id;
+            final documents = next
+                ? controller.overview!.checklist
+                      .where(
+                        (item) => item.section == ChecklistSection.documents,
+                      )
+                      .toList()
+                : const <ChecklistItem>[];
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppointmentSummaryCard(appointment: appointment),
+                    const SizedBox(height: 12),
                     AppSurface(
                       border: true,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SectionHeading(
-                            title: 'O que levar',
-                            icon: Icons.description_outlined,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SectionHeading(
+                                      title: 'Local do atendimento',
+                                      icon: Icons.location_on_rounded,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      appointment.address,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const SizedBox(
+                                width: 95,
+                                height: 85,
+                                child: _MapPreview(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Material(
+                            color: context.appColors.blueSoft,
+                            borderRadius: BorderRadius.circular(AppRadii.small),
+                            child: InkWell(
+                              onTap: () => _location(context, appointment),
+                              borderRadius: BorderRadius.circular(
+                                AppRadii.small,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.near_me_rounded,
+                                      color: context.appColors.primary,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'Como chegar',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: context.appColors.primary,
+                                            ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right_rounded,
+                                      color: context.appColors.primary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (documents.isNotEmpty) ...[
+                      AppSurface(
+                        border: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SectionHeading(
+                              title: 'O que levar',
+                              icon: Icons.description_outlined,
+                            ),
+                            const SizedBox(height: 12),
+                            for (final entry in documents.indexed) ...[
+                              if (entry.$1 > 0) const Divider(),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      entry.$2.isCompleted
+                                          ? Icons.check_circle_rounded
+                                          : Icons
+                                                .radio_button_unchecked_rounded,
+                                      color: entry.$2.isCompleted
+                                          ? context.appColors.tealDark
+                                          : context.appColors.muted,
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Text(
+                                        entry.$2.title,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    AppSurface(
+                      border: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeading(
+                            title: 'Orientações',
+                            icon: Icons.info_rounded,
+                            color: context.appColors.primaryDark,
                           ),
                           const SizedBox(height: 12),
-                          for (final entry in documents.indexed) ...[
-                            if (entry.$1 > 0) const Divider(),
+                          for (final instruction in appointment.instructions)
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.symmetric(vertical: 9),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Icon(
-                                    entry.$2.isCompleted
-                                        ? Icons.check_circle_rounded
-                                        : Icons.radio_button_unchecked_rounded,
-                                    color: entry.$2.isCompleted
-                                        ? context.appColors.tealDark
-                                        : context.appColors.muted,
+                                    Icons.info_outline_rounded,
+                                    color: context.appColors.primaryDark,
+                                    size: 22,
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
-                                      entry.$2.title,
+                                      instruction,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,
@@ -234,85 +284,46 @@ class AppointmentDetailsPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ],
+                          const Divider(),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              'Em caso de imprevisto, procure o canal oficial da unidade para saber como remarcar ou cancelar.',
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 18),
+                    if (next) ...[
+                      AppButton(
+                        label: 'Ver checklist completo',
+                        icon: Icons.chevron_right_rounded,
+                        color: context.appColors.primaryDark,
+                        onPressed: () => context.push(AppRoutes.checklist),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => context.push(AppRoutes.attendance),
+                        child: const Text('Confirmar presença'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.report),
+                        icon: const Icon(Icons.edit_note_rounded),
+                        label: const Text('Relato pré-consulta'),
+                      ),
+                    ] else
+                      AppButton(
+                        label: 'Voltar à agenda',
+                        icon: Icons.calendar_month_outlined,
+                        onPressed: () => context.go(AppRoutes.agenda),
+                      ),
                   ],
-                  AppSurface(
-                    border: true,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SectionHeading(
-                          title: 'Orientações',
-                          icon: Icons.info_rounded,
-                          color: context.appColors.primaryDark,
-                        ),
-                        const SizedBox(height: 12),
-                        for (final instruction in appointment.instructions)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 9),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  color: context.appColors.primaryDark,
-                                  size: 22,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    instruction,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const Divider(),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            'Em caso de imprevisto, procure o canal oficial da unidade para saber como remarcar ou cancelar.',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  if (next) ...[
-                    AppButton(
-                      label: 'Ver checklist completo',
-                      icon: Icons.chevron_right_rounded,
-                      color: context.appColors.primaryDark,
-                      onPressed: () => context.push(AppRoutes.checklist),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: () => context.push(AppRoutes.attendance),
-                      child: const Text('Confirmar presença'),
-                    ),
-                    TextButton.icon(
-                      onPressed: () => context.push(AppRoutes.report),
-                      icon: const Icon(Icons.edit_note_rounded),
-                      label: const Text('Relato pré-consulta'),
-                    ),
-                  ] else
-                    AppButton(
-                      label: 'Voltar à agenda',
-                      icon: Icons.calendar_month_outlined,
-                      onPressed: () => context.go(AppRoutes.agenda),
-                    ),
-                ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     ),
   );

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../state/preparation_controller.dart';
+import 'network_feedback.dart';
 
 class PreparationView extends StatelessWidget {
   const PreparationView({
     super.key,
     required this.controller,
     required this.builder,
+    this.requiresAppointment = true,
   });
   final PreparationController controller;
   final WidgetBuilder builder;
+  final bool requiresAppointment;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: controller,
@@ -17,19 +20,16 @@ class PreparationView extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
       if (controller.failed || controller.overview == null) {
-        return Center(
+        return NetworkFeedback(
+          error: controller.error,
+          onRetry: controller.load,
+        );
+      }
+      if (requiresAppointment && !controller.overview!.hasNextAppointment) {
+        return const Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Não foi possível carregar seu preparo.'),
-                TextButton(
-                  onPressed: controller.load,
-                  child: const Text('Tentar novamente'),
-                ),
-              ],
-            ),
+            padding: EdgeInsets.all(24),
+            child: Text('Nenhum próximo atendimento para preparar.'),
           ),
         );
       }

@@ -3,10 +3,34 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/profile_controller.dart';
+import '../../../../core/widgets/network_feedback.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../data/models/user_profile.dart';
 import '../../../../data/models/health_record.dart';
+
+class PreferenceSaveStatus extends StatelessWidget {
+  const PreferenceSaveStatus({super.key, required this.controller});
+  final ProfileController controller;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (controller.preferencesSaving) const Text('Salvando preferências...'),
+      if (controller.preferenceError != null) ...[
+        Text(
+          userError(controller.preferenceError),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        TextButton(
+          onPressed: controller.retryPreferences,
+          child: const Text('Tentar novamente'),
+        ),
+      ],
+    ],
+  );
+}
 
 void profileBack(BuildContext context, [String fallback = AppRoutes.profile]) {
   if (context.canPop()) {
@@ -58,20 +82,9 @@ class ProfileView extends StatelessWidget {
       if (controller.failed ||
           controller.profile == null ||
           controller.health == null) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Não foi possível carregar seus dados.'),
-                TextButton(
-                  onPressed: controller.load,
-                  child: const Text('Tentar novamente'),
-                ),
-              ],
-            ),
-          ),
+        return NetworkFeedback(
+          error: controller.error,
+          onRetry: controller.load,
         );
       }
       return builder(context);
@@ -232,7 +245,9 @@ class ProfileIdentityCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        'Cadastro atualizado',
+                        profile.phone.isEmpty || profile.birthDate.isEmpty
+                            ? 'Complete seus dados'
+                            : 'Cadastro atualizado',
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(color: context.appColors.tealDark),
                       ),

@@ -23,6 +23,7 @@ import '../../features/appointments/presentation/pages/appointment_details_page.
 import '../../features/checklist/presentation/pages/checklist_page.dart';
 import '../../features/attendance/presentation/pages/attendance_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/registration_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
@@ -42,14 +43,21 @@ GoRouter createAppRouter({
   redirect: (context, state) {
     final public =
         state.matchedLocation == AppRoutes.welcome ||
-        state.matchedLocation == AppRoutes.login;
+        state.matchedLocation == AppRoutes.login ||
+        state.matchedLocation == AppRoutes.register;
     if (!public && !session.signedIn) return AppRoutes.login;
-    if (state.matchedLocation == AppRoutes.login && session.signedIn) {
+    if ((state.matchedLocation == AppRoutes.login ||
+            state.matchedLocation == AppRoutes.register) &&
+        session.signedIn) {
       return AppRoutes.home;
     }
     return null;
   },
   routes: [
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) => RegistrationPage(session: session),
+    ),
     GoRoute(
       path: AppRoutes.welcome,
       builder: (context, state) => const WelcomePage(),

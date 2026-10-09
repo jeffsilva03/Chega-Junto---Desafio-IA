@@ -3,10 +3,19 @@ class ReportSection {
     required this.id,
     required this.title,
     required this.text,
-  });
+    String? sectionKey,
+    this.serverId,
+  }) : sectionKey = sectionKey ?? id;
   final String id, title, text;
-  ReportSection withText(String value) =>
-      ReportSection(id: id, title: title, text: value);
+  final String sectionKey;
+  final String? serverId;
+  ReportSection withText(String value) => ReportSection(
+    id: id,
+    title: title,
+    text: value,
+    sectionKey: sectionKey,
+    serverId: serverId,
+  );
 }
 
 class ConsultationQuestion {
@@ -14,14 +23,17 @@ class ConsultationQuestion {
     required this.id,
     required this.text,
     this.selected = true,
+    this.serverId,
   });
   final String id, text;
   final bool selected;
+  final String? serverId;
   ConsultationQuestion copyWith({String? text, bool? selected}) =>
       ConsultationQuestion(
         id: id,
         text: text ?? this.text,
         selected: selected ?? this.selected,
+        serverId: serverId,
       );
 }
 

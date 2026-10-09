@@ -27,4 +27,21 @@ class AppNotification {
   final NotificationDestination destination;
   final String? destinationId;
   final bool unread;
+  AppNotification withRead(bool read) => AppNotification(
+    id: id,
+    title: title,
+    message: message,
+    dateTime: dateTime,
+    category: category,
+    destination: destination,
+    destinationId: destinationId,
+    unread: !read,
+  );
+}
+
+class NotificationInbox {
+  NotificationInbox(List<AppNotification> items, this.unreadCount)
+    : items = List.unmodifiable(items);
+  final List<AppNotification> items;
+  final int unreadCount;
 }

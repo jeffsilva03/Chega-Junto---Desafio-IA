@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/appointment_date.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -36,11 +37,14 @@ class _FinalReviewPageState extends State<FinalReviewPage> {
       await widget.controller.completePreparation();
       if (!mounted) return;
       if (_scroll.hasClients) _scroll.jumpTo(0);
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         reportMessage(
           context,
-          'Não foi possível concluir. Revise o resumo atualizado e tente novamente.',
+          userError(
+            e,
+            'Não foi possível concluir. Revise o resumo atualizado e tente novamente.',
+          ),
         );
       }
     } finally {
@@ -93,6 +97,7 @@ class _FinalReviewPageState extends State<FinalReviewPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  ReportSaveStatus(controller: controller),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
@@ -330,7 +335,7 @@ class _FinalReviewPageState extends State<FinalReviewPage> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Você decide o que compartilhar. Concluir salva sua preparação somente nesta sessão; nada é enviado a profissionais, UBS ou SUS.',
+                    'Você decide o que compartilhar. Concluir salva sua preparação; nada é enviado a profissionais, UBS ou SUS.',
                     key: const ValueKey('review-privacy'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: context.appColors.textSecondary,

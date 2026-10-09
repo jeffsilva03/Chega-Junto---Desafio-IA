@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../data/models/organized_report.dart';
@@ -44,12 +45,15 @@ class _ConsultationQuestionsPageState extends State<ConsultationQuestionsPage> {
       } else {
         context.push(AppRoutes.finalReview);
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
         reportMessage(
           context,
-          'Não foi possível salvar. Revise o resumo e tente novamente.',
+          userError(
+            e,
+            'Não foi possível salvar. Revise o resumo e tente novamente.',
+          ),
         );
       }
     }
@@ -64,6 +68,7 @@ class _ConsultationQuestionsPageState extends State<ConsultationQuestionsPage> {
           controller.questions.isNotEmpty &&
           controller.questions.every((q) => q.selected);
       return ReportScaffold(
+        controller: controller,
         title: 'Perguntas para levar à consulta',
         eyebrow: 'PRÓXIMA CONSULTA',
         backTo: AppRoutes.summary,

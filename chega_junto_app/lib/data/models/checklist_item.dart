@@ -26,13 +26,24 @@ class ChecklistItem {
 enum PreparationStage { documents, attendance, report, finalReview }
 
 class PreparationProgress {
-  PreparationProgress(Set<PreparationStage> completed)
-    : completed = Set.unmodifiable(completed);
+  PreparationProgress(
+    Set<PreparationStage> completed, {
+    int? completedCount,
+    int? totalCount,
+    double? fraction,
+    int? percentage,
+  }) : completed = Set.unmodifiable(completed),
+       _count = completedCount,
+       _total = totalCount,
+       _fraction = fraction,
+       _percentage = percentage;
   final Set<PreparationStage> completed;
-  int get completedCount => completed.length;
-  int get totalCount => PreparationStage.values.length;
-  double get fraction => completedCount / totalCount;
-  int get percentage => (fraction * 100).round();
+  final int? _count, _total, _percentage;
+  final double? _fraction;
+  int get completedCount => _count ?? completed.length;
+  int get totalCount => _total ?? PreparationStage.values.length;
+  double get fraction => _fraction ?? completedCount / totalCount;
+  int get percentage => _percentage ?? (fraction * 100).round();
 }
 
 double requiredChecklistProgress(List<ChecklistItem> items) {

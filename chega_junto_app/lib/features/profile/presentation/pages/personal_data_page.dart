@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/profile_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../data/models/user_profile.dart';
 import '../widgets/profile_components.dart';
@@ -43,14 +44,18 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
   String? _validate(String key, String? raw) {
     final value = (raw ?? '').trim();
     if (key == 'complement') return null;
-    if (value.isEmpty) return 'Preencha este campo.';
+    if (value.isEmpty) {
+      return key == 'name' || key == 'email' ? 'Preencha este campo.' : null;
+    }
     if (key == 'email' &&
         !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
       return 'Confira o e-mail.';
     }
     final digits = value.replaceAll(RegExp(r'\D'), '');
     if ((key == 'phone' || key == 'emergencyPhone') &&
-        (digits.length < 10 || digits.length > 11)) {
+        (digits.length < 10 ||
+            digits.length > 13 ||
+            (digits.length > 11 && !digits.startsWith('55')))) {
       return 'Use DDD e telefone.';
     }
     if (key == 'cpf' && digits.length != 11) return 'Use os 11 dígitos.';
@@ -65,7 +70,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
       if (date.day != day ||
           date.month != month ||
           year < 1900 ||
-          date.isAfter(DateTime(2026, 10, 7))) {
+          date.isAfter(DateTime.now())) {
         return 'Confira a data.';
       }
     }
@@ -98,11 +103,22 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
     try {
       await widget.controller.saveProfile(profile);
       if (!mounted) return;
-      setState(() => _editing = false);
-      profileMessage(context, 'Dados salvos nesta sessão.');
-    } catch (_) {
+      setState(() {
+        _editing = false;
+        for (final field in _fields!.values) {
+          field.dispose();
+        }
+        _fields = null;
+      });
+      profileMessage(context, 'Dados salvos.');
+    } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Não foi possível salvar. Tente novamente.');
+        setState(
+          () => _error = userError(
+            e,
+            'Não foi possível salvar. Tente novamente.',
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -153,7 +169,9 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                         ),
                       )
                     : Text(
-                        _text(entry.$2.$1),
+                        _text(entry.$2.$1).isEmpty
+                            ? 'Não informado'
+                            : _text(entry.$2.$1),
                         textAlign: TextAlign.right,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: context.appColors.textSecondary,
@@ -232,7 +250,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                 ]),
                 const SizedBox(height: 12),
                 const ProfileInfo(
-                  'Dados fictícios para organizar sua preparação. Alterações ficam somente nesta sessão.',
+                  'Dados fictícios para organizar sua preparação.',
                 ),
                 if (_error != null)
                   Padding(

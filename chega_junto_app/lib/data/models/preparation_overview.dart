@@ -5,15 +5,19 @@ import 'pre_visit_report.dart';
 class PreparationOverview {
   const PreparationOverview({
     required this.firstName,
-    required this.nextAppointment,
+    required Appointment? nextAppointment,
     required this.progress,
     required this.checklist,
     required this.report,
     required this.reminder,
     required this.referenceDate,
-  });
+    this.checklistFraction,
+  }) : _nextAppointment = nextAppointment;
   final String firstName;
-  final Appointment nextAppointment;
+  final Appointment? _nextAppointment;
+  bool get hasNextAppointment => _nextAppointment != null;
+  Appointment get nextAppointment => _nextAppointment!;
+  final double? checklistFraction;
   final PreparationProgress progress;
   final List<ChecklistItem> checklist;
   final PreVisitReport report;
@@ -22,7 +26,7 @@ class PreparationOverview {
 
   PreparationOverview withFinalReview(bool completed) => PreparationOverview(
     firstName: firstName,
-    nextAppointment: nextAppointment,
+    nextAppointment: _nextAppointment,
     progress: PreparationProgress({
       ...progress.completed.where(
         (stage) => stage != PreparationStage.finalReview,
@@ -30,19 +34,21 @@ class PreparationOverview {
       if (completed) PreparationStage.finalReview,
     }),
     checklist: checklist,
-    report: report,
+    report: report.copyWith(finalDone: completed),
     reminder: reminder,
     referenceDate: referenceDate,
+    checklistFraction: checklistFraction,
   );
 
   PreparationOverview withReport(PreVisitReport value) => PreparationOverview(
     firstName: firstName,
-    nextAppointment: nextAppointment,
+    nextAppointment: _nextAppointment,
     progress: progress,
     checklist: checklist,
     report: value,
     reminder: reminder,
     referenceDate: referenceDate,
+    checklistFraction: checklistFraction,
   );
 
   PreparationOverview withAttendance(ConfirmationStatus status) {

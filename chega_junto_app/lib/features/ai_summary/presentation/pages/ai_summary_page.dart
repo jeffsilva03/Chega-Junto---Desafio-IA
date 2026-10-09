@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../widgets/summary_section_card.dart';
@@ -33,6 +34,13 @@ class AiSummaryPage extends StatelessWidget {
     );
     if (confirmed == true && context.mounted) {
       controller.clearSummary();
+      try {
+        await controller.saveDraft();
+      } catch (e) {
+        if (context.mounted) reportMessage(context, userError(e));
+        return;
+      }
+      if (!context.mounted) return;
       reportMessage(
         context,
         'Conteúdo do resumo removido. Seu relato original foi mantido.',
@@ -44,6 +52,7 @@ class AiSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: controller,
     builder: (context, _) => ReportScaffold(
+      controller: controller,
       title: 'Resumo gerado pela IA',
       subtitle:
           'Aqui está a organização do que você contou. Você pode revisar e editar antes da consulta.',

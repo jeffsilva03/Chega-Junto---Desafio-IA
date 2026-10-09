@@ -110,6 +110,7 @@ class _AgendaPageState extends State<AgendaPage> {
     body: SafeArea(
       bottom: false,
       child: PreparationView(
+        requiresAppointment: false,
         controller: widget.controller,
         builder: (context) {
           final controller = widget.controller;
@@ -138,6 +139,15 @@ class _AgendaPageState extends State<AgendaPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (controller.reminderRefreshError != null) ...[
+                    const Text(
+                      'Lembrete salvo. Não foi possível atualizar a lista completa.',
+                    ),
+                    TextButton(
+                      onPressed: controller.load,
+                      child: const Text('Recarregar Agenda'),
+                    ),
+                  ],
                   Row(
                     children: [
                       const BrandLogo(width: 185),
@@ -279,18 +289,23 @@ class _AgendaPageState extends State<AgendaPage> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  AppointmentCard(
-                    appointment: overview.nextAppointment,
-                    onTap: () => context.push(
-                      AppRoutes.appointmentDetails(overview.nextAppointment.id),
+                  if (overview.hasNextAppointment)
+                    AppointmentCard(
+                      appointment: overview.nextAppointment,
+                      onTap: () => context.push(
+                        AppRoutes.appointmentDetails(
+                          overview.nextAppointment.id,
+                        ),
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 16),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       key: _reminderAnchor,
-                      onPressed: _addReminder,
+                      onPressed: overview.hasNextAppointment
+                          ? _addReminder
+                          : null,
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: const Text('Adicionar lembrete'),
                     ),

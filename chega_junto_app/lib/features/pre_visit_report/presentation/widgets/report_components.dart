@@ -4,6 +4,99 @@ import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/preparation_view.dart';
+
+class ReportSaveStatus extends StatelessWidget {
+  const ReportSaveStatus({super.key, required this.controller});
+  final ReportController controller;
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: controller,
+    builder: (context, _) {
+      if (controller.autosaveDelay == null) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (controller.saving)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text('Salvando alterações...'),
+            ),
+          if (controller.saveError != null) ...[
+            Text(
+              userError(controller.saveError),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            if (controller.conflict)
+              TextButton(
+                onPressed: controller.saving ? null : controller.reloadLatest,
+                child: const Text('Recarregar versão mais recente'),
+              )
+            else
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await controller.saveDraft();
+                  } catch (_) {}
+                },
+                child: const Text('Tentar salvar novamente'),
+              ),
+          ],
+          if (controller.preservedDraft != null && !controller.conflict)
+            TextButton(
+              onPressed: () async {
+                final restore = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Rascunho preservado'),
+                    scrollable: true,
+                    content: Text(
+                      [
+                        controller.preservedDraft!.originalText,
+                        ...controller.preservedDraft!.sections.map(
+                          (s) => '${s.title}\n${s.text}',
+                        ),
+                        ...controller.preservedDraft!.questions.map(
+                          (q) =>
+                              '${q.selected ? 'Selecionada' : 'Não selecionada'}: ${q.text}',
+                        ),
+                      ].join('\n\n'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Fechar'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Restaurar para editar'),
+                      ),
+                    ],
+                  ),
+                );
+                if (restore == true) controller.restorePreservedDraft();
+              },
+              child: const Text('Ver rascunho preservado'),
+            ),
+          if (controller.hasUnsavedChanges &&
+              !controller.saving &&
+              !controller.conflict &&
+              controller.saveError == null)
+            TextButton(
+              onPressed: () async {
+                try {
+                  await controller.saveDraft();
+                } catch (_) {}
+              },
+              child: const Text('Salvar rascunho'),
+            ),
+        ],
+      );
+    },
+  );
+}
 
 void reportMessage(BuildContext context, String message) =>
     ScaffoldMessenger.of(context)
@@ -27,13 +120,18 @@ class ReportScaffold extends StatelessWidget {
     this.eyebrow,
     this.action,
     this.backTo = AppRoutes.report,
+    this.controller,
   });
   final String title, subtitle, backTo;
   final String? eyebrow;
   final Widget? action;
   final List<Widget> children;
+  final ReportController? controller;
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => controller == null
+      ? _content(context)
+      : PreparationView(controller: controller!.preparation, builder: _content);
+  Widget _content(BuildContext context) => Scaffold(
     backgroundColor: context.appColors.surface,
     bottomNavigationBar: const AppBottomNavigation(selectedIndex: 2),
     body: SafeArea(
@@ -89,6 +187,7 @@ class ReportScaffold extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
+            if (controller != null) ReportSaveStatus(controller: controller!),
             ...children,
           ],
         ),

@@ -13,11 +13,18 @@ import '../core/state/profile_controller.dart';
 import '../core/state/speech_controller.dart';
 import '../core/services/speech_engine.dart';
 import '../core/widgets/app_reading_tools.dart';
-import '../data/mock/mock_profile_repository.dart';
+import '../core/config/data_config.dart';
+import '../core/network/api_client.dart';
+import 'app_dependencies.dart';
+import '../data/repositories/preferences_repository.dart';
+import '../data/repositories/notification_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/models/profile_preferences.dart';
 import '../data/mock/mock_auth_repository.dart';
-import '../data/mock/mock_preparation_repository.dart';
+import '../data/api/api_auth_repository.dart';
+import '../data/repositories/auth_repository.dart';
+import '../core/auth/auth_token_store.dart';
+import 'router/app_routes.dart';
 import '../data/repositories/preparation_repository.dart';
 import 'demo_session.dart';
 import 'router/app_router.dart';
@@ -33,6 +40,12 @@ class ChegaJuntoApp extends StatefulWidget {
     this.speechEngine,
     this.aiAssistant,
     this.audioDraftService,
+    this.dataConfig,
+    this.preferencesRepository,
+    this.notificationRepository,
+    this.apiClient,
+    this.tokenStore,
+    this.authRepository,
   });
   final DemoSession? session;
   final PreparationRepository? repository;
@@ -41,40 +54,140 @@ class ChegaJuntoApp extends StatefulWidget {
   final SpeechEngine? speechEngine;
   final AiAssistantService? aiAssistant;
   final AudioDraftService? audioDraftService;
+  final DataConfig? dataConfig;
+  final PreferencesRepository? preferencesRepository;
+  final NotificationRepository? notificationRepository;
+  final ApiClient? apiClient;
+  final AuthTokenStore? tokenStore;
+  final AuthRepository? authRepository;
   @override
   State<ChegaJuntoApp> createState() => _ChegaJuntoAppState();
 }
 
 class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
   late final DemoSession _session;
+  late final AuthTokenStore _tokenStore;
+  ApiClient? _authClient;
+  @override
+  void initState() {
+    super.initState();
+    final config = widget.dataConfig ?? DataConfig.environment();
+    _tokenStore =
+        widget.tokenStore ??
+        widget.session?.tokenStore ??
+        MemoryAuthTokenStore();
+    AuthRepository repository;
+    if (config.mode == DataSourceMode.api) {
+      _authClient =
+          widget.apiClient ??
+          ApiClient(config.baseUrl, tokenStore: _tokenStore);
+      repository = widget.authRepository ?? ApiAuthRepository(_authClient!);
+    } else {
+      repository = widget.authRepository ?? MockAuthRepository();
+    }
+    _session =
+        widget.session ?? DemoSession(repository, tokenStore: _tokenStore);
+    _authClient?.onUnauthorized = _session.expire;
+    if (widget.session == null) _session.initialize();
+  }
+
+  @override
+  void dispose() {
+    if (widget.session == null) _session.dispose();
+    if (widget.apiClient == null) _authClient?.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: _session,
+    builder: (context, _) => _AccountApp(
+      key: ValueKey(_session.epoch),
+      options: widget,
+      session: _session,
+      tokenStore: _tokenStore,
+    ),
+  );
+}
+
+/// Every identity change disposes the entire product state and its HTTP client.
+class _AccountApp extends StatefulWidget {
+  const _AccountApp({
+    super.key,
+    required this.options,
+    required this.session,
+    required this.tokenStore,
+  });
+  final ChegaJuntoApp options;
+  final DemoSession session;
+  final AuthTokenStore tokenStore;
+  @override
+  State<_AccountApp> createState() => _AccountAppState();
+}
+
+class _AccountAppState extends State<_AccountApp> {
+  late final DemoSession _session;
   late final GoRouter _router;
   late final PreparationController _preparation;
   late final ReportController _report;
   late final ProfileController _profile;
   late final SpeechController _speech;
+  late final AppDependencies _dependencies;
   @override
   void initState() {
     super.initState();
-    _session = widget.session ?? DemoSession(MockAuthRepository());
+    _session = widget.session;
+    final epoch = _session.epoch;
+    _dependencies = AppDependencies(
+      widget.options.dataConfig ?? DataConfig.environment(),
+      client: widget.options.apiClient,
+      tokenStore: ScopedAuthTokenStore(
+        widget.tokenStore,
+        () => _session.signedIn && _session.epoch == epoch,
+      ),
+      onUnauthorized: _session.expire,
+      preparationOverride: widget.options.repository,
+      preferencesOverride: widget.options.preferencesRepository,
+    );
     _preparation = PreparationController(
-      widget.repository ?? MockPreparationRepository(),
-    )..load();
+      widget.options.repository ?? _dependencies.preparation,
+      persistDraftInvalidation: _dependencies.persistDraftInvalidation,
+    );
     _report = ReportController(
       _preparation,
-      widget.aiAssistant ?? const MockAiAssistantService(),
-      widget.audioDraftService ?? const MockAudioDraftService(),
+      widget.options.aiAssistant ?? const MockAiAssistantService(),
+      widget.options.audioDraftService ?? const MockAudioDraftService(),
+      autosaveDelay: _dependencies.reportAutosaveDelay,
     );
     _profile = ProfileController(
-      widget.profileRepository ?? MockProfileRepository(),
-    )..load();
-    _speech = SpeechController(widget.speechEngine);
+      widget.options.profileRepository ?? _dependencies.profile,
+      preferences:
+          widget.options.preferencesRepository ?? _dependencies.preferences,
+      notificationRepository:
+          widget.options.notificationRepository ?? _dependencies.notifications,
+    );
+    _preparation.onChanged = _profile.reloadNotifications;
+    if (_session.signedIn) {
+      _preparation.load();
+      _profile.load();
+    }
+    _speech = SpeechController(widget.options.speechEngine);
     _router = createAppRouter(
       session: _session,
       preparation: _preparation,
       profile: _profile,
       speech: _speech,
       report: _report,
-      initialLocation: widget.initialLocation,
+      initialLocation: _session.signedIn
+          ? (widget.options.initialLocation == null ||
+                    widget.options.initialLocation == AppRoutes.welcome ||
+                    widget.options.initialLocation == AppRoutes.login ||
+                    widget.options.initialLocation == AppRoutes.register
+                ? AppRoutes.home
+                : widget.options.initialLocation)
+          : _session.epoch > 0
+          ? AppRoutes.login
+          : widget.options.initialLocation,
     );
     _router.routeInformationProvider.addListener(_stopReading);
   }
@@ -82,6 +195,7 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
   void _stopReading() {
     _speech.stop();
     _report.pauseAudio();
+    _report.flushPendingEdits();
   }
 
   @override
@@ -92,7 +206,8 @@ class _ChegaJuntoAppState extends State<ChegaJuntoApp> {
     _preparation.dispose();
     _profile.dispose();
     _speech.dispose();
-    if (widget.session == null) _session.dispose();
+    _dependencies.dispose();
+
     super.dispose();
   }
 

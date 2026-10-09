@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/preparation_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_surface.dart';
@@ -18,12 +19,15 @@ class ChecklistPage extends StatelessWidget {
   Future<void> _toggle(BuildContext context, ChecklistItem item) async {
     try {
       await controller.setChecklistItem(item.id, !item.isCompleted);
-    } catch (_) {
+    } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Não foi possível atualizar o item. Tente novamente.',
+              userError(
+                e,
+                'Não foi possível atualizar o item. Tente novamente.',
+              ),
             ),
           ),
         );
@@ -60,7 +64,9 @@ class ChecklistPage extends StatelessWidget {
         controller: controller,
         builder: (context) {
           final overview = controller.overview!;
-          final fraction = requiredChecklistProgress(overview.checklist);
+          final fraction =
+              overview.checklistFraction ??
+              requiredChecklistProgress(overview.checklist);
           final percentage = (fraction * 100).round();
           return SingleChildScrollView(
             child: Padding(

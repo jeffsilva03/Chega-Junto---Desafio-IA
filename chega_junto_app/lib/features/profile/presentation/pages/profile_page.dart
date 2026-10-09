@@ -79,6 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
     body: SafeArea(
       bottom: false,
       child: PreparationView(
+        requiresAppointment: false,
         controller: widget.controller,
         builder: (context) => FutureBuilder<UserProfile>(
           future: _profile,
@@ -128,14 +129,16 @@ class _ProfilePageState extends State<ProfilePage> {
                               context.push(AppRoutes.notificationSettings);
                             }
                           },
-                          itemBuilder: (_) => const [
-                            PopupMenuItem(
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
                               value: 'notifications',
                               child: Text('Configurações de notificações'),
                             ),
                             PopupMenuItem(
                               value: 'sign-out',
-                              child: Text('Sair da demonstração'),
+                              child: Text(
+                                widget.session.repository.logoutLabel,
+                              ),
                             ),
                           ],
                         ),
@@ -174,7 +177,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    profile.susCardNumber,
+                                    profile.susCardNumber.isEmpty
+                                        ? 'Não informado'
+                                        : profile.susCardNumber,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -183,10 +188,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const SizedBox(height: 5),
                                   Text(
                                     widget
-                                        .controller
-                                        .overview!
-                                        .nextAppointment
-                                        .facilityName,
+                                            .controller
+                                            .overview!
+                                            .hasNextAppointment
+                                        ? widget
+                                              .controller
+                                              .overview!
+                                              .nextAppointment
+                                              .facilityName
+                                        : 'Nenhuma unidade agendada',
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyLarge,
@@ -312,7 +322,9 @@ class _Identity extends StatelessWidget {
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
-                      'Cadastro atualizado',
+                      profile.phone.isEmpty || profile.birthDate.isEmpty
+                          ? 'Complete seus dados'
+                          : 'Cadastro atualizado',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: context.appColors.tealDark,
                       ),
@@ -344,7 +356,7 @@ class _Contact extends StatelessWidget {
       const SizedBox(width: 6),
       Expanded(
         child: Text(
-          text,
+          text.isEmpty ? 'Não informado' : text,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 13),
         ),
       ),

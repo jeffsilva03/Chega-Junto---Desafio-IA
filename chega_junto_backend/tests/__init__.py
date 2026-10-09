@@ -1,0 +1,1 @@
+"""Suíte isolada do backend."""

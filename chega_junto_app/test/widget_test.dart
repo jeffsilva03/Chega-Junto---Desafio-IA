@@ -16,7 +16,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _InstantAuth implements AuthRepository {
+class _InstantAuth extends AuthRepository {
   @override
   Future<void> signInDemo() async {}
 }

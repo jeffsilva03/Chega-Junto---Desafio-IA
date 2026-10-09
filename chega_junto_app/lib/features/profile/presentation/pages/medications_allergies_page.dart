@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/profile_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/app_surface.dart';
@@ -50,11 +51,18 @@ class _MedicationsAllergiesPageState extends State<MedicationsAllergiesPage> {
       setState(() {
         _dirty = false;
         _editing = false;
+        _medications = List.of(widget.controller.health!.medications);
+        _allergies = List.of(widget.controller.health!.allergies);
       });
-      profileMessage(context, 'Medicamentos e alergias salvos nesta sessão.');
-    } catch (_) {
+      profileMessage(context, 'Medicamentos e alergias salvos.');
+    } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Não foi possível salvar. Tente novamente.');
+        setState(
+          () => _error = userError(
+            e,
+            'Não foi possível salvar. Tente novamente.',
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -243,6 +251,7 @@ class _HealthItemEditorState extends State<_HealthItemEditor> {
       context,
       HealthItem(
         id: widget.item?.id ?? 'local-${DateTime.now().microsecondsSinceEpoch}',
+        serverId: widget.item?.serverId,
         name: _name.text.trim(),
         details: _details.text.trim(),
       ),
