@@ -107,6 +107,76 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  testWidgets(
+    'Home refresh displays first external appointment and removes cancelled one',
+    (tester) async {
+      api.emptyOverview = true;
+      await mount(tester, AppRoutes.home);
+      expect(find.text('Nenhum próximo atendimento agendado.'), findsOneWidget);
+      api.emptyOverview = false;
+      api.appointment['status'] = 'scheduled';
+      await tester.tap(find.byTooltip('Atualizar atendimentos'));
+      await tester.pumpAndSettle();
+      expect(find.text('Clínica geral'), findsOneWidget);
+      expect(find.text('Nenhum próximo atendimento agendado.'), findsNothing);
+      api.emptyOverview = true;
+      api.appointment['status'] = 'cancelled';
+      await tester.tap(find.byTooltip('Atualizar atendimentos'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nenhum próximo atendimento agendado.'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'Agenda reload and details show cancellation without active preparation actions',
+    (tester) async {
+      await mount(tester, AppRoutes.agenda);
+      api.appointment['status'] = 'cancelled';
+      api.emptyOverview = true;
+      await tester.tap(find.byTooltip('Atualizar atendimentos'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cancelada'), findsOneWidget);
+      await tester.ensureVisible(find.text('Consulta fictícia API'));
+      await tester.tap(find.text('Consulta fictícia API'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cancelada'), findsOneWidget);
+      expect(find.text('Confirmar presença'), findsNothing);
+      expect(find.text('Relato pré-consulta'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('API exam without instructions or checklist remains navigable', (
+    tester,
+  ) async {
+    api.appointment['type'] = 'exam';
+    api.appointment['instructions'] = <String>[];
+    api.intercept = (request) async => request.url.path.endsWith('/checklist')
+        ? response({
+            ...api.checklist(),
+            'items': <Object>[],
+            'required_count': 0,
+            'required_completed_count': 0,
+            'fraction': 1.0,
+            'percentage': 100,
+          })
+        : null;
+    await mount(tester, AppRoutes.agenda);
+    expect(find.text('Consulta fictícia API'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    final router = GoRouter.of(
+      tester.element(find.byType(AppBottomNavigation)),
+    );
+    router.go(AppRoutes.checklist);
+    await tester.pumpAndSettle();
+    expect(find.text('100% concluído'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('API error screen offers retry without falling back to mock', (
     tester,
   ) async {

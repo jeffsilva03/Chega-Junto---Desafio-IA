@@ -39,7 +39,10 @@ Appointment appointmentFromJson(Json j) => Appointment(
   address: j['facility']['address_text'],
   instructions: List<String>.from(j['instructions'] ?? []),
   confirmationStatus: ConfirmationStatus.values.byName(j['attendance_status']),
-  type: AppointmentType.values.byName(j['type']),
+  type: j['type'] == 'return'
+      ? AppointmentType.followUp
+      : AppointmentType.values.byName(j['type']),
+  status: AppointmentStatus.values.byName(j['status'] ?? 'scheduled'),
 );
 AppointmentReminder reminderFromJson(Json j) => AppointmentReminder(
   id: decimalId(j['id']),

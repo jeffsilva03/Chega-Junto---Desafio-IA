@@ -5,6 +5,8 @@ from pydantic import AwareDatetime, Field, StrictBool, field_validator
 from app.schemas.common import DTO, DatabaseId, ListFilter, NonEmpty, UtcDatetime, utc
 
 AttendanceStatus = Literal["confirmed", "undecided", "unable"]
+AppointmentStatus = Literal["scheduled", "cancelled", "completed"]
+AppointmentType = Literal["consultation", "exam", "return"]
 
 
 class FacilityRead(DTO):
@@ -15,13 +17,14 @@ class FacilityRead(DTO):
 
 
 class AppointmentFilter(ListFilter):
-    type: Literal["consultation", "exam"] | None = None
+    type: AppointmentType | None = None
     query: str | None = Field(default=None, max_length=120)
 
 
 class AppointmentRead(DTO):
     id: DatabaseId
-    type: Literal["consultation", "exam"]
+    type: AppointmentType
+    status: AppointmentStatus
     title: str
     specialty: str
     professional_name: str

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simulador acadêmico de agendamentos Chega Junto. Sistema não oficial, sem integração SUS.">
+  <title>Portal da Unidade • Chega Junto</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="demo-banner"><strong>AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL</strong><span>Simulação acadêmica de agendamentos para o projeto Chega Junto. Este não é um sistema oficial.</span></div>
+  <header class="header">
+    <a class="brand" href="./"><img src="assets/portal-mark.svg" width="52" height="52" alt=""><span><strong>Portal da Unidade</strong><small>Simulador de Agendamentos</small></span></a>
+    <div class="operator">
+      <button class="icon-button header-bell" type="button" disabled aria-label="Notificações indisponíveis no simulador" title="Notificações de operador não fazem parte desta fase"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bell"></use></svg></button>
+      <span class="operator-identity"><span class="avatar" aria-hidden="true"><svg class="icon"><use href="assets/icons.svg#user"></use></svg></span><span>Operador de Atendimento</span><svg class="icon chevron" aria-hidden="true"><use href="assets/icons.svg#down"></use></svg></span>
+      <button class="header-exit link-button" type="button" disabled title="Ambiente local, sem autenticação de operador"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#exit"></use></svg>Sair</button>
+    </div>
+  </header>
+  <div class="workspace">
+    <nav class="sidebar" aria-label="Navegação principal">
+      <button type="button" disabled title="Fora do escopo desta fase"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#home"></use></svg>Visão geral</button>
+      <a href="#main" aria-current="page"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#calendar"></use></svg>Agendamentos</a>
+      <button type="button" disabled title="Use Localizar usuário em Agendamentos"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#users"></use></svg>Usuários</button>
+      <button type="button" disabled title="Unidades existentes são carregadas no formulário"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#building"></use></svg>Unidades</button>
+      <button type="button" disabled title="Fora do escopo desta fase"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#settings"></use></svg>Configurações</button>
+    </nav>
+    <main id="main">
+      <div class="page-heading"><div><h1>Agendamentos</h1><p>Consulte e registre atendimentos para usuários cadastrados no Chega Junto.</p></div><button id="new-appointment" type="button"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg>Nova consulta</button></div>
+      <div id="message" class="toast" role="status" aria-live="polite" tabindex="-1" hidden><span id="message-icon" class="toast-icon" aria-hidden="true"></span><span id="message-text"></span><button id="dismiss-message" type="button" class="icon-button" aria-label="Fechar mensagem"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#close"></use></svg></button></div>
+      <section class="panel search-panel" aria-labelledby="search-title">
+        <h2 id="search-title">Localizar usuário</h2>
+        <form id="search-form" class="search-form"><label>E-mail do usuário<input id="email" name="email" type="email" placeholder="usuario@example.test" maxlength="254" required autocomplete="off"></label><button type="submit"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg>Buscar usuário</button></form>
+        <div id="patient-result" class="patient-result" hidden></div>
+      </section>
+      <form id="filter-form" class="panel filter-panel" aria-label="Filtrar agendamentos">
+        <div class="filter-heading"><h2>Filtros de agendamentos</h2><button id="clear-filters" type="button" class="link-button"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg>Limpar filtros</button></div>
+        <div class="filters">
+          <label>Buscar por paciente<span class="input-icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input name="patient" placeholder="Nome do paciente" maxlength="160"></span></label>
+          <label>Data<input name="date" type="date" min="1000-01-01" max="9998-12-31"></label>
+          <label>Unidade<select name="facility_id" class="facility-select"><option value="">Todas</option></select></label>
+          <label>Especialidade<input name="specialty" class="suggestions" list="specialty-options" placeholder="Todas" maxlength="120"></label>
+          <label>Status<select name="status"><option value="">Todos</option><option value="scheduled">Agendada</option><option value="cancelled">Cancelada</option><option value="completed">Concluída</option></select></label>
+        </div>
+        <button type="submit" class="sr-only">Filtrar</button>
+      </form>
+      <section aria-label="Lista de agendamentos" id="list-section" class="list-panel" aria-busy="false">
+        <div class="table-wrap"><table><caption class="sr-only">Consultas cadastradas no simulador</caption><colgroup><col class="patient-column"><col class="specialty-column"><col class="professional-column"><col class="facility-column"><col class="date-column"><col class="time-column"><col class="status-column"><col class="actions-column"></colgroup><thead><tr><th scope="col">Paciente</th><th scope="col">Especialidade</th><th scope="col">Profissional</th><th scope="col">Unidade</th><th scope="col">Data</th><th scope="col">Horário</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead><tbody id="appointments"><tr><td colspan="8">Carregando agendamentos…</td></tr></tbody></table></div>
+        <div class="pagination"><span id="page-info"></span><button id="reload" class="link-button icon-button" type="button" aria-label="Atualizar lista" title="Atualizar lista"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg></button><button id="previous" class="secondary icon-button" type="button" disabled aria-label="Anterior"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#left"></use></svg></button><span id="page-number" aria-label="Página atual">1</span><button id="next" class="secondary icon-button" type="button" disabled aria-label="Próxima"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#right"></use></svg></button></div>
+      </section>
+      <p class="scope-note">Uso exclusivo com dados fictícios. Este portal não realiza integração com o SUS.</p>
+    </main>
+    <aside id="editor" aria-labelledby="editor-title" hidden>
+      <div class="editor-heading"><h2 id="editor-title">Nova consulta</h2><button id="close-editor" class="icon-button" aria-label="Fechar formulário" type="button"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#close"></use></svg></button></div>
+      <div id="editor-patient" class="patient-result"></div>
+      <form id="appointment-form">
+        <fieldset id="appointment-fields">
+          <label><span>Especialidade <span class="required-mark" aria-hidden="true">*</span></span><input name="specialty" class="suggestions" list="specialty-options" required maxlength="120" placeholder="Selecione uma especialidade"></label>
+          <label><span>Profissional <span class="required-mark" aria-hidden="true">*</span></span><input name="professional_name" class="suggestions" list="professional-options" required maxlength="160" placeholder="Selecione um profissional"></label>
+          <label><span>Unidade <span class="required-mark" aria-hidden="true">*</span></span><select name="facility_id" class="facility-select" required><option value="">Selecione uma unidade</option></select></label>
+          <div class="date-time"><label><span>Data <span class="required-mark" aria-hidden="true">*</span></span><input name="date" type="date" required min="1000-01-01" max="9998-12-31"></label><label><span>Horário <span class="required-mark" aria-hidden="true">*</span></span><input name="time" type="time" required step="60"></label></div>
+          <p class="sr-only">Horário da consulta: America/Sao_Paulo.</p>
+          <fieldset class="types"><legend>Tipo de atendimento</legend><label><input name="type" value="consultation" type="radio" checked> Consulta</label><label><input name="type" value="exam" type="radio"> Exame</label><label><input name="type" value="return" type="radio"> Retorno</label></fieldset>
+          <label>Orientações para o atendimento<textarea name="instructions" aria-label="Orientações para o atendimento" rows="3" maxlength="25000" placeholder="Chegar com 20 minutos de antecedência."></textarea><span id="instructions-count" class="character-count">0/25000</span></label>
+          <div class="checklist-heading"><h3>Documentos e preparo</h3></div>
+          <div id="checklist"></div>
+          <button id="add-item" class="secondary" type="button"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg>Adicionar orientação</button>
+        </fieldset>
+        <p id="editor-status" class="hint" hidden></p>
+        <div class="editor-actions"><button id="dismiss" class="secondary" type="button">Cancelar</button><button id="save" type="submit">Salvar consulta</button></div>
+      </form>
+    </aside>
+  </div>
+  <datalist id="specialty-options"></datalist><datalist id="professional-options"></datalist>
+  <dialog id="cancel-dialog" aria-labelledby="cancel-title"><form method="dialog"><h2 id="cancel-title">Cancelar consulta?</h2><p id="cancel-description"></p><p>A consulta permanecerá registrada como cancelada.</p><div class="dialog-actions"><button value="back" class="secondary">Voltar</button><button value="confirm" class="danger">Cancelar consulta</button></div></form></dialog>
+</body>
+</html>

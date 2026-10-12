@@ -95,6 +95,9 @@ class RecordingOperations:
     def create_unique_constraint(self, name, table, columns):
         self.metadata.tables[table].append_constraint(sa.UniqueConstraint(*columns, name=name))
 
+    def create_check_constraint(self, name, table, condition):
+        self.metadata.tables[table].append_constraint(sa.CheckConstraint(condition, name=name))
+
     def drop_constraint(self, name, table, **kwargs):
         target = self.metadata.tables[table]
         target.constraints.remove(next(c for c in target.constraints if c.name == name))
@@ -138,6 +141,13 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
     authentication = load_auth_migration()
     monkeypatch.setattr(authentication, "op", operations)
     authentication.upgrade()
+    spec = importlib.util.spec_from_file_location(
+        "simulator_migration", ROOT / "migrations/versions/20261012_0003_simulator.py"
+    )
+    simulator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(simulator)
+    monkeypatch.setattr(simulator, "op", operations)
+    simulator.upgrade()
     assert set(operations.metadata.tables) == EXPECTED_TABLES == set(Base.metadata.tables)
     for name, expected in Base.metadata.tables.items():
         actual = operations.metadata.tables[name]
@@ -155,6 +165,7 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
             (i.name, tuple(c.name for c in i.columns)) for i in expected.indexes
         }
         assert all(len(str(c.name)) <= 64 for c in actual.constraints)
+    simulator.downgrade()
     authentication.downgrade()
     migration.downgrade()
     assert not operations.metadata.tables

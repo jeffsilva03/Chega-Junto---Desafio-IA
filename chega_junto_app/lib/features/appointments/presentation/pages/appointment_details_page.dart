@@ -108,6 +108,7 @@ class AppointmentDetailsPage extends StatelessWidget {
               controller.loadAppointment(appointmentId, retry: retry),
           builder: (context, appointment) {
             final next =
+                appointment.status == AppointmentStatus.scheduled &&
                 controller.overview!.hasNextAppointment &&
                 appointment.id == controller.overview!.nextAppointment.id;
             final documents = next

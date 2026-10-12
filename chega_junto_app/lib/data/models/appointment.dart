@@ -8,7 +8,17 @@ extension ConfirmationStatusText on ConfirmationStatus {
   };
 }
 
-enum AppointmentType { consultation, exam }
+enum AppointmentType { consultation, exam, followUp }
+
+enum AppointmentStatus { scheduled, cancelled, completed }
+
+extension AppointmentStatusText on AppointmentStatus {
+  String get label => switch (this) {
+    AppointmentStatus.scheduled => 'Agendada',
+    AppointmentStatus.cancelled => 'Cancelada',
+    AppointmentStatus.completed => 'Concluída',
+  };
+}
 
 class Appointment {
   const Appointment({
@@ -22,6 +32,7 @@ class Appointment {
     required this.instructions,
     required this.confirmationStatus,
     this.type = AppointmentType.consultation,
+    this.status = AppointmentStatus.scheduled,
   });
   final String id;
   final String title;
@@ -33,6 +44,7 @@ class Appointment {
   final List<String> instructions;
   final ConfirmationStatus confirmationStatus;
   final AppointmentType type;
+  final AppointmentStatus status;
 
   Appointment withConfirmation(ConfirmationStatus status) => Appointment(
     id: id,
@@ -45,5 +57,6 @@ class Appointment {
     instructions: instructions,
     confirmationStatus: status,
     type: type,
+    status: this.status,
   );
 }

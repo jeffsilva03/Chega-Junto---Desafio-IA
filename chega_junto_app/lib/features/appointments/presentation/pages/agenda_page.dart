@@ -50,7 +50,8 @@ class _AgendaPageState extends State<AgendaPage> {
       final typeMatches = switch (_filter) {
         _Filter.all => true,
         _Filter.consultations =>
-          entry.appointment?.type == AppointmentType.consultation,
+          entry.appointment?.type == AppointmentType.consultation ||
+              entry.appointment?.type == AppointmentType.followUp,
         _Filter.exams => entry.appointment?.type == AppointmentType.exam,
         _Filter.reminders => entry.reminder != null,
       };
@@ -126,7 +127,7 @@ class _AgendaPageState extends State<AgendaPage> {
             _Filter.all:
                 controller.appointments.length + controller.reminders.length,
             _Filter.consultations: controller.appointments
-                .where((a) => a.type == AppointmentType.consultation)
+                .where((a) => a.type != AppointmentType.exam)
                 .length,
             _Filter.exams: controller.appointments
                 .where((a) => a.type == AppointmentType.exam)
@@ -150,8 +151,13 @@ class _AgendaPageState extends State<AgendaPage> {
                   ],
                   Row(
                     children: [
-                      const BrandLogo(width: 185),
+                      const Flexible(child: BrandLogo(width: 185)),
                       const Spacer(),
+                      IconButton(
+                        tooltip: 'Atualizar atendimentos',
+                        onPressed: controller.load,
+                        icon: const Icon(Icons.refresh_rounded),
+                      ),
                       IconButton.filledTonal(
                         onPressed: () => context.push(AppRoutes.notifications),
                         tooltip: 'Notificações',
@@ -445,7 +451,13 @@ class _AgendaTile extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            if (appointment != null)
+                            if (appointment != null &&
+                                appointment.status !=
+                                    AppointmentStatus.scheduled)
+                              Text(appointment.status.label),
+                            if (appointment != null &&
+                                appointment.status ==
+                                    AppointmentStatus.scheduled)
                               ConfirmationChip(
                                 status: appointment.confirmationStatus,
                                 exam: exam,
@@ -458,7 +470,7 @@ class _AgendaTile extends StatelessWidget {
                   const Icon(Icons.chevron_right_rounded, size: 22),
                 ],
               ),
-              if (exam) ...[
+              if (exam && appointment!.instructions.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
@@ -471,14 +483,16 @@ class _AgendaTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        appointment!.instructions.first,
+                        appointment.instructions.first,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        appointment.instructions.last,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                      if (appointment.instructions.length > 1) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          appointment.instructions.last,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ],
                   ),
                 ),

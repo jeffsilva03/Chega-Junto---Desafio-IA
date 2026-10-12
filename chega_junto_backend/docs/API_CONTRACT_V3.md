@@ -1,3 +1,7 @@
+# Extensão posterior ao checkpoint V3
+
+Para a superfície atual, leia também [API_CONTRACT_V4.md](API_CONTRACT_V4.md): separa APP API e SIMULATOR API, documenta `status`, tipo `return` e operações locais do portal. O contrato V3 abaixo permanece como base histórica.
+
 # Chega Junto — contratos HTTP V3
 
 Atualizado na Fase 4, 09/10/2026: cadastro/login/JWT e integração Flutter real, mantendo modo mock. Base local: `http://127.0.0.1:8000`. São **29 operações de produto + 3 de autenticação em `/api/v1` + GET `/health` = 33**. Swagger em `/docs`, ReDoc em `/redoc`, especificação em `/openapi.json`.

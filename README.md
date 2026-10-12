@@ -1,22 +1,31 @@
 # Chega Junto
 
-Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, a documentação oficial, os protótipos aprovados, a identidade visual e o código-fonte da landing page. A tag `V1` preserva a versão inicial.
+Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web Simulador, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint oficial `V4` acrescenta o Portal Simulador integrado à API e ao aplicativo. As tags históricas `V1`, `V2` e `V3` permanecem preservadas.
 
 ## Organização
 
 - `chega_junto_app/`: aplicativo Flutter para Android e Web, testes, assets e decisões de implementação.
+- `chega_junto_backend/`: FastAPI, autenticação JWT, SQLAlchemy e MySQL/Aiven com TLS.
+- `chega_junto_portal/`: Portal Web Simulador local em HTML/CSS/JavaScript.
+- `docs/RELATORIO_PORTAL_SIMULADOR_V4.md`: implementação e validações automatizadas/manuais da V4.
 - `chega_junto_codex_context/`: contexto e regras oficiais do projeto.
 - `Design Telas ChegaJunto/`: protótipos de referência, incluindo telas ainda não implementadas.
 - `Identidade Visual/`: referência da identidade do projeto.
 - `Landing Page/`: código-fonte da landing page existente.
 
+## Portal Simulador
+
+**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Ferramenta acadêmica local para buscar usuários fictícios e criar, visualizar, editar e cancelar agendamentos na mesma API usada pelo aplicativo. Não representa integração real com SUS ou gov.br. Não acessa prontuário ou dados clínicos e não está autorizado para exposição pública.
+
+Veja [execução local de Backend, Portal, Flutter Web, Emulator e iPhone Web](chega_junto_portal/README.md), [contrato APP/SIMULATOR](chega_junto_backend/docs/API_CONTRACT_V4.md) e [relatório completo](docs/RELATORIO_PORTAL_SIMULADOR_V4.md).
+
 ## Aplicativo
 
-O aplicativo possui 21 telas e um estado de processamento: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade, Ajuda, Relato pré-consulta, Gravação de áudio simulada, Resumo organizado pela IA mockada, Perguntas para a consulta e Revisão final. Também permite criar lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O estado dura apenas a sessão.
+O aplicativo possui 21 telas e um estado de processamento: Boas-vindas, Login, Home, Agenda, Detalhes da consulta, Checklist, Confirmação de presença, Perfil, Dados pessoais, Medicamentos e alergias, Histórico, Detalhes do histórico, Notificações, Configurações de notificações, Acessibilidade, Ajuda, Relato pré-consulta, Gravação de áudio simulada, Resumo organizado pela IA mockada, Perguntas para a consulta e Revisão final. Também permite criar lembretes demonstrativos. Os dados são fictícios, com referência em outubro de 2026. O modo mock mantém dados na sessão; o modo API persiste os dados no Aiven com isolamento por usuário.
 
-Tema escuro, alto contraste, escala de texto e leitura por voz local estão disponíveis. Não há backend, autenticação real, IA real nem integração com serviços de saúde. O fluxo de relato/IA utiliza serviços mockados, com revisão, edição e seleção de perguntas durante a sessão, sem envio externo.
+Tema escuro, alto contraste, escala de texto e leitura por voz local estão disponíveis. O modo API possui cadastro/login reais, JWT e backend FastAPI/MySQL. IA real e integração com serviços de saúde não fazem parte desta fase. O fluxo de relato/IA utiliza serviços mockados, com revisão, edição e seleção de perguntas durante a sessão, sem envio externo.
 
-Checkpoint oficial **V2**, de 8 de outubro de 2026: MVP funcional principal concluído e aprovado. São 76 testes aprovados, análise sem problemas e builds Web/Android concluídos. A jornada completa foi executada manualmente no emulador Android, incluindo Home em 100% e retorno a 75% após editar o relato. Veja o [relatório oficial V2](chega_junto_app/docs/RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md). A tag `V1` permanece preservada.
+Checkpoint oficial **V2**, de 8 de outubro de 2026: MVP funcional principal concluído e aprovado. São 76 testes aprovados, análise sem problemas e builds Web/Android concluídos. A jornada completa foi executada manualmente no emulador Android, incluindo Home em 100% e retorno a 75% após editar o relato. Veja o [relatório oficial V2](chega_junto_app/docs/RELATORIO_V2_MVP_FUNCIONAL_2026-10-08.md). Este parágrafo descreve a validação histórica V2. O checkpoint anterior V3 (`f7226bd4a45be38b25e159118ccc61b7a0b8f26d`) preserva a integração com autenticação/API; a entrega atual V4 está descrita no relatório do portal.
 
 ```powershell
 cd chega_junto_app

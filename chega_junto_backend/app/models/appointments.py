@@ -17,7 +17,8 @@ class Facility(IdentityMixin, TimestampMixin, Base):
 class Appointment(IdentityMixin, TimestampMixin, Base):
     __tablename__ = "appointments"
     __table_args__ = (
-        CheckConstraint("type IN ('consultation', 'exam')", name="type_values"),
+        CheckConstraint("type IN ('consultation', 'exam', 'return')", name="type_values"),
+        CheckConstraint("status IN ('scheduled', 'cancelled', 'completed')", name="status_values"),
         CheckConstraint(
             "attendance_status IN ('confirmed', 'undecided', 'unable')",
             name="attendance_values",
@@ -36,6 +37,9 @@ class Appointment(IdentityMixin, TimestampMixin, Base):
         ForeignKey("facilities.id", ondelete="RESTRICT"),
     )
     type: Mapped[str] = mapped_column(String(20, collation="utf8mb4_bin"))
+    status: Mapped[str] = mapped_column(
+        String(20, collation="utf8mb4_bin"), default="scheduled", server_default="scheduled"
+    )
     title: Mapped[str] = mapped_column(String(160))
     specialty: Mapped[str] = mapped_column(String(120))
     professional_name: Mapped[str] = mapped_column(String(160))

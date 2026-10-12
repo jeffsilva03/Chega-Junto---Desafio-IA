@@ -1,4 +1,6 @@
-# Chega Junto — Backend V3
+# Chega Junto — Backend
+
+Checkpoint V4: Portal Simulador local, 7 operações em namespace separado, desabilitado por padrão. Consulte [contrato atual V4](docs/API_CONTRACT_V4.md), [execução e controle do simulador](../chega_junto_portal/README.md) e [relatório](../docs/RELATORIO_PORTAL_SIMULADOR_V4.md). A contagem de 33 operações abaixo descreve a base histórica V3.
 
 Fase 4: backend funcional com cadastro/login/JWT, executado localmente com MySQL Aiven. **33 operações HTTP**: 29 de produto + 3 de autenticação em `/api/v1` e `/health`. Flutter possui modo mock e ApiRepositories com sessão por usuário.
 
@@ -72,7 +74,7 @@ uv run alembic current
 uv run alembic check
 ```
 
-Esperado: `20261009_0002 (head)` e `No new upgrade operations detected.` São 16 tabelas de negócio e `alembic_version`. Migration histórica 0001 não editada; 0002 move o e-mail para users, adiciona hash/conta ativa e permite perfil inicial incompleto.
+Esperado: `20261012_0003 (head)` e `No new upgrade operations detected.` São 16 tabelas de negócio e `alembic_version`. Migration histórica 0001 não editada; 0002 move o e-mail para users, adiciona hash/conta ativa e permite perfil inicial incompleto. A extensão 0003 adiciona status de consulta e tipo retorno.
 
 Em instalação nova, somente após inspecionar o destino e descartar conflitos com estruturas desconhecidas:
 
@@ -141,7 +143,7 @@ uv run ruff format --check app scripts migrations tests
 uv run python -m compileall -q app scripts migrations
 ```
 
-**280 testes passam**, com o warning conhecido TestClient/httpx. Testes normais não herdam `.env` ou credenciais; chaves efêmeras são geradas somente para os testes. Mutações HTTP usam SQLite em memória exclusivamente nos testes, com FKs/CHECKs/UNIQUE imediato e compilação adaptada dos tipos MySQL. Produção continua exclusivamente MySQL; `create_all` está restrito à fixture efêmera. DDL/migrations são também verificados offline com dialeto MySQL.
+**325 testes passam**, com o warning conhecido TestClient/httpx. Testes normais não herdam `.env` ou credenciais; chaves efêmeras são geradas somente para os testes. Mutações HTTP usam SQLite em memória exclusivamente nos testes, com FKs/CHECKs/UNIQUE imediato e compilação adaptada dos tipos MySQL. Produção continua exclusivamente MySQL; `create_all` está restrito à fixture efêmera. DDL/migrations são também verificados offline com dialeto MySQL.
 
 Cobertura funcional: 33 contratos, autenticação, JWT inválido/expirado, isolamento de titulares, novo usuário vazio, no-op, limites/filtros, dia local, revisão/reordenação, rollback após flush e erros/logs sanitizados. UNIQUE imediato e SQL MySQL FOR UPDATE verificados; isso não substitui ensaio de concorrência sob carga em instância MySQL isolada.
 

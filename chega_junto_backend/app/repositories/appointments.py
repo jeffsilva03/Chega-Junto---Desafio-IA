@@ -50,7 +50,11 @@ class AppointmentRepository:
     def next_appointment(self, user_id, start):
         return self.session.scalar(
             select(Appointment)
-            .where(Appointment.user_id == user_id, Appointment.scheduled_at >= start)
+            .where(
+                Appointment.user_id == user_id,
+                Appointment.scheduled_at >= start,
+                Appointment.status == "scheduled",
+            )
             .order_by(Appointment.scheduled_at, Appointment.id)
             .limit(1)
         )

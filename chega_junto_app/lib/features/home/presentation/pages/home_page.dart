@@ -56,8 +56,13 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      const BrandLogo(width: 185),
+                      const Flexible(child: BrandLogo(width: 185)),
                       const Spacer(),
+                      IconButton(
+                        tooltip: 'Atualizar atendimentos',
+                        onPressed: _controller.load,
+                        icon: const Icon(Icons.refresh_rounded),
+                      ),
                       Semantics(
                         label: unread == 0
                             ? 'Notificações, nenhuma não lida'

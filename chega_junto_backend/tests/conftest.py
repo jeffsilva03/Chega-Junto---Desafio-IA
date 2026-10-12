@@ -12,7 +12,10 @@ def isolate_environment(monkeypatch):
     # Arquivos de configuração de teste continuam possíveis via _env_file explícito.
     monkeypatch.setitem(Settings.model_config, "env_file", None)
     for key in os.environ:
-        if key.startswith(("DATABASE_", "APP_", "DEMO_", "CORS_", "AUTH_")) or key == "LOG_LEVEL":
+        if (
+            key.startswith(("DATABASE_", "APP_", "DEMO_", "CORS_", "AUTH_", "SIMULATOR_"))
+            or key == "LOG_LEVEL"
+        ):
             monkeypatch.delenv(key, raising=False)
 
     monkeypatch.setenv("AUTH_SECRET_KEY", secrets.token_urlsafe(32))

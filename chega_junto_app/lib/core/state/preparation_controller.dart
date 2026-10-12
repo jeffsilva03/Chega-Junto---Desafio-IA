@@ -118,6 +118,8 @@ class PreparationController extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    if (loading && overview != null) return;
+    _details.clear();
     loading = true;
     failed = false;
     error = null;

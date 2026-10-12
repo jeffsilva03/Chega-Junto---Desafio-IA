@@ -78,7 +78,13 @@ class AppointmentSummaryCard extends StatelessWidget {
                         ),
                       ),
                     if (!attendance && !preVisit) const SizedBox(height: 8),
-                    if (!attendance && !preVisit)
+                    if (!attendance &&
+                        !preVisit &&
+                        appointment.status != AppointmentStatus.scheduled)
+                      Text(appointment.status.label),
+                    if (!attendance &&
+                        !preVisit &&
+                        appointment.status == AppointmentStatus.scheduled)
                       ConfirmationChip(
                         status: appointment.confirmationStatus,
                         exam: appointment.type == AppointmentType.exam,

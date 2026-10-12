@@ -173,7 +173,8 @@ class ChecklistPage extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       child: Column(
                         children: [
-                          if (section.$1 == ChecklistSection.reminders)
+                          if (section.$1 == ChecklistSection.reminders &&
+                              overview.nextAppointment.instructions.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.all(8),
                               child: Container(

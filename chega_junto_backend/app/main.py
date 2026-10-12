@@ -1,6 +1,7 @@
 import logging
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -50,6 +51,25 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
     logger.setLevel(settings.log_level)
 
     @application.middleware("http")
+    async def local_simulator(request: Request, call_next):
+        if request.url.path.startswith("/api/v1/simulator"):
+            if not settings.simulator_mode or settings.app_env == "production":
+                return error_response(404, "resource_not_found", "Recurso não encontrado.")
+            host = urlsplit("//" + request.headers.get("host", "")).hostname
+            origin = request.headers.get("origin")
+            if (
+                request.client is None
+                or request.client.host not in {"127.0.0.1", "::1"}
+                or host not in {"127.0.0.1", "localhost", "::1"}
+                or (origin is not None and origin not in settings.simulator_allowed_origins)
+                or request.headers.get("X-Simulator-Request") != "local"
+            ):
+                return error_response(
+                    403, "simulator_local_only", "Simulador disponível somente no PC local."
+                )
+        return await call_next(request)
+
+    @application.middleware("http")
     async def safe_errors(
         request: Request,
         call_next: Callable[[Request], Awaitable[Response]],
@@ -66,10 +86,15 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
     # CORS envolve também a resposta sanitizada de erro inesperado.
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_allowed_origins,
+        allow_origins=list(
+            dict.fromkeys(
+                settings.cors_allowed_origins
+                + (settings.simulator_allowed_origins if settings.simulator_mode else [])
+            )
+        ),
         allow_credentials=False,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Content-Type", "Accept", "Authorization"],
+        allow_headers=["Content-Type", "Accept", "Authorization", "X-Simulator-Request"],
     )
 
     @application.exception_handler(DatabaseUnavailable)
@@ -132,6 +157,10 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
         return HealthResponse(status="ok", database="ok")
 
     application.include_router(v1_router, prefix="/api/v1")
+    if settings.simulator_mode:
+        from app.api.v1.simulator import router as simulator_router
+
+        application.include_router(simulator_router, prefix="/api/v1")
     return application
 
 

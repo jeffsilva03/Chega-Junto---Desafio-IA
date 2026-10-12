@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     cors_allowed_origins: list[str] = Field(default_factory=list)
     app_timezone: str = "America/Sao_Paulo"
     demo_mode: bool = True
+    simulator_mode: bool = False
+    simulator_allowed_origins: list[str] = Field(default_factory=lambda: ["http://127.0.0.1:5500"])
     demo_user_id: int = Field(default=1, ge=1, le=18446744073709551615)
     auth_mode: Literal["jwt", "demo"] = "jwt"
     auth_secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
@@ -83,7 +85,7 @@ class Settings(BaseSettings):
             raise ValueError("APP_TIMEZONE deve ser uma zona IANA válida") from None
         return value
 
-    @field_validator("cors_allowed_origins")
+    @field_validator("cors_allowed_origins", "simulator_allowed_origins")
     @classmethod
     def valid_origins(cls, values: list[str]) -> list[str]:
         for value in values:
@@ -108,6 +110,11 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def complete_database_configuration(self) -> Self:
+        if self.simulator_mode and self.app_env == "production":
+            raise ValueError("Simulador proibido em produção")
+        for origin in self.simulator_allowed_origins:
+            if urlsplit(origin).hostname not in {"127.0.0.1", "localhost", "::1"}:
+                raise ValueError("Simulador exige origens de loopback")
         fields = (
             self.database_host,
             self.database_port,
