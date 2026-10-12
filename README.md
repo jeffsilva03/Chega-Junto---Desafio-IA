@@ -2,6 +2,8 @@
 
 Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web Simulador, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint oficial `V4` acrescenta o Portal Simulador integrado à API e ao aplicativo. As tags históricas `V1`, `V2` e `V3` permanecem preservadas.
 
+Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Hosting Spark → FastAPI no Render → MySQL no Aiven. O Portal Simulador permanece local. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Consulte o [relatório da publicação Web V6](docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).
+
 ## Organização
 
 - `chega_junto_app/`: aplicativo Flutter para Android e Web, testes, assets e decisões de implementação.

@@ -113,6 +113,21 @@ flutter build apk --debug --dart-define=DATA_SOURCE=api --dart-define=API_BASE_U
 
 O destino continua configurável por `--dart-define`; mock e API local permanecem disponíveis. Não adicionar URL fixa, credenciais do banco ou CA ao Dart. O Portal permanece local e o simulador deve ficar indisponível no Render. Consulte o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para configuração, resultados, limitações do plano Free e a substituição de credenciais pendente, informada ao usuário.
 
+## Flutter Web publicado
+
+URL principal: **https://chega-junto-desafio-ia.web.app**. Alternativa: https://chega-junto-desafio-ia.firebaseapp.com. Arquitetura: Flutter Web no Firebase Hosting Spark → HTTPS → FastAPI em https://chega-junto-api.onrender.com → TLS → Aiven MySQL. O Portal Simulador permanece local. A publicação é Web App/PWA, não aplicativo iOS nativo.
+
+Build e deploy manual, nesta pasta, PowerShell:
+
+```powershell
+flutter build web --release --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=https://chega-junto-api.onrender.com
+firebase deploy --only hosting
+```
+
+O alias público está em `.firebaserc`; `firebase.json` publica somente `build/web`, com fallback SPA e revalidação dos arquivos de bootstrap/versionamento. Builds, cache `.firebase/` e sessão da CLI ficam fora do Git. Não há auto-deploy GitHub ou serviços Firebase adicionais configurados.
+
+JWT continua somente em memória: reload completo ou fechamento exige novo login. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Cadastro pelo domínio Firebase e persistência de perfil após novo login integram a validação V6. Resultados, limitações, comandos e evidências estão no [relatório de publicação Web](../docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).
+
 ## Organização
 
 ```text
