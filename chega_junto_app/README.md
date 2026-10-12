@@ -1,6 +1,6 @@
-# Chega Junto — Flutter V3
+# Chega Junto — Flutter
 
-Aplicativo para apoiar a preparação antes de consultas e exames, com modos **mock** (sem backend) e **api** (FastAPI local → Aiven MySQL). Plataformas: Android e Flutter Web. A interface da V2 foi preservada. Consulte [o relatório da integração V3](docs/RELATORIO_INTEGRACAO_API_V3.md) para arquitetura, testes, limites e procedimento manual de persistência.
+Aplicativo para apoiar a preparação antes de consultas e exames, com modos **mock** (sem backend) e **api** (FastAPI local ou Render HTTPS → Aiven MySQL). Plataformas: Android e Flutter Web. A interface da V2 foi preservada. Consulte [o relatório da integração V3](docs/RELATORIO_INTEGRACAO_API_V3.md) para a base de integração e [o relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para o backend publicado, validações e pendências operacionais.
 
 ## Cadastro e autenticação — Fase 4
 
@@ -95,11 +95,23 @@ Relato pré-consulta, áudio simulado, processamento demonstrativo, resumo edit�
 
 ## Dados e limites
 
-No mock, use e-mail/CPF fictício e senha fictícia de pelo menos quatro caracteres, ou Google simulado; nenhuma credencial sai do app. No API, cadastre uma conta fictícia com senha de 8–128 caracteres; senha é enviada somente ao backend local, que persiste hash Argon2id. Token permanece em memória no Flutter. Recuperação não envia e-mail em nenhum modo. O MVP não está liberado para dados reais sensíveis ou publicação em produção.
+No mock, use e-mail/CPF fictício e senha fictícia de pelo menos quatro caracteres, ou Google simulado; nenhuma credencial sai do app. No API, cadastre uma conta fictícia com senha de 8–128 caracteres; senha é enviada ao backend FastAPI configurado (local ou Render HTTPS), que persiste hash Argon2id. Token permanece em memória no Flutter. Recuperação não envia e-mail em nenhum modo. O MVP não está liberado para dados reais sensíveis ou publicação em produção.
 
 Os dados e endereços são fictícios. No modo mock, a referência é 7 de outubro de 2026, com próxima consulta em 9 de outubro às 08:00; alterações duram apenas a sessão. No modo API, dados e data de referência vêm do servidor e alterações confirmadas persistem no banco demo. Fechar antes da confirmação, falhas de rede e conflitos podem deixar rascunhos apenas em memória. Em 409, preserve o texto, recarregue e escolha explicitamente como continuar. Em timeout de lembrete, confira a Agenda antes de repetir. Adicionar lembrete não programa notificação do sistema. Salvar presença não avisa a unidade.
 
-O modo mock funciona sem backend; o modo API requer FastAPI local configurado e usa cadastro/autenticação reais desde a Fase 4. Não há IA real, mapas externos ou deploy Render nesta fase. Orientações exibidas são conteúdo fictício previamente definido, não recomendações geradas por IA. Segredos Aiven e futuras chaves de serviços pertencem somente ao backend; `.env` e `ca.pem` permanecem ignorados pelo Git.
+O modo mock funciona sem backend; o modo API requer FastAPI configurado, local ou Render HTTPS, e usa cadastro/autenticação reais desde a Fase 4. Na V5, o backend foi publicado para demonstração no Render. Não há IA real ou mapas externos. Orientações exibidas são conteúdo fictício previamente definido, não recomendações geradas por IA. Segredos Aiven e futuras chaves de serviços pertencem somente ao backend; `.env` e `ca.pem` permanecem ignorados pelo Git.
+
+## Backend HTTPS no Render — V5
+
+Backend demonstrativo disponível em https://chega-junto-api.onrender.com. Cadastro, login, perfil e persistência foram validados pelo Flutter Web; o usuário também confirmou login no Android. A origem Web exata autorizada para este smoke é `http://127.0.0.1:5173`. Execute no diretório deste aplicativo:
+
+```powershell
+flutter run -d chrome --web-hostname 127.0.0.1 --web-port 5173 --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=https://chega-junto-api.onrender.com
+flutter build web --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=https://chega-junto-api.onrender.com
+flutter build apk --debug --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=https://chega-junto-api.onrender.com
+```
+
+O destino continua configurável por `--dart-define`; mock e API local permanecem disponíveis. Não adicionar URL fixa, credenciais do banco ou CA ao Dart. O Portal permanece local e o simulador deve ficar indisponível no Render. Consulte o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para configuração, resultados, limitações do plano Free e a substituição de credenciais pendente, informada ao usuário.
 
 ## Organização
 

@@ -1,6 +1,8 @@
 # Chega Junto — Backend
 
-Checkpoint V4: Portal Simulador local, 7 operações em namespace separado, desabilitado por padrão. Consulte [contrato atual V4](docs/API_CONTRACT_V4.md), [execução e controle do simulador](../chega_junto_portal/README.md) e [relatório](../docs/RELATORIO_PORTAL_SIMULADOR_V4.md). A contagem de 33 operações abaixo descreve a base histórica V3.
+Checkpoint V5: backend demonstrativo no Render, com JWT e conexão TLS ao Aiven. Consulte [Deploy Render](#deploy-render--v5) e o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para configuração, validações e pendências operacionais.
+
+Base V4 preservada: Portal Simulador local, 7 operações em namespace separado, desabilitado por padrão e indisponível no Render. Consulte [contrato atual V4](docs/API_CONTRACT_V4.md), [execução e controle do simulador](../chega_junto_portal/README.md) e [relatório](../docs/RELATORIO_PORTAL_SIMULADOR_V4.md). A contagem de 33 operações abaixo descreve a base histórica V3.
 
 Fase 4: backend funcional com cadastro/login/JWT, executado localmente com MySQL Aiven. **33 operações HTTP**: 29 de produto + 3 de autenticação em `/api/v1` e `/health`. Flutter possui modo mock e ApiRepositories com sessão por usuário.
 
@@ -149,8 +151,30 @@ Cobertura funcional: 33 contratos, autenticação, JWT inválido/expirado, isola
 
 Validação Aiven da Fase 4: migration 0002 aplicada, TLS/VERIFY_IDENTITY mantido e Alembic sem divergência; fingerprints preservaram todas as fixtures originais. Uma conta fictícia foi autorizada para o smoke Flutter de cadastro/logout/login. Detalhes e contagens no relatório de autenticação, sem credenciais ou tokens.
 
-## Limites e próxima fase
+## Limites históricos da base V3
 
 Adiadas: POST/PATCH atendimentos; PATCH/DELETE lembretes; DELETE relato inteiro; administração de unidades; refresh/revogação; recuperação/verificação de e-mail; Google/Apple; MFA/RBAC; exclusão de conta. Sem IA/áudio/transcrição reais, upload, push/Firebase/APNs, SUS/mapas ou Render. Sem novos estados de realização/cancelamento.
 
 Integração e autenticação mínima implementadas; aguardam revisão e aprovação para a próxima fase. Nenhum commit/push/tag/deploy.
+
+## Deploy Render — V5
+
+Backend demonstrativo publicado em [chega-junto-api.onrender.com](https://chega-junto-api.onrender.com): `Flutter → HTTPS → Render → TLS VERIFY_IDENTITY → Aiven MySQL`. Portal e simulador continuam exclusivamente locais; não há integração SUS. Esta seção registra a evolução V5; limites históricos acima pertencem às fases anteriores.
+
+Web Service `chega-junto-api`, Free, Oregon, runtime Python nativo 3.14.3, uv 0.10.8, repositório privado, branch `main`, Root Directory `chega_junto_backend`, Auto-Deploy Off. Comandos no Dashboard:
+
+```text
+Build: uv sync --frozen --no-dev
+Start: uv run --no-sync uvicorn app.main:app --host 0.0.0.0 --port $PORT
+Health Check Path: /health
+```
+
+Variáveis de runtime por nome: `PYTHON_VERSION`, `UV_VERSION`, `APP_ENV`, `AUTH_MODE`, `DEMO_MODE`, `SIMULATOR_MODE`, `AUTH_SECRET_KEY`, `AUTH_ACCESS_TOKEN_EXPIRE_MINUTES`, `LOG_LEVEL`, `APP_TIMEZONE`, `CORS_ALLOWED_ORIGINS`. Variáveis do banco: `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_SSL_MODE`, `DATABASE_SSL_CA_PATH`. Preencher valores secretos somente no ambiente privado; nunca em Git ou frontend.
+
+Produção usa JWT, demo/simulador desligados e origem CORS exata `http://127.0.0.1:5173` para smoke local, sem wildcard. Secret File `ca.pem` em `/etc/secrets/ca.pem`, TLS `VERIFY_IDENTITY` mantido. Não publicar o Portal contra este serviço.
+
+[Health](https://chega-junto-api.onrender.com/health) retornou 200 com banco ok; [Swagger](https://chega-junto-api.onrender.com/docs) e [OpenAPI](https://chega-junto-api.onrender.com/openapi.json) retornaram 200, sem rotas simulator. Simulator retorna 404; perfil sem token retorna 401/Bearer. Cadastro/login/logout e persistência de nome fictício após novo login foram validados via Flutter Web; login Android confirmado pelo usuário.
+
+Alembic permanece `20261012_0003 (head)`, sem operações pendentes. Sem nova migration, pre-deploy migration ou migration no startup. Alterações futuras de schema exigem execução controlada antes do deploy autorizado. Para novo deploy: revisar commit/configuração, executar checks e usar Manual Deploy; não presumir que mudanças locais não commitadas foram publicadas.
+
+Free pode dormir após 15 minutos sem tráfego e apresenta cold start/cotas; não há keep-alive. Consulte o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para todos os resultados e limites. **A senha Aiven e o segredo JWT envolvidos no incidente relatado ainda precisam ser substituídos pelo usuário**, que autorizou continuar com os atuais temporariamente. Nenhum segredo foi incluído nos documentos ou builds. O checkpoint oficial V5 registra esta entrega documental; Auto-Deploy Off preserva o serviço funcional durante o fechamento Git.
