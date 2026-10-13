@@ -1,6 +1,6 @@
 # Chega Junto — Portal público de agendamentos V7
 
-Data: 12/10/2026. **Status: implementação e validações locais aprovadas; migration aplicada no Aiven; um operador criado pelo usuário em terminal privado e confirmado por contagem.** Implementação pronta para commit/push e publicação autorizados. Deploy, E2E/iPhone e tag V7 ainda pendentes. Não declarar produção/E2E/iPhone V7 aprovados antes de executá-los.
+Atualização: 13/10/2026. **Status: implementação publicada na main, backend V7 ativo no Render e portal publicado no Firebase.** Migration aplicada no Aiven; um operador criado pelo usuário em terminal privado e confirmado por contagem. Verificações públicas de saúde, proteção, CORS e artefatos aprovadas. Login real, tokens cruzados em produção, E2E e iPhone V7 ainda pendentes; tag V7 não criada.
 
 **AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Somente dados fictícios; sem integração SUS/governamental ou prontuário.
 
@@ -30,7 +30,7 @@ Simulator → FastAPI loopback (somente local)
 
 Tabela separada `operators`, com id BIGINT UNSIGNED AUTO_INCREMENT, nome, e-mail trim/lowercase UNIQUE com collation binária coerente com users, hash Argon2id, ativo e timestamps DATETIME(6). InnoDB/utf8mb4. Migration `20261012_0004`, parent `20261012_0003`, cria somente essa tabela. Migrations 0001/0002/0003 permanecem sem diff.
 
-JWT de operador usa segredo próprio, HS256 allowlisted, issuer `chega-junto-operator`, claims sub/iat/exp/iss/actor_type. Não carrega nome/e-mail/saúde. Ativação exige segredo com pelo menos 32 bytes, diferente do segredo paciente. `OPERATOR_PORTAL_ENABLED=false` é padrão, com 404 e ausência no OpenAPI. Expiração padrão 60 minutos. Em produção, segredo novo será gerado/inserido somente no Render, sem arquivo/chat/terminal compartilhado. Nenhum segredo de operador de produção foi criado durante a implementação local.
+JWT de operador usa segredo próprio, HS256 allowlisted, issuer `chega-junto-operator`, claims sub/iat/exp/iss/actor_type. Não carrega nome/e-mail/saúde. Ativação exige segredo com pelo menos 32 bytes, diferente do segredo paciente. `OPERATOR_PORTAL_ENABLED=false` é padrão, com 404 e ausência no OpenAPI. Expiração padrão 60 minutos. Usuário gerou/salvou o segredo novo diretamente no Render pelo botão Generate, após preparação das configurações; nenhum valor foi lido, impresso, enviado pelo chat ou salvo localmente. Startup V7 aprovado com a validação de chave habilitada.
 
 Nove operações operator: login/me, busca por e-mail exato, facilities, lista/create/detail/PATCH/cancel de appointments. `OperatorBearer` no OpenAPI. Cadastro de operador não possui rota pública. Conta ausente executa Argon2 dummy; senha errada/ausência/inatividade têm erro 401 idêntico. Cada request protegido verifica operador ativo.
 
@@ -53,16 +53,16 @@ Segundo site criado com sucesso, sem habilitar cobrança:
 | Project ID | `chega-junto-desafio-ia` |
 | Site ID portal | `chega-junto-agendamentos` |
 | Target | `portal`, mapeado somente ao segundo site |
-| URL reservada | https://chega-junto-agendamentos.web.app |
-| Alternativa reservada | https://chega-junto-agendamentos.firebaseapp.com |
+| URL pública | https://chega-junto-agendamentos.web.app |
+| Alternativa pública | https://chega-junto-agendamentos.firebaseapp.com |
 | Plano | Spark; Cloud Billing `billingEnabled=false`, conta não vinculada antes da criação |
-| Deploy portal | Pendente; site criado não significa conteúdo publicado |
+| Deploy portal | Concluído em 13/10/2026 via CLI manual, 11 arquivos de dist, somente hosting:portal |
 
 Configuração separada dentro de `chega_junto_portal/`; target explícito no firebase.json e .firebaserc. O deploy manual deve usar `--only hosting:portal --project chega-junto-desafio-ia`. A configuração V6 do app permanece intacta.
 
 `npm run build` usa allowlist e gera dist ignorado, somente index.html/css/js/assets (inclui fontes e licença). Não copia README, testes, scripts, .env, Git, logs, capturas ou credenciais. Sem build system/dependências de produção adicionais.
 
-HTML, CSS e JS sem hash usam no-cache. Assets usam max-age=3600. Headers previstos: nosniff, no-referrer e CSP restrita à origem própria e API HTTPS Render; sem inline scripts, objetos ou frames. Headers reais serão conferidos após deploy.
+HTML, CSS e JS sem hash usam no-cache. Assets usam max-age=3600. Headers reais conferidos em todos os 11 arquivos: nosniff, no-referrer e CSP restrita à origem própria e API HTTPS Render; sem inline scripts, objetos ou frames. Todos retornam HTTP 200 e bytes idênticos ao dist. `.env`, README, arquivo de teste e config.json retornam 404. Os 52 arquivos dos bundles Flutter/portal foram auditados sem achados de valores secretos locais, JWT/hash completos, PEM ou variáveis de segredo. Main.dart.js público mantém o SHA-256 V6.
 
 ## Migrations e testes locais
 
@@ -98,12 +98,22 @@ Nome sugerido `Operador Demonstrativo`. Por solicitação posterior do usuário,
 
 Confirmação posterior do usuário: operador criado com sucesso no terminal privado. Leitura agregada confirmou **operators=1**, `0004 (head)`, Alembic check sem operações, 19 FKs/zero órfãos e fingerprints/contagens das 16 tabelas anteriores idênticos. Nenhum nome/e-mail de operador, senha ou hash de operador foi consultado ou incluído no relatório. A pausa B6 foi atendida.
 
-## Publicação e validações ainda necessárias
+## Publicação realizada e verificações públicas
 
-1. Confirmar migration/Aiven íntegros e criação manual do operador. Só depois auditar/stage/commit/push V7 na main, sem tag V7.
-2. Render: preservar APP_ENV production, AUTH_MODE jwt, DEMO_MODE false, SIMULATOR_MODE false, DATABASE_*, VERIFY_IDENTITY/CA e plano Free. Adicionar OPERATOR_PORTAL_ENABLED true, segredo JWT novo independente somente no Render, expiração 60. Acrescentar as duas origens exatas do portal ao CORS, preservando origens do app.
-3. Deploy manual do commit V7 com Auto-Deploy Off. Health 200/database ok; simulator 404; operator sem token 401; tokens cruzados recusados; OpenAPI habilitado corretamente.
-4. Na pasta portal: `npm test`, `npm run build`, conferir target, `firebase deploy --only hosting:portal --project chega-junto-desafio-ia`. Conferir HTML/assets/cache/CSP e app Flutter original preservado.
+Commit de implementação `f54a2dbd4fdf70e7f91d68d636f1d5df6adf1db4`, mensagem `feat: publica portal de agendamentos com auth de operador V7`: 38 arquivos intencionais, 1370 inserções/51 remoções. Auditoria staged sem achados; diff --check limpo. Commit/push na main após migration, criação manual do operador e testes. V6 permanece `24794e296f0eb63ad60af42d594106b96ff70c66`; objetos e commits V1–V6 remotos conferidos e intactos. Nenhuma tag V7 criada.
+
+Render: deploy manual da implementação `dep-db6npe2j9qps739pt7pg` concluído em 12/10, duração 2m19s. Atualização final somente de CORS em 13/10, com build existente, deploy `dep-db7088qj9qps73ap2r1g`, duração 31,7s, Live no mesmo commit. Plano Free, comandos/runtime e TLS mantidos. `OPERATOR_PORTAL_ENABLED=true`, validade 60 minutos e segredo próprio no Render. SIMULATOR_MODE permanece false.
+
+Verificações HTTPS após publicação: `/health` 200 com status/database ok; `/api/v1/simulator/appointments` 404; `/api/v1/operator/auth/me` sem token 401; `/api/v1/me/profile` sem token 401. OpenAPI expõe nove operações operator e OperatorBearer, sem simulator. Preflight das duas origens do portal retorna 200 com Access-Control-Allow-Origin exato; duas origens Flutter preservadas também aprovadas. Origem desconhecida retorna 400 sem permissão. A primeira verificação identificou ausência das origens portal na configuração salva; corrigida e comprovada antes do deploy Firebase.
+
+CLI Firebase publicou somente hosting:portal com sucesso; segundo site separado, sem substituir Flutter. Interface pública de login/banner observada. O plano foi reconfirmado sem Cloud Billing vinculado antes da publicação. A sessão de navegador anterior não foi preservada entre retomadas; entrada privada de operador e paciente fictício solicitada ao usuário, sem novas contas ou pedido de senha no chat.
+
+## Validações ainda necessárias
+
+1. Confirmar login real de operador/paciente usando suas telas públicas, com senhas mantidas privadas. Conta de paciente deve ser fictícia.
+2. Validar tokens cruzados em produção usando logins reais via QA manual privada; nenhum token deve ser extraído do runtime do navegador ou exposto em logs/arquivos. A configuração JWT local não deve ser presumida igual à de produção.
+3. Verificações públicas de saúde/proteção/OpenAPI/CORS já aprovadas conforme seção acima.
+4. Deploy Firebase e conferência de conteúdo/cache/CSP/site Flutter já aprovados conforme seção acima.
 5. Login real seguro no portal; erro de senha, loading/teclado, logout, busca, unidades, lista/filtros. Nenhum segredo em console, CORS exato e sem Mixed Content.
 6. E2E desktop com conta fictícia: criar consulta futura/checklist, verificar Home/Agenda/Detalhes/Preparo no app, concluir obrigatório/progresso, editar horário e conferir, cancelar e confirmar ausência da próxima ativa.
 7. Usuário valida recebimento da consulta no Safari de iPhone físico pela URL pública. A validação V6 não comprova automaticamente o E2E remoto V7.
@@ -113,6 +123,6 @@ Confirmação posterior do usuário: operador criado com sucesso no terminal pri
 
 Demonstrativo, sem SUS/governo; operador manual, token em memória, sem recuperação de senha, MFA, refresh, RBAC avançado, auditoria administrativa completa, cadastro de unidades ou dados clínicos pelo portal. CORS não é autorização. Cancelamento mantém relações e não revoga o JWT de paciente. Escritas com timeout precisam de leitura antes de repetir. As limitações Render Free e a rotação histórica pendente documentada na V5 permanecem, sem mudança automática de credenciais.
 
-Sem IA/áudio/transcrição reais, OAuth, push/WebSocket, domínio customizado, keep-alive ou billing. Deploy/tag e aceite E2E/iPhone de produção V7 ainda pendentes.
+Sem IA/áudio/transcrição reais, OAuth, push/WebSocket, domínio customizado, keep-alive ou billing. Login real/tokens cruzados em produção, E2E/iPhone e tag V7 ainda pendentes.
 
 Fontes oficiais consultadas: [Firebase multisites](https://firebase.google.com/docs/hosting/multisites), [PyJWT usage](https://pyjwt.readthedocs.io/en/stable/usage.html), [Argon2-cffi](https://argon2-cffi.readthedocs.io/en/stable/howto.html).

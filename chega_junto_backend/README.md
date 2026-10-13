@@ -1,6 +1,6 @@
 # Chega Junto — Backend
 
-## Portal autenticado — preparação V7
+## Portal autenticado — publicação V7
 
 Implementada entidade `operators` separada dos pacientes, migration `20261012_0004` após 0003 e nove operações sob `/api/v1/operator`. Não há cadastro público de operador. `OPERATOR_PORTAL_ENABLED=false` mantém 404/OpenAPI oculto; ativação exige `OPERATOR_AUTH_SECRET_KEY` independente, mínimo 32 bytes, com `OPERATOR_AUTH_ACCESS_TOKEN_EXPIRE_MINUTES=60`. Em produção o novo segredo pertence somente ao Render; `.env.example` permanece vazio.
 
@@ -14,7 +14,7 @@ uv run python -m scripts.create_operator
 
 O comando pede nome, e-mail válido (inclusive `@gmail.com`, sem restrição de domínio) e senha de 8–128 caracteres via getpass, com confirmação sem eco. Recusa entrada não interativa, fallback com eco e duplicidade. Não enviar senha ao chat, não gravar em arquivo e não cadastrar operador via API de paciente. O comando não precisa da chave JWT de produção. Dados de pacientes e agendamentos continuam fictícios.
 
-Deploy, operador real e aceite V7 ainda pendentes; detalhes no [contrato V7](docs/API_CONTRACT_V7.md) e [relatório V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). As seções abaixo preservam a base histórica e a operação V5.
+Backend V7 publicado no Render, migration 0004 aplicada e operador criado pelo usuário. Health, bloqueios sem token, simulator 404 e CORS exato aprovados. Portal público em https://chega-junto-agendamentos.web.app. Login real/E2E/iPhone e checkpoint V7 ainda pendentes; detalhes no [contrato V7](docs/API_CONTRACT_V7.md) e [relatório V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). As seções abaixo preservam a base histórica e a operação V5.
 
 Checkpoint V5: backend demonstrativo no Render, com JWT e conexão TLS ao Aiven. Consulte [Deploy Render](#deploy-render--v5) e o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para configuração, validações e pendências operacionais.
 

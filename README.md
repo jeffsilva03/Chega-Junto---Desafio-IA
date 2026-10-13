@@ -8,7 +8,7 @@ Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Ho
 
 - `chega_junto_app/`: aplicativo Flutter para Android e Web, testes, assets e decisões de implementação.
 - `chega_junto_backend/`: FastAPI, autenticação JWT, SQLAlchemy e MySQL/Aiven com TLS.
-- `chega_junto_portal/`: Portal Web Simulador local em HTML/CSS/JavaScript.
+- `chega_junto_portal/`: Portal Web autenticado de agendamentos, com modo simulador local, em HTML/CSS/JavaScript.
 - `docs/RELATORIO_PORTAL_SIMULADOR_V4.md`: implementação e validações automatizadas/manuais da V4.
 - `chega_junto_codex_context/`: contexto e regras oficiais do projeto.
 - `Design Telas ChegaJunto/`: protótipos de referência, incluindo telas ainda não implementadas.
@@ -17,7 +17,7 @@ Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Ho
 
 ## Portal Simulador
 
-A V7 prepara o Portal de Agendamentos com autenticação própria de operador, namespace `/api/v1/operator` e segundo site Firebase `chega-junto-agendamentos`. Migration e criação segura do operador concluídas; publicação ainda pendente de deploy e E2E/iPhone; confira o [relatório V7](docs/RELATORIO_PORTAL_PUBLICO_V7.md). O simulador local abaixo continua separado e não será liberado na internet.
+Portal de Agendamentos publicado em **https://chega-junto-agendamentos.web.app**, com autenticação própria de operador, namespace `/api/v1/operator` e segundo site Firebase. Migration, criação segura do operador e deploys Render/Firebase concluídos; login real/E2E/iPhone e tag V7 ainda pendentes. Confira o [relatório V7](docs/RELATORIO_PORTAL_PUBLICO_V7.md). O simulador local abaixo continua separado e não será liberado na internet.
 
 **AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Ferramenta acadêmica local para buscar usuários fictícios e criar, visualizar, editar e cancelar agendamentos na mesma API usada pelo aplicativo. Não representa integração real com SUS ou gov.br. Não acessa prontuário ou dados clínicos e não está autorizado para exposição pública.
 

@@ -1,12 +1,12 @@
 # Portal Web Simulador de Agendamentos
 
-**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Portal acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente dados fictícios de pacientes e agendamentos. O modo simulator continua exclusivamente local; a V7 prepara o modo operator autenticado para publicação. Migration e criação manual do operador concluídas; deploy/E2E pendentes.
+**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Portal acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente dados fictícios de pacientes e agendamentos. O modo simulator continua exclusivamente local; modo operator publicado no Firebase. Migration, criação manual do operador e deploys concluídos; login real/E2E/iPhone e tag V7 pendentes.
 
 ## Portal autenticado V7
 
-Reutiliza esta aplicação, com login de operador e JWT próprio na FastAPI. Sem signup público/Firebase Auth. Token somente em memória: reload exige novo login. Logout e 401 limpam sessão, paciente, lista, editor e filtros; respostas antigas são descartadas. O operador pode identificar usuário por e-mail exato e gerenciar agendamentos/checklist, sem acesso a dados clínicos. Cadastro manual seguro explicado no [README backend](../chega_junto_backend/README.md#portal-autenticado--preparação-v7).
+Reutiliza esta aplicação, com login de operador e JWT próprio na FastAPI. Sem signup público/Firebase Auth. Token somente em memória: reload exige novo login. Logout e 401 limpam sessão, paciente, lista, editor e filtros; respostas antigas são descartadas. O operador pode identificar usuário por e-mail exato e gerenciar agendamentos/checklist, sem acesso a dados clínicos. Cadastro manual seguro explicado no [README backend](../chega_junto_backend/README.md#portal-autenticado--publicação-v7).
 
-Segundo site já criado no projeto `chega-junto-desafio-ia`, Site ID `chega-junto-agendamentos`, target `portal`. URLs reservadas https://chega-junto-agendamentos.web.app e https://chega-junto-agendamentos.firebaseapp.com; **conteúdo ainda não publicado**. App Flutter permanece no site original.
+Segundo site publicado no projeto `chega-junto-desafio-ia`, Site ID `chega-junto-agendamentos`, target `portal`. URLs públicas https://chega-junto-agendamentos.web.app e https://chega-junto-agendamentos.firebaseapp.com. Os 11 arquivos publicados correspondem ao build local, com cache e headers conferidos; App Flutter permanece no site original com o hash V6.
 
 Após backend V7 publicado e operador criado, na pasta portal:
 
@@ -20,7 +20,7 @@ Build usa allowlist, sem dependências adicionais, copiando somente index.html/c
 
 No domínio público, API é HTTPS Render e namespace `/api/v1/operator` com Bearer; não envia header simulator. Login aceita e-mail válido de qualquer domínio, inclusive `@gmail.com`, e senha de 8–128 caracteres, conforme o cadastro administrativo. Localmente, `serve.py --api-base http://127.0.0.1:8000 --mode operator` oferece o mesmo login contra API local explicitamente configurada. Backend local exige chave efêmera privada e flag de operador quando esse modo for testado; o segredo de produção permanece só no Render. O modo simulator exige `--mode simulator`, API/servidor loopback e os guards V4 abaixo.
 
-[Contrato V7](../chega_junto_backend/docs/API_CONTRACT_V7.md) e [estado da publicação V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). Sem recuperação de senha/MFA/refresh/RBAC avançado/auditoria completa/cadastro de unidades. Nenhum commit/tag V7 deve preceder as validações exigidas.
+[Contrato V7](../chega_junto_backend/docs/API_CONTRACT_V7.md) e [estado da publicação V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). Sem recuperação de senha/MFA/refresh/RBAC avançado/auditoria completa/cadastro de unidades. Commit de implementação publicado após testes/migration/operador/auditoria; tag V7 depende das validações públicas E2E/iPhone restantes.
 
 O operador localiza um usuário por e-mail, consulta agendamentos paginados, cria, visualiza, edita e cancela consultas. As unidades vêm de `facilities`. O portal só conversa com FastAPI; não possui driver, credenciais ou acesso ao MySQL. Flutter e portal compartilham a mesma fonte de verdade no Aiven.
 
