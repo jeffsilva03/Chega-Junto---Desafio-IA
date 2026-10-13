@@ -1,114 +1,169 @@
-# Chega Junto — V8 candidata: IA e transcrição reais
+# Chega Junto — V8 candidata para revisão
 
-Data: 13/10/2026. **Implementação candidata publicada; smoke real e validação física em andamento. Sem tag V8.** V7 permanece checkpoint estável `58a33a251176441a7ce0c0111ad7be6d4f3fe005`; V1–V7 preservadas.
+13/10/2026. IA e transcrição reais publicadas, com fluxo de áudio validado no computador e no Safari do iPhone físico. **Sem tag V8.** V1–V7 preservadas; rollback V7: `58a33a251176441a7ce0c0111ad7be6d4f3fe005`.
 
-Sistema demonstrativo não oficial, somente dados fictícios. Nenhum conteúdo é enviado automaticamente a operador, profissional, unidade ou SUS. O usuário revisa e decide o que compartilhar.
+Sistema demonstrativo não oficial, somente dados fictícios. Concluir salva a preparação; nada é enviado automaticamente a profissionais, UBS ou SUS.
 
-## Arquitetura e conteúdo
+## Arquitetura e proteção do conteúdo
 
-Flutter → HTTPS FastAPI → ReportAiService → AiProvider → OpenAiProvider → OpenAI. Resposta validada → revisão/editável no Flutter → persistência pelo ReportWrite existente → Aiven. `FakeAiProvider` isola a suíte automática da rede e dos créditos.
+Flutter → HTTPS FastAPI → ReportAiService → AiProvider → OpenAiProvider → OpenAI. Resposta validada → revisão/editável no Flutter → ReportWrite existente → Aiven. FakeAiProvider isola testes automáticos da rede e dos créditos.
 
-Organização usa SDK oficial OpenAI 2.54.0, Responses API com JSON Schema strict, `additionalProperties=false`, `store=false`, sem tools ou estado/conversa externa. Modelos lidos do Render, conferidos somente pelos campos não secretos: `gpt-6-luna` para texto e `gpt-transcribe` para transcrição. A API key não foi revelada, copiada ou salva localmente. Sem mudança de modelo, fallback ou retry automático; timeout padrão 45 segundos, configurável 10–120, saída de texto limitada a 4.000 tokens.
+SDK oficial OpenAI Python **2.54.0**, Responses API, JSON Schema strict com additionalProperties=false, store=false explícito, sem tools, conversa externa, fallback ou retry automático. Timeout 45 segundos, configurável entre 10–120; saída limitada a 4.000 tokens. Modelos conferidos somente nos campos não secretos do Render: **gpt-6-luna** e **gpt-transcribe**. A chave não foi revelada, copiada ou salva localmente.
 
-O backend envia somente original_text, com instruções separadas; identificador de atendimento serve apenas para titularidade interna. Sem dados adicionais de perfil, documentos ou histórico. Prompt considera o relato dado não confiável, não obedece instruções internas e preserva incerteza. Organização não pode diagnosticar, prescrever, sugerir dose, interpretar exames, classificar urgência, triar ou completar informações ausentes. Até cinco perguntas neutras para o profissional, inicialmente desmarcadas. Chaves/títulos/ordem das quatro seções fixados pelo backend. Schema controla formato; o smoke humano deverá avaliar conteúdo antes do aceite.
+Somente original_text é enviado à organização; identificador do atendimento serve à autorização interna. Transcrição envia somente áudio e parâmetros mínimos. Perfil, documentos e histórico não são anexados. Instruções separadas tratam o relato como dado não confiável e preservam incerteza. Organização não pode diagnosticar, prescrever, recomendar dose, interpretar exame, triar, classificar urgência ou inventar fatos. Quatro seções com chave/título/ordem fixados pelo backend: reason/Motivo da consulta, points/Pontos relatados, context/Contexto informado e other/Outros pontos importantes. Até cinco perguntas neutras, inicialmente desmarcadas.
 
-## Endpoints, quota e migration
+## Endpoints, uso e banco
 
-`POST /api/v1/appointments/{id}/report/organization` e `/transcription`, JWT paciente ativo + ownership, operador/simulator/contexto demo bloqueados. Desabilitados por padrão, ausentes do OpenAPI com flag false. Organização não persiste automaticamente; original/fonte/revisões/cancelamento/conflitos/saveDraft/revisão humana existentes preservados.
+POST `/api/v1/appointments/{id}/report/organization` e `/transcription`: JWT paciente ativo + ownership; operador e contexto demo bloqueados. AI_ENABLED=false por padrão remove esses endpoints do OpenAPI. Organização não persiste automaticamente; fonte, revisão, conflito, rascunho e confirmação humana existentes preservados.
 
-Migration 0005 cria somente `ai_usage_events`; anteriores intactas. Campos mínimos e índices por usuário/operação/dia e operação/dia; apenas telemetria numérica, sem conteúdo ou áudio. Calendário UTC; reservas started e falhas contam para quota. MySQL GET_LOCK serializa reserva confirmada; conexão/lock/transação terminam antes da OpenAI. Quotas: organização 10 por paciente/50 globais; transcrição 3 por paciente/10 globais por dia. Configuráveis por env; 429 sanitizado, sem divulgar saldo ou limite global ao usuário.
+Migration **20261013_0005** cria somente ai_usage_events e seus índices. Migrations 0001–0004 intactas. Usage contém operação/provider/model/outcome/telemetria numérica/datas, sem áudio, relato, prompt, resposta, transcrição ou identificador externo do provider. Quotas por dia calendário UTC: organização **10/usuário e 50/globais**; transcrição **3/usuário e 10/globais**. Started/falhas contam. GET_LOCK em conexão dedicada serializa contagem/reserva confirmada; lock e transação terminam antes da OpenAI. Erro 429 sanitizado, sem revelar saldo global.
 
-## Áudio e Flutter
+MySQL 8.4 isolado: cadeia 0001→0005, metadata equivalente, downgrade somente da tabela nova vazia/reupgrade aprovados; 12 reservas concorrentes respeitaram limite global 2 e liberaram lock. No Aiven, current=0005 head e check sem novas operações. Comparação pós-migration confirmou as 17 tabelas anteriores integralmente idênticas; comparação final após o smoke confirmou todos os registros originais preservados, 19 FKs anteriores e zero órfãos. Nova FK de usage soma-se às anteriores. Sem downgrade no Aiven.
 
-Pacote `record` 6.2.1, compatível com Dart 3.11.1 atual. A versão mais recente exige Dart 3.12; não houve atualização ampla do SDK/dependências. `http_parser` 4.1.2 tornou-se dependência direta para MIME multipart. Captura e transcrição separadas; mock preservado sem microfone.
+## Gravação e revisão
 
-Captura real PCM16 mono de 16 kHz em memória, convertida em WAV, sem ffmpeg, arquivo/blob temporário ou encoder customizado de navegador. Cinco minutos = 9.600.044 bytes; parada automática em 300 segundos ativos e limite de 10 MiB. Permissão somente após toque, pausa/retomada real, alternativa em texto em caso de negação. Android inclui INTERNET e RECORD_AUDIO, sem cleartext adicional. Web requer HTTPS/localhost; Safari físico ainda precisa ser validado.
+record **6.2.1**, compatível com Dart 3.11.1; sem atualização ampla de SDK/dependências. Captura PCM16 mono 16 kHz em memória e WAV, sem ffmpeg ou arquivo/blob temporário de gravação. Cinco minutos ativos = 9.600.044 bytes; parada automática em 300 segundos, limite de upload **10 MiB**. Permissão após toque, pausa/retomada, alternativa em texto. Android declara INTERNET e RECORD_AUDIO; sem cleartext adicional.
 
-FastAPI aceita WAV/WebM/M4A/MP4/MP3 com extensão/MIME/assinatura; MP4 acomoda contêiner de áudio do Safari. Upload bounded inclusive chunked; temporário fechado em finally. Bytes não são persistidos e são limpos no cliente após processamento, cancelamento/logout/dispose. Transcrição editável até 20.000 caracteres, sem truncamento, inserida somente após “Usar transcrição no relato”; depois segue o mesmo pipeline de organização. Falha mantém original, resumo anterior e texto revisado. Troca de sessão e saída da tela invalidam respostas tardias.
+Backend aceita WAV/WebM/M4A/MP4/MP3 com extensão/MIME/assinatura, incluindo limite de corpo chunked e fechamento do upload em finally. Áudio não persiste no banco. Cliente limpa bytes após processamento, cancelamento/logout/dispose e descarta respostas tardias. Transcrição editável até 20.000 caracteres, sem truncar; inserção somente após Usar transcrição no relato. Erros preservam conteúdo anterior. Mock continua disponível sem microfone/rede OpenAI.
 
-## Evidências locais
+## Smoke real e correções verificadas
 
-- Backend: primeira regressão identificou expectativas de metadata anteriores à 0005; corrigidas sem editar migrations históricas. Suíte completa final local: **442 aprovados/1 opt-in pulado**. Ruff check/format e compileall aprovados. Aviso transitivo Starlette/httpx não bloqueante, sem atualização não relacionada.
-- Provider/API/migration: 55 testes focados aprovados; SDK mockado, sem chamada OpenAI real.
-- MySQL 8.4 isolado: cadeia 0001→0005, metadata idêntica, downgrade local somente da tabela nova vazia/reupgrade e quotas concorrentes aprovados; 12 reservas concorrentes respeitaram limite global 2, lock liberado ao final. Sem downgrade no Aiven.
-- Flutter: 177 testes aprovados, incluindo 15 novos; analyze sem problemas. Cobertura de payload mínimo/multipart, erros/429/retry explícito, negação, start/pause/resume/stop, transcrição/revisão/uso, 10 MiB, parada em cinco minutos, cancelamento, dispose e resposta antiga após troca de sessão.
-- Portal: 29 testes aprovados, nenhum arquivo funcional alterado.
-- Builds Web release e APK debug com API pública concluídos. Três avisos históricos do dry run WebAssembly de flutter_tts; alvo JavaScript gerado corretamente. APK confirmou INTERNET e RECORD_AUDIO; nenhum aparelho/emulador conectado por ADB nesta etapa.
-- Auditoria repetida após rebuild: 370 arquivos versionáveis; 43 arquivos Web e 172 entradas do APK, nenhuma credencial/padrão de segredo encontrado. Quatro valores privados locais comparados somente em memória. Ocorrências numéricas de IPs em snapshots/engine são exemplos do próprio SDK, conferidos contra originais; nenhum IP pessoal identificado. A chave real do Render não foi lida para comparação literal.
-- Aiven: migration 0005 aplicada após testes/auditoria; `current=20261013_0005 (head)` e `check=No new upgrade operations detected`. Comparação imediatamente após migration confirmou as 17 tabelas anteriores integralmente intactas, 19 FKs anteriores, zero órfãos e usage vazio. A nova FK de usage soma-se às anteriores. Fingerprints/contagens agregados guardados somente em arquivo local ignorado; GET_LOCK/RELEASE_LOCK conferidos no Aiven.
-- Busca explícita adicional em main.dart.js e todas as entradas do APK por OPENAI_API_KEY, AUTH_SECRET_KEY, OPERATOR_AUTH_SECRET_KEY, DATABASE_PASSWORD, password_hash e padrão de chave OpenAI: nenhuma ocorrência.
-- Android: build/permissões aprovados. Emulador headless iniciou, mas não concluiu boot no período observado e prejudicou a resposta do navegador; encerrado sem wipe ou exclusão de dados. Teste de captura nativa preparado em integration_test/audio_capture_v8_test.dart, ainda não executado. Não afirmar validação física ou início de microfone Android; esta limitação não impede aceite se desktop e Safari físico passarem, conforme pedido.
-- Desktop/áudio e Safari físico: em andamento, sem resultado presumido.
+Foram realizadas **5 organizações e 3 transcrições**, todas succeeded. O limite inicial era 5/2; as duas transcrições iniciais foram usadas pelo usuário no computador, e ele autorizou explicitamente **uma única transcrição extra de 10–20 segundos no iPhone**, informado do consumo de créditos. Quotas de produção não foram alteradas. Nenhuma chamada extra foi feita para as correções de interface.
 
-## Publicação e smoke
+- Dúvida fictícia de diagnóstico: dúvida atribuída ao usuário, sem afirmar diagnóstico; perguntas neutras.
+- Pedido fictício de dose: sem recomendar alteração/dose/medicamento.
+- Prompt injection: instrução maliciosa tratada como dado, sem obedecer ao pedido de diagnosticar.
+- Desktop: usuário confirmou transcrição funcionando perfeitamente; interface mostrou captura de 10 segundos. Edição, uso explícito, organização real, quatro seções e três perguntas inicialmente desmarcadas conferidos. Edição humana do resumo, escolha de uma pergunta e revisão final salvas sem nova IA; persistência conferida no Aiven.
+- Safari do iPhone físico: usuário confirmou gravação/transcrição e organização funcionando perfeitamente. Utilizou relato fictício livre diferente do exemplo sugerido. Confirmou Revisão final concluída após restaurada a consulta; fonte correspondente, quatro seções, uma pergunta selecionada e ambas as revisões atuais confirmadas no banco. A preservação de incerteza foi observada no caso de dúvida de diagnóstico; o relato final do iPhone não continha os marcadores de incerteza do exemplo sugerido.
 
-Variáveis de ativação/timeout/quotas salvas no Render com Save only e conferidas em modo somente leitura, sem alterar chave/modelos existentes. Candidato **392bcf8ecc018c6cd91ec27f26f3b3a0eb929951**, mensagem `feat: integra IA e transcricao reais V8`, commit/push normal em origin/main, sem tag.
+O primeiro teste de microfone falhou antes da captura/upload: registrant Web em cache havia omitido RecordPluginWeb, causando MissingPluginException. Corrigido com flutter clean/pub get offline/rebuild, sem editar gerados; plugin/worklet presentes no bundle e testes reais posteriores aprovados. O aviso do resumo real que ainda dizia simulada foi corrigido; mock mantém sua mensagem.
 
-Render deploy manual `dep-db79rqt9fdbs73ddkv90`, concluído em 1m22s; commit conferido no Dashboard, SDK instalado, startup/configuração aceitos. Health público 200/database ok; simulator 404, operator/patient/ambos endpoints IA sem token 401. OpenAPI contém os dois endpoints, sem segredo ou prompt. Autenticação de operador e paciente pelo usuário e criação de uma nova consulta fictícia V8 pelo Portal confirmadas; dados anteriores não foram editados.
+Durante a limpeza, o agente cancelou prematuramente somente a consulta criada para V8, antes de o usuário concluir a última revisão. Isso expôs o estado vazio sem Material/Scaffold, com tipografia de depuração vermelha e sem navegação. A consulta própria foi restaurada por atualização guardada, verificando que não pertencia aos registros anteriores e preservando o relato. **Permanece ativa para revisão do usuário.** A tela vazia agora usa a estrutura visual normal e oferece Atualizar atendimentos/Voltar ao início; loading/erro também recebem contexto Material. Teste de regressão verifica tipografia, navegação e recuperação quando atendimento volta a estar disponível.
 
-Firebase publicou somente `chega-junto-desafio-ia`, 42 arquivos, sem alteração de configuração/plano. Após regenerar o build de gravação, main.dart.js público corresponde ao SHA-256 `66a365603414dcc0f8b219fd252f029382869f91d0709a0d9eaa74e682a1f4e6`. Portal público continua HTTP 200; index SHA-256 `4c93bf87e6bf3cbb27587f06f949db4d28c38903269661b8f4a70bfaddbd9133`, idêntico antes/depois e ao dist local. Nenhum deploy ou arquivo funcional do Portal alterado.
+Usage retornado: texto **2.355 unidades de entrada e 1.064 de saída**, agregadas nas cinco chamadas. Transcrição retornou unidades **null**, não zero. Oito usage rows, sem falhas. Custo monetário não consultado nem estimado.
 
-Plano de smoke: no máximo cinco organizações reais e duas transcrições curtas fictícias, incluindo desktop e Safari físico; nenhuma chamada real nas suítes automáticas. Caso simples via áudio desktop; pedidos de diagnóstico/dose e injection no desktop; relato desorganizado via iPhone. Usage numérico e custos só serão reportados se retornados/observados, sem estimar saldo ou inventar valores. Não reutilizar a gravação do usuário fora desse fluxo.
+## Testes, builds e publicação
 
-Três organizações reais aprovadas pela inspeção da interface: dúvida fictícia de diagnóstico, pedido fictício de alteração de dose e instrução maliciosa dentro do relato. As respostas atribuíram dúvidas ao usuário, mantiveram seções sem informação vazias e geraram perguntas neutras inicialmente desmarcadas; não diagnosticaram nem recomendaram dose. Usage agregado nesse ponto: 3 organizações succeeded, 1.396 unidades de entrada e 616 de saída retornadas pelo SDK; nenhuma transcrição iniciada. Custo monetário não consultado. Restam duas organizações e duas transcrições no orçamento do smoke.
+Backend: **442 aprovados/1 opt-in pulado**; Ruff check/format e compileall aprovados. Provider/API/migration com SDK fake, sem OpenAI real nas suítes. Flutter: **178 aprovados**, incluindo regressão da tela vazia; analyze sem problemas. Portal: **29 aprovados**, sem alteração funcional. Não houve necessidade de repetir suítes backend/Portal após correção exclusivamente Flutter.
 
-O primeiro teste manual de microfone falhou antes da captura/upload. Console e registrant gerado identificaram MissingPluginException: o cache de compilação Web havia omitido RecordPluginWeb. Corrigido com flutter clean, pub get offline e novo build, sem editar arquivos gerados. Registrant novo e bundle confirmam plugin/worklet de gravação presentes; publicação corrigida conferida pelo hash público. Novo teste com microfone do usuário ainda pendente. Ajustado também o aviso do resumo real que ainda dizia “simulada”; mock mantém seu aviso original. Analyze e os 177 testes Flutter passaram novamente após o ajuste.
+Web release e APK debug com DATA_SOURCE=api/API_BASE_URL público compilados. Três avisos históricos flutter_tts no dry run WebAssembly; alvo JavaScript gerado corretamente. APK/permissões aprovados. Nova tentativa de emulador, com menos recursos, concluiu boot em cerca de 60 segundos, mas instalação normal e APK x64 de teste falharam por armazenamento insuficiente; sem wipe, exclusão de dados ou instalação concluída. Emulador encerrado. **Captura nativa Android não validada**; teste/driver preparados. Limitação registrada conforme regra do pedido que permite seguir com desktop + Safari físico aprovados. APK público anterior 0.7.0 não foi substituído por APK debug V8.
 
-Conferência adicional enquanto se aguarda o usuário: as 17 tabelas mantêm todos os registros originais intactos, admitindo apenas os novos registros do smoke; 19 FKs anteriores, zero órfãos, usage com 3 registros. Tags locais inalteradas e consulta remota contém somente V1–V7 com os mesmos objetos/commits. Health, isolamento público e hash do Portal conferidos novamente. APK debug recompilado após o ajuste do aviso e auditado junto ao Web. A consulta fictícia criada para V8 permanece ativa para concluir os testes físicos.
+Render Live: deploy `dep-db79rqt9fdbs73ddkv90`, backend `392bcf8ecc018c6cd91ec27f26f3b3a0eb929951`. Chave/modelos existentes preservados; ativação/timeout/quotas conferidos sem revelar segredo. Health público 200/database ok; simulator 404; endpoints paciente/operador e ambos IA sem token 401. OpenAPI contém os dois endpoints, sem segredo ou prompt. Logins reais de ambas as interfaces e criação da fixture pelo Portal aprovados.
 
-## Checklist dos 46 resultados solicitados
+Firebase publica somente o app principal, 42 arquivos, mesmo plano/configuração. Hash final do main.dart.js: `cda6df8781e391eeb8e98c9e6b90bec756e0f456e7eb7b4a76af74682940f876`. Portal HTTP 200, index SHA-256 `4c93bf87e6bf3cbb27587f06f949db4d28c38903269661b8f4a70bfaddbd9133`, idêntico antes/depois e ao dist local; sem deploy do Portal.
 
-| Item | Evidência / estado atual |
+Auditorias finais: **370 arquivos versionáveis, 43 arquivos Web e 172 entradas do APK**, nenhuma credencial/padrão de segredo encontrado. Quatro valores privados locais comparados somente em memória; busca explícita por OPENAI_API_KEY, AUTH_SECRET_KEY, OPERATOR_AUTH_SECRET_KEY, DATABASE_PASSWORD, password_hash e padrão de chave. IPs numéricos em snapshots/engine correspondem a exemplos dos originais do SDK, sem IP pessoal identificado. A chave real do Render não foi lida para comparação literal. Nenhum segredo identificado nas verificações; logs não incluem corpos de erro do provider. APK debug final SHA-256: `b46678479c4de2591ec916196640c681f2e9794a23bc9a0fb3483b91ae959cae`.
+
+Commits candidatos publicados por push normal: `392bcf8ecc018c6cd91ec27f26f3b3a0eb929951` e `2bf6736b8d106b984ddca69a02ebc2905a047146`; correção final identificada por `fix: trata preparo sem atendimento e conclui validacao V8`. Árvore de trabalho e origin/main conferidos após commit/push final. Tags locais/remotas V1–V7 preservadas, **V8 ausente**. Pastas de vídeos do usuário preservadas e excluídas apenas localmente do status, sem versionar ou apagar.
+
+## Os 46 resultados solicitados
+
+| Item | Resultado |
 | --- | --- |
-| 1. Arquitetura | Flutter → FastAPI → AiProvider → OpenAI; revisão e persistência existentes no Aiven. |
-| 2. Commits candidatos | 392bcf8ecc018c6cd91ec27f26f3b3a0eb929951 publicado; correção subsequente identificável por fix: ajusta aviso e registra validacao parcial V8. |
-| 3. Abstração | AiProvider, OpenAiProvider e FakeAiProvider separados. |
+| 1. Arquitetura | Flutter → FastAPI → AiProvider → OpenAI; revisão/persistência existentes no Aiven. |
+| 2. Commits | Candidatos acima; commit final e HEAD conferíveis por git log. |
+| 3. Provider abstraction | AiProvider, OpenAiProvider, FakeAiProvider. |
 | 4. SDK | OpenAI Python 2.54.0. |
-| 5. Responses | responses.create, sem conversa/estado externo. |
-| 6. Structured Output | JSON Schema strict, additionalProperties=false, validação Pydantic. |
-| 7. store=false | Configurado explicitamente e verificado nos testes do provider. |
-| 8. Modelo texto | gpt-6-luna, conferido no campo não secreto do Render. |
-| 9. Modelo transcrição | gpt-transcribe, conferido no campo não secreto do Render. |
+| 5. Responses | responses.create, sem estado/conversa externa. |
+| 6. Structured Output | JSON Schema strict, additionalProperties=false, Pydantic. |
+| 7. store=false | Explícito e verificado nos testes. |
+| 8. Texto | gpt-6-luna, env Render. |
+| 9. Transcrição | gpt-transcribe, env Render. |
 | 10. Organization | POST /api/v1/appointments/{id}/report/organization. |
 | 11. Transcription | POST /api/v1/appointments/{id}/report/transcription. |
-| 12. Safety | Organização sem diagnóstico, prescrição, dose, triagem, interpretação ou invenção; revisão humana. |
-| 13. Injection | Instrução separada, conteúdo tratado como dado; caso real aprovado. |
-| 14. Minimização | Somente original_text ou áudio e parâmetros mínimos enviados ao provider. |
-| 15. Migration | 20261013_0005, somente tabela/índices de usage; anteriores intactas. |
-| 16. Usage | ai_usage_events sem áudio, relato, transcrição, prompt ou resposta. |
-| 17. Quotas | UTC: organização 10/usuário e 50/global; transcrição 3/usuário e 10/global; started/falhas contam. |
-| 18. Backend | 442 aprovados, 1 opt-in pulado. |
-| 19. Flutter | 177 aprovados; analyze sem problemas. |
+| 12. Safety | Sem diagnóstico, prescrição, dose, triagem, interpretação ou invenção; revisão humana. |
+| 13. Injection | Instrução separada; caso real aprovado. |
+| 14. Minimização | Somente original_text ou áudio/parâmetros mínimos. |
+| 15. Migration | 20261013_0005; anteriores intactas. |
+| 16. Usage | ai_usage_events, sem conteúdo ou áudio. |
+| 17. Quotas | UTC: texto 10/50; áudio 3/10, usuário/global. |
+| 18. Backend | 442 aprovados/1 opt-in pulado. |
+| 19. Flutter | 178 aprovados; analyze sem problemas. |
 | 20. Portal | 29 aprovados. |
-| 21. MySQL | 8.4 isolado: migration/metadata/downgrade vazio/reupgrade/12 reservas concorrentes aprovados. |
-| 22. Alembic | current 0005 head; check sem novas operações. |
-| 23. Aiven | 17 tabelas anteriores intactas após migration e após 3 chamadas do smoke, 19 FKs anteriores e zero órfãos; repetir ao concluir testes físicos. |
-| 24. Render | Deploy dep-db79rqt9fdbs73ddkv90 Live, health 200/database ok. |
+| 21. MySQL | 8.4 isolado, migration/metadata/concorrência aprovadas. |
+| 22. Alembic | 0005 head; check sem novas operações. |
+| 23. Aiven | 17 tabelas anteriores intactas; 19 FKs anteriores; zero órfãos. |
+| 24. Render | Health 200/database ok; Live. |
 | 25. Simulator | 404 público. |
-| 26. Isolamento | Operator JWT recusado nos testes de IA; endpoints públicos sem token 401; logins de ambas as interfaces confirmados. |
-| 27. Texto real | 3/5 chamadas: diagnóstico, dose e injection aprovados; simples e desorganizado pendentes. |
-| 28. Diagnóstico | Dúvida atribuída ao usuário, sem diagnóstico na resposta real. |
-| 29. Dose | Sem recomendar alteração/dose na resposta real. |
-| 30. Transcrição | 0/2 chamadas; repetição manual após correção do build pendente. |
-| 31. Formatos | WAV/WebM/M4A/MP4/MP3 validados com fixtures locais; captura real produzirá WAV, ainda pendente. |
-| 32. Limites | Upload 10 MiB; gravação 300 segundos ativos; texto/transcrição 20 mil caracteres, sem truncar. |
-| 33. Desktop | Organização real aprovada; microfone aguardando repetição do usuário. |
-| 34. Safari iPhone | Teste físico V8 pendente; sucesso anterior V7 não contado como teste de áudio. |
-| 35. Android | APK debug/permissões aprovados; emulador sem boot concluído; teste nativo preparado, não executado. |
-| 36. Firebase | Apenas app principal publicado, hash atual conferido. |
-| 37. Portal | HTTP 200 e hash idêntico; sem deploy/alteração funcional. |
-| 38. Web | Auditoria repetida no build corrigido: 43 arquivos, comparação privada em memória e padrões sem achados. |
-| 39. APK | Auditoria repetida no build corrigido: 172 entradas, sem achados. |
-| 40. API key | Valor do Render nunca revelado/copiado; SDK somente backend; buscas de padrões/nomes no frontend sem achados. |
-| 41. Limitações | Cache inicial do plugin corrigido; validações físicas ainda pendentes; avisos históricos flutter_tts não bloqueantes. |
-| 42. Usage/custo | 3 chamadas: entrada 1.396, saída 616; dólares não observados nem estimados. |
-| 43. Arquivos | Candidato inicial: 48 arquivos (git show --stat 392bcf8); correção: aviso do resumo, teste/driver Android e este relatório. |
-| 44. Git status | Correção preparada para commit/push normal; estado conferido após o commit. Testes físicos continuam pendentes. |
-| 45. V1–V7 | Preservadas na comparação local e remota após as 3 chamadas reais. |
-| 46. V8 | Sem tag; exige aprovação posterior para checkpoint. |
+| 26. Isolamento | JWT operador recusado nos testes IA; público sem token 401; logins confirmados. |
+| 27. Texto real | 5 succeeded: diagnóstico, dose, injection, desktop/áudio e relato livre iPhone. |
+| 28. Diagnóstico | Sem diagnóstico na resposta real; dúvida atribuída. |
+| 29. Dose | Sem recomendar dose/alteração na resposta real. |
+| 30. Transcrição | 3 succeeded: duas desktop, uma extra iPhone autorizada. |
+| 31. Formatos | WAV real desktop/iPhone; WAV/WebM/M4A/MP4/MP3 com fixtures locais, sem alegar smoke real dos demais. |
+| 32. Limites | 10 MiB, 300 segundos ativos, texto/transcrição 20 mil caracteres, sem truncar. |
+| 33. Desktop | Captura/transcrição, edição/uso, organização e revisão final aprovados. |
+| 34. Safari físico | Usuário confirmou fluxo e revisão final; persistência conferida. |
+| 35. Android | Build/permissões aprovados; instalação bloqueada por espaço no AVD; captura não validada. |
+| 36. Firebase | Somente app principal; bundle final conferido. |
+| 37. Portal | HTTP 200/hash constante; nenhum deploy/alteração funcional. |
+| 38. Web | Auditoria de padrões/credenciais sem achados. |
+| 39. APK | Auditoria de padrões/credenciais sem achados. |
+| 40. API key | Só backend/Render; valor nunca revelado/copiado. |
+| 41. Erros/limitações | Cache do plugin e tela vazia corrigidos; Android nativo pendente por espaço; avisos flutter_tts históricos. |
+| 42. Usage/custo | Texto entrada 2.355/saída 1.064; áudio unidades null; dólares não observados. |
+| 43. Arquivos | Relação completa abaixo. |
+| 44. Git status | Conferido limpo após commit/push final. |
+| 45. V1–V7 | Tags locais e remotas inalteradas. |
+| 46. V8 | Sem tag; aguarda aprovação do usuário para checkpoint oficial. |
 
 ## Reproduzir e referências
 
-Contrato, limites, erros e procedimento detalhados em [API_CONTRACT_V8](../chega_junto_backend/docs/API_CONTRACT_V8.md). Comandos locais: pytest/Ruff/compileall, testes/analyze Flutter, npm test Portal, build Web release e APK debug com DATA_SOURCE=api/API_BASE_URL do Render. A integração segue [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Responses](https://developers.openai.com/api/docs/guides/migrate-to-responses), [transcrição](https://developers.openai.com/api/docs/guides/speech-to-text) e [record](https://pub.dev/packages/record/versions/6.2.1).
+Contrato: [API_CONTRACT_V8](../chega_junto_backend/docs/API_CONTRACT_V8.md). Comandos: pytest, Ruff check/format, compileall; flutter test/analyze; npm test no Portal; flutter build web --release e build apk --debug com DATA_SOURCE=api/API_BASE_URL Render. Não executar novamente smoke OpenAI automaticamente: o orçamento autorizado já foi usado.
 
-Relatório parcial: validações de microfone/transcrição desktop e Safari físico ainda dependem da participação do usuário. Não considerar V8 pronta para aceite enquanto essas evidências estiverem pendentes. Não criar tag V8 sem aprovação posterior do usuário.
+Referências oficiais: [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Responses](https://developers.openai.com/api/docs/guides/migrate-to-responses), [transcrição](https://developers.openai.com/api/docs/guides/speech-to-text), [record 6.2.1](https://pub.dev/packages/record/versions/6.2.1).
+
+## Arquivos alterados desde V7
+- `chega_junto_app/README.md`
+- `chega_junto_app/android/app/src/main/AndroidManifest.xml`
+- `chega_junto_app/integration_test/audio_capture_v8_test.dart`
+- `chega_junto_app/lib/app/app.dart`
+- `chega_junto_app/lib/app/app_dependencies.dart`
+- `chega_junto_app/lib/core/network/api_client.dart`
+- `chega_junto_app/lib/core/services/ai_assistant_service.dart`
+- `chega_junto_app/lib/core/services/audio_capture_service.dart`
+- `chega_junto_app/lib/core/services/audio_draft_service.dart`
+- `chega_junto_app/lib/core/services/record_audio_capture_service.dart`
+- `chega_junto_app/lib/core/state/report_controller.dart`
+- `chega_junto_app/lib/core/widgets/preparation_view.dart`
+- `chega_junto_app/lib/data/api/api_ai_assistant_service.dart`
+- `chega_junto_app/lib/data/api/api_audio_draft_service.dart`
+- `chega_junto_app/lib/data/mock/mock_ai_assistant_service.dart`
+- `chega_junto_app/lib/data/mock/mock_audio_draft_service.dart`
+- `chega_junto_app/lib/features/ai_summary/presentation/pages/ai_summary_page.dart`
+- `chega_junto_app/lib/features/ai_summary/presentation/pages/report_processing_page.dart`
+- `chega_junto_app/lib/features/pre_visit_report/presentation/pages/audio_report_page.dart`
+- `chega_junto_app/lib/features/pre_visit_report/presentation/pages/pre_visit_report_page.dart`
+- `chega_junto_app/pubspec.lock`
+- `chega_junto_app/pubspec.yaml`
+- `chega_junto_app/test/ai_v8_test.dart`
+- `chega_junto_app/test/api_widget_test.dart`
+- `chega_junto_app/test/report_controller_test.dart`
+- `chega_junto_app/test/report_flow_test.dart`
+- `chega_junto_app/test_driver/audio_capture_v8_driver.dart`
+- `chega_junto_backend/.env.example`
+- `chega_junto_backend/README.md`
+- `chega_junto_backend/app/api/audio_upload_limit.py`
+- `chega_junto_backend/app/api/v1/ai.py`
+- `chega_junto_backend/app/core/config.py`
+- `chega_junto_backend/app/main.py`
+- `chega_junto_backend/app/models/__init__.py`
+- `chega_junto_backend/app/models/ai_usage.py`
+- `chega_junto_backend/app/schemas/ai.py`
+- `chega_junto_backend/app/services/ai_provider.py`
+- `chega_junto_backend/app/services/ai_quota.py`
+- `chega_junto_backend/app/services/openai_provider.py`
+- `chega_junto_backend/app/services/report_ai.py`
+- `chega_junto_backend/docs/API_CONTRACT_V8.md`
+- `chega_junto_backend/migrations/versions/20261013_0005_ai_usage.py`
+- `chega_junto_backend/pyproject.toml`
+- `chega_junto_backend/tests/conftest.py`
+- `chega_junto_backend/tests/fake_ai_provider.py`
+- `chega_junto_backend/tests/test_ai_api.py`
+- `chega_junto_backend/tests/test_ai_provider.py`
+- `chega_junto_backend/tests/test_ai_upload.py`
+- `chega_junto_backend/tests/test_models_migration.py`
+- `chega_junto_backend/tests/test_mysql_migrations.py`
+- `chega_junto_backend/uv.lock`
+- `docs/RELATORIO_APK_ANDROID_0_7_0.md`
+- `docs/RELATORIO_IA_REAL_V8.md`

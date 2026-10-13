@@ -130,6 +130,37 @@ void main() {
   );
 
   testWidgets(
+    'empty report keeps normal typography navigation and refresh recovery',
+    (tester) async {
+      api.emptyOverview = true;
+      await mount(tester, AppRoutes.report);
+      final empty = find.text('Nenhum próximo atendimento para preparar.');
+      expect(empty, findsOneWidget);
+      expect(
+        find.ancestor(of: empty, matching: find.byType(Scaffold)),
+        findsOneWidget,
+      );
+      expect(
+        DefaultTextStyle.of(tester.element(empty)).style.decoration,
+        isNot(TextDecoration.underline),
+      );
+      expect(find.byType(AppBottomNavigation), findsOneWidget);
+      api.emptyOverview = false;
+      await tester.tap(find.text('Atualizar atendimentos'));
+      await tester.pumpAndSettle();
+      expect(empty, findsNothing);
+      expect(
+        find.text('O que você gostaria de contar ao profissional?'),
+        findsOneWidget,
+      );
+      expect(api.mutations, isEmpty);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
     'Agenda reload and details show cancellation without active preparation actions',
     (tester) async {
       await mount(tester, AppRoutes.agenda);
