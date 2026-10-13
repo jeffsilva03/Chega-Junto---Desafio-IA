@@ -1,6 +1,6 @@
-# Portal Web Simulador de Agendamentos
+# Portal Web de Agendamentos
 
-**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Portal acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente dados fictícios de pacientes e agendamentos. O modo simulator continua exclusivamente local; modo operator publicado no Firebase. Migration, criação manual do operador e deploys concluídos; login real/E2E/iPhone e tag V7 pendentes.
+**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Portal acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente dados fictícios de pacientes e agendamentos. O modo simulator continua exclusivamente local; modo operator publicado no Firebase. Migration, criação manual do operador, deploys, autenticação/isolamento, E2E desktop e recebimento no iPhone físico validados.
 
 ## Portal autenticado V7
 
@@ -20,7 +20,7 @@ Build usa allowlist, sem dependências adicionais, copiando somente index.html/c
 
 No domínio público, API é HTTPS Render e namespace `/api/v1/operator` com Bearer; não envia header simulator. Login aceita e-mail válido de qualquer domínio, inclusive `@gmail.com`, e senha de 8–128 caracteres, conforme o cadastro administrativo. Localmente, `serve.py --api-base http://127.0.0.1:8000 --mode operator` oferece o mesmo login contra API local explicitamente configurada. Backend local exige chave efêmera privada e flag de operador quando esse modo for testado; o segredo de produção permanece só no Render. O modo simulator exige `--mode simulator`, API/servidor loopback e os guards V4 abaixo.
 
-[Contrato V7](../chega_junto_backend/docs/API_CONTRACT_V7.md) e [estado da publicação V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). Sem recuperação de senha/MFA/refresh/RBAC avançado/auditoria completa/cadastro de unidades. Commit de implementação publicado após testes/migration/operador/auditoria; tag V7 depende das validações públicas E2E/iPhone restantes.
+[Contrato V7](../chega_junto_backend/docs/API_CONTRACT_V7.md) e [relatório completo V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). Sem recuperação de senha/MFA/refresh/RBAC avançado/auditoria completa/cadastro de unidades. Login/logout/reload, teclado, busca, filtros, criação, checklist, edição e cancelamento conferidos publicamente; tokens cruzados recusados e consulta recebida no iPhone. Checkpoint V7 fechado após essas validações.
 
 O operador localiza um usuário por e-mail, consulta agendamentos paginados, cria, visualiza, edita e cancela consultas. As unidades vêm de `facilities`. O portal só conversa com FastAPI; não possui driver, credenciais ou acesso ao MySQL. Flutter e portal compartilham a mesma fonte de verdade no Aiven.
 

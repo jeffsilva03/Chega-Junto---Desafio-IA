@@ -1,6 +1,6 @@
 # Chega Junto — Portal público de agendamentos V7
 
-Atualização: 13/10/2026. **Status: implementação publicada na main, backend V7 ativo no Render e portal publicado no Firebase.** Migration aplicada no Aiven; um operador criado pelo usuário em terminal privado e confirmado por contagem. Verificações públicas de saúde, proteção, CORS e artefatos aprovadas. Login real, tokens cruzados em produção, E2E e iPhone V7 ainda pendentes; tag V7 não criada.
+Atualização: 13/10/2026. **Status: validações V7 concluídas com sucesso, incluindo produção, autenticação, tokens cruzados, E2E desktop e Safari em iPhone físico.** Backend ativo no Render e portal publicado no Firebase. Migration aplicada no Aiven; um operador criado pelo usuário em terminal privado. Este relatório descreve o estado validado para fechamento do checkpoint V7, após auditoria final e push do commit de documentação.
 
 **AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Somente dados fictícios; sem integração SUS/governamental ou prontuário.
 
@@ -42,7 +42,7 @@ Operador só acessa identificação mínima e dados de agendamento/unidade/check
 
 Aplicação vanilla existente preservada; nova tela/estado de login de operador, aviso demonstrativo permanente, sem signup. Token exclusivamente em memória; reload exige login. Logout/401 limpam sessão e dados visíveis. Requests pendentes são abortados; respostas tardias não restauram dados após logout. Sem retry automático de POST/PATCH/cancelamento. Erros são sanitizados e nome/e-mail são renderizados como texto.
 
-Durante a verificação pública em janela estreita, a regra CSS histórica até 800px ocultava todo o bloco de operador, incluindo Sair. Ajustada para ocultar somente identidade/sino nesse tamanho, preservando o botão de logout. Os 29 testes do portal e o build foram reexecutados com sucesso após o ajuste; conferência visual autenticada ainda pendente após nova publicação/reload.
+Durante a verificação pública em janela estreita, a regra CSS histórica até 800px ocultava todo o bloco de operador, incluindo Sair. Ajustada para ocultar somente identidade/sino nesse tamanho, preservando o botão de logout. Os 29 testes do portal e o build foram reexecutados com sucesso e a correção publicada. Logout exercitado na sessão autenticada; após reload com CSS novo, o bloco de operador mantém display flex em 784px. Override temporário de viewport restaurado.
 
 Modo público usa `https://chega-junto-api.onrender.com` e `/api/v1/operator`, com Authorization Bearer; não envia header simulator. Configuração local gerada em memória por serve.py permite modo operator ou simulator explícito, apenas com API loopback. Nenhum SDK/Auth Firebase, PWA ou service worker novo.
 
@@ -85,9 +85,9 @@ Verificação antes do upgrade: revision `20261012_0003`, 16 tabelas de domínio
 
 Aplicado `uv run alembic upgrade head`, exclusivamente a nova 0004. `alembic current`: **`20261012_0004 (head)`**; `alembic check`: **No new upgrade operations detected**. Comparação após migration: fingerprints e contagens das 16 tabelas anteriores **idênticos**, nenhuma tabela com registros alterados; 19 FKs/zero órfãos; **operators=0**. Nenhum seed, downgrade, reset ou alteração de credenciais. A API Render anterior continua compatível com a extensão aditiva do schema.
 
-Auditoria pré-migration: **347 arquivos versionáveis**, quatro valores reais locais comparados somente em memória, zero achados de credenciais, JWT/hash completos, PEM, cookies, token Firebase/GitHub, host Aiven ou IP particular. **52 arquivos de frontend** (41 Flutter + 11 portal dist), zero valores reais/segredos/tokens/certificados. Referências a nomes de variáveis, contratos Bearer e loopback em testes/configuração local são intencionais; o modo público seleciona exclusivamente HTTPS Render. Build/dist/caches/capturas/QA continuam ignorados. Auditoria final de produção será repetida após deploy.
+Auditoria pré-migration e final: **347 arquivos versionáveis**, quatro valores reais locais comparados somente em memória, zero achados de credenciais, JWT/hash completos, PEM, cookies, token Firebase/GitHub, host Aiven ou IP particular. **52 arquivos de frontend** (41 Flutter + 11 portal dist), zero valores reais/segredos/tokens/certificados. Referências a nomes de variáveis, contratos Bearer e loopback em testes/configuração local são intencionais; o modo público seleciona exclusivamente HTTPS Render. Build/dist/caches/capturas/QA continuam ignorados. Auditoria de produção repetida após deploy e E2E, incluindo bytes/headers dos 11 arquivos públicos e preservação do hash Flutter.
 
-Preview visual do novo login observado, com banner e campos acessíveis, senha limpa após tentativa e erro sanitizado; não foi teste de login real de operador. A porta temporária 5501 não integra o CORS local e não será acrescentada preventivamente. Captura ignorada em `.local/firebase-qa/v7-operator-login-preview.png` do app. Preview e container encerrados; portal original em 5500 reiniciado com `--mode simulator` explícito, preservando o ambiente local.
+Na preparação local, preview visual do novo login observado com banner e campos acessíveis, senha limpa após tentativa e erro sanitizado; esse preview não foi teste de login real de operador. A porta temporária 5501 não integra o CORS local. Captura ignorada em `.local/firebase-qa/v7-operator-login-preview.png` do app. Preview e container foram encerrados; durante aquela etapa, o portal original em 5500 foi reiniciado com `--mode simulator` explícito. O fluxo final V7 utiliza as URLs públicas Firebase/Render.
 
 Depois dos testes e da migration validada, **o usuário deve executar em seu terminal privado**:
 
@@ -102,29 +102,66 @@ Confirmação posterior do usuário: operador criado com sucesso no terminal pri
 
 ## Publicação realizada e verificações públicas
 
-Commit de implementação `f54a2dbd4fdf70e7f91d68d636f1d5df6adf1db4`, mensagem `feat: publica portal de agendamentos com auth de operador V7`: 38 arquivos intencionais, 1370 inserções/51 remoções. Auditoria staged sem achados; diff --check limpo. Commit/push na main após migration, criação manual do operador e testes. V6 permanece `24794e296f0eb63ad60af42d594106b96ff70c66`; objetos e commits V1–V6 remotos conferidos e intactos. Nenhuma tag V7 criada.
+Commit de implementação `f54a2dbd4fdf70e7f91d68d636f1d5df6adf1db4`, mensagem `feat: publica portal de agendamentos com auth de operador V7`: 38 arquivos intencionais, 1370 inserções/51 remoções. Auditoria staged sem achados; diff --check limpo. Commit/push na main após migration, criação manual do operador e testes. V6 permanece `24794e296f0eb63ad60af42d594106b96ff70c66`; objetos e commits V1–V6 remotos conferidos e intactos.
+
+Commits posteriores normais, sem reescrita: `bb1701303a5a663a5313acf1c8bed44d0718f3bf` registra o deploy e `0a7eb3d1976386783b17d7cc91822e4fcdc460c5` corrige o logout responsivo. A correção CSS foi publicada somente em hosting:portal. Código/dependências/migrations/scripts de backend conferidos idênticos ao commit efetivamente implantado no Render; todos os arquivos Flutter idênticos à V6. O commit final deste relatório contém apenas documentação, mantendo o código já validado.
 
 Render: deploy manual da implementação `dep-db6npe2j9qps739pt7pg` concluído em 12/10, duração 2m19s. Atualização final somente de CORS em 13/10, com build existente, deploy `dep-db7088qj9qps73ap2r1g`, duração 31,7s, Live no mesmo commit. Plano Free, comandos/runtime e TLS mantidos. `OPERATOR_PORTAL_ENABLED=true`, validade 60 minutos e segredo próprio no Render. SIMULATOR_MODE permanece false.
 
 Verificações HTTPS após publicação: `/health` 200 com status/database ok; `/api/v1/simulator/appointments` 404; `/api/v1/operator/auth/me` sem token 401; `/api/v1/me/profile` sem token 401. OpenAPI expõe nove operações operator e OperatorBearer, sem simulator. Preflight das duas origens do portal retorna 200 com Access-Control-Allow-Origin exato; duas origens Flutter preservadas também aprovadas. Origem desconhecida retorna 400 sem permissão. A primeira verificação identificou ausência das origens portal na configuração salva; corrigida e comprovada antes do deploy Firebase.
 
-CLI Firebase publicou somente hosting:portal com sucesso; segundo site separado, sem substituir Flutter. Interface pública de login/banner observada. O plano foi reconfirmado sem Cloud Billing vinculado antes da publicação. A sessão de navegador anterior não foi preservada entre retomadas; entrada privada de operador e paciente fictício solicitada ao usuário, sem novas contas ou pedido de senha no chat.
+CLI Firebase publicou somente hosting:portal com sucesso; segundo site separado, sem substituir Flutter. Interface pública de login/banner observada. O plano foi reconfirmado sem Cloud Billing vinculado antes da publicação. A sessão de navegador anterior não foi preservada entre retomadas; o usuário autenticou operador e paciente privadamente. Não houve pedido de senha no chat nem novo cadastro de paciente executado pelo agente durante o E2E V7.
 
-## Validações ainda necessárias
+## Autenticação pública e proteções
 
-1. Confirmar login real de operador/paciente usando suas telas públicas, com senhas mantidas privadas. Conta de paciente deve ser fictícia.
-2. Validar tokens cruzados em produção usando logins reais via QA manual privada; nenhum token deve ser extraído do runtime do navegador ou exposto em logs/arquivos. A configuração JWT local não deve ser presumida igual à de produção.
-3. Verificações públicas de saúde/proteção/OpenAPI/CORS já aprovadas conforme seção acima.
-4. Deploy Firebase e conferência de conteúdo/cache/CSP/site Flutter já aprovados conforme seção acima.
-5. Login real seguro no portal; erro de senha, loading/teclado, logout, busca, unidades, lista/filtros. Nenhum segredo em console, CORS exato e sem Mixed Content.
-6. E2E desktop com conta fictícia: criar consulta futura/checklist, verificar Home/Agenda/Detalhes/Preparo no app, concluir obrigatório/progresso, editar horário e conferir, cancelar e confirmar ausência da próxima ativa.
-7. Usuário valida recebimento da consulta no Safari de iPhone físico pela URL pública. A validação V6 não comprova automaticamente o E2E remoto V7.
-8. Auditoria final Git/builds/sites/docs e status limpo com main sincronizada. Só então tag anotada V7, push somente V7, hashes conferidos e V1–V6 preservadas. Sem amend/force push.
+Usuário confirmou entrada nas duas aplicações públicas. Dashboard de operador, busca exata de conta demonstrativa, unidades, listagem, filtro Cancelada e detalhes administrativos foram exercitados pelo agente. Conta usada no E2E foi expressamente confirmada pelo usuário como exclusivamente demonstrativa, com dados fictícios; nenhum e-mail de paciente foi incluído neste relatório.
+
+Login inválido em aba separada apresentou “E-mail ou senha inválidos.” e limpou a senha; tentativa usou entrada efêmera de oito caracteres, sem impressão/arquivo. Loading observado em buscas e salvamentos. Teclado Tab percorre e-mail → senha → Entrar. Logout limpou os dados visíveis e voltou ao login; reload permaneceu no login, sem restaurar a sessão. Console de erro do app e portal autenticados: vazio; sem CORS/Mixed Content no fluxo aprovado.
+
+QA privada executada pelo usuário em seu terminal, com getpass e requests HTTPS para o Render. Somente resultados agregados foram compartilhados, sem senhas/tokens. Logins reais em produção, sem presumir igualdade de chaves locais/de produção:
+
+| Verificação | HTTP |
+| --- | --- |
+| Login operador | 200 |
+| Identidade operador | 200 |
+| Token operador na API de paciente | 401 |
+| Senha incorreta de operador | 401 |
+| Operador inexistente | 401 |
+| Login paciente demonstrativo | 200 |
+| Token paciente válido na própria API | 200 |
+| Token paciente na API de operador | 401 |
+
+Mensagem final confirmada: “Autenticação e isolamento aprovados.” O script local ignorado não grava tokens/senhas, não altera dados e não extrai estado privado do navegador.
+
+## E2E público desktop e iPhone
+
+E2E desktop realizado pelo agente nas duas URLs Firebase:
+
+1. Estado inicial do paciente sem próximo atendimento ativo.
+2. Busca do paciente confirmado como demonstrativo pelo e-mail exato no portal.
+3. Criação de consulta fictícia de Clínica Geral, Dra. Ana Teste, UBS Centro, 20/10/2026 às 09:30 (São Paulo), orientação “Chegar com 20 minutos de antecedência.”.
+4. Checklist com Documento com foto obrigatório e Cartão SUS opcional, tipos booleanos conferidos.
+5. Atualização pelo botão do app: próxima consulta na Home e consulta na Agenda; Detalhes com profissional, unidade, data/hora, orientação e documentos corretos. Checklist/Preparo vinculados à consulta recebida.
+6. Documento obrigatório marcado: checklist passou de 0% para 100%, mantendo opcional desmarcado. Home mostrou 25% geral, 1 de 4 etapas, Documentos e preparo concluído.
+7. Edição pelo portal para 10:15. Nova atualização no app confirmou horário e preservou a conclusão do documento/progresso.
+8. Cancelamento pelo portal, registro mantido como Cancelada. App atualizado deixou de apresentar a consulta como próxima ativa.
+
+Após o desktop, criada uma segunda consulta fictícia somente para a validação física, mesma especialidade/profissional/unidade e checklist, em 21/10/2026 às 11:00. Usuário abriu a URL pública no Safari de iPhone físico, entrou na mesma conta demonstrativa e confirmou que a consulta apareceu. Validação manual V7 realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Não foram registrados modelo, versão iOS, rede específica ou desempenho.
+
+Depois da confirmação do iPhone, a segunda consulta também foi cancelada pelo agente no portal. As duas permanecem registradas como Cancelada; app do computador atualizado novamente confirmou ausência de próximo atendimento ativo. Nenhum registro preexistente foi editado/cancelado por esse teste. Capturas de QA permanecem somente na pasta .local ignorada, fora do Git e dos sites publicados.
+
+## Integridade final e fechamento
+
+Conferência final por fingerprints: as 16 tabelas originais preservam exatamente seus registros/contagens, ao separar as adições demonstrativas posteriores ao snapshot. Há uma conta demonstrativa adicional já autenticada ao iniciar o E2E, com seu perfil/preferências, além de duas novas consultas e quatro itens de checklist deste teste. Totais atuais: 9 pacientes, 8 consultas e 1 operador ativo. As duas consultas de teste estão canceladas. **19 FKs, zero órfãos; 0004 (head), Alembic check sem operações pendentes.** Nenhum hash, senha, dado clínico ou credencial foi emitido pelas verificações agregadas.
+
+Validações exigidas aprovadas: backend 389 testes (um opt-in MySQL pulado na suíte normal, aprovado separadamente), Flutter 162, portal 29 após a correção CSS, analyze/Ruff/format/compileall, MySQL isolado, Aiven, Render, dois sites Firebase, autenticação/isolamento, E2E desktop, iPhone físico e auditorias. Git, builds e documentação não contêm segredos; publicação estática contém somente os 11 arquivos permitidos. Não foi habilitado billing/Auth Firebase.
+
+Procedimento do checkpoint: auditar e commit/push normal deste relatório, confirmar working tree limpa e main/origin sincronizadas, criar tag anotada `V7` com mensagem `V7 - Portal publico de agendamentos` apontando ao HEAD final, conferir hashes iguais e publicar somente `git push origin V7`. Conferir V1–V6 intactas. A referência V7 identifica o commit final deste relatório; seu hash completo deve ser obtido por `git rev-list -n 1 V7`, sem alterar o relatório para tentar incluir o próprio hash. Não usar amend/force push ou git push --tags.
 
 ## Limitações
 
 Demonstrativo, sem SUS/governo; operador manual, token em memória, sem recuperação de senha, MFA, refresh, RBAC avançado, auditoria administrativa completa, cadastro de unidades ou dados clínicos pelo portal. CORS não é autorização. Cancelamento mantém relações e não revoga o JWT de paciente. Escritas com timeout precisam de leitura antes de repetir. As limitações Render Free e a rotação histórica pendente documentada na V5 permanecem, sem mudança automática de credenciais.
 
-Sem IA/áudio/transcrição reais, OAuth, push/WebSocket, domínio customizado, keep-alive ou billing. Login real/tokens cruzados em produção, E2E/iPhone e tag V7 ainda pendentes.
+Sem IA/áudio/transcrição reais, OAuth, push/WebSocket, domínio customizado, keep-alive ou billing. Validações públicas V7 concluídas; nenhuma fase V8 iniciada.
 
 Fontes oficiais consultadas: [Firebase multisites](https://firebase.google.com/docs/hosting/multisites), [PyJWT usage](https://pyjwt.readthedocs.io/en/stable/usage.html), [Argon2-cffi](https://argon2-cffi.readthedocs.io/en/stable/howto.html).

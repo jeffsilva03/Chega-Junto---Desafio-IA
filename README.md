@@ -1,6 +1,6 @@
 # Chega Junto
 
-Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint oficial `V6` publica o Flutter Web no Firebase, conectado ao Render/Aiven. V1–V5 permanecem preservadas.
+Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint `V7` publica o Portal de Agendamentos autenticado, conectado ao Render/Aiven e ao aplicativo Flutter Web da V6. V1–V6 permanecem preservadas.
 
 Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Hosting Spark → FastAPI no Render → MySQL no Aiven. O Portal Simulador permanece local. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Consulte o [relatório da publicação Web V6](docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).
 
@@ -15,9 +15,9 @@ Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Ho
 - `Identidade Visual/`: referência da identidade do projeto.
 - `Landing Page/`: código-fonte da landing page existente.
 
-## Portal Simulador
+## Portal de Agendamentos
 
-Portal de Agendamentos publicado em **https://chega-junto-agendamentos.web.app**, com autenticação própria de operador, namespace `/api/v1/operator` e segundo site Firebase. Migration, criação segura do operador e deploys Render/Firebase concluídos; login real/E2E/iPhone e tag V7 ainda pendentes. Confira o [relatório V7](docs/RELATORIO_PORTAL_PUBLICO_V7.md). O simulador local abaixo continua separado e não será liberado na internet.
+Portal de Agendamentos publicado em **https://chega-junto-agendamentos.web.app**, com autenticação própria de operador, namespace `/api/v1/operator` e segundo site Firebase. Migration, criação segura do operador, deploys, autenticação/isolamento e fluxo público de criação/checklist/edição/cancelamento aprovados. Recebimento de consulta no Safari de iPhone físico confirmado pelo usuário. Confira o [relatório V7](docs/RELATORIO_PORTAL_PUBLICO_V7.md). O simulador local abaixo continua separado e não será liberado na internet.
 
 **AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Ferramenta acadêmica local para buscar usuários fictícios e criar, visualizar, editar e cancelar agendamentos na mesma API usada pelo aplicativo. Não representa integração real com SUS ou gov.br. Não acessa prontuário ou dados clínicos e não está autorizado para exposição pública.
 

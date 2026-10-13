@@ -1,6 +1,6 @@
 # API V7 — Portal de Agendamentos demonstrativo
 
-**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Extensão da V4; não representa SUS/gov.br nem concede acesso a prontuário. Pacientes continuam usando o contrato V3/V4 com seu próprio JWT. Backend V7 publicado no Render e portal no Firebase; E2E/iPhone e tag ainda pendentes. Conferir o [relatório](../../docs/RELATORIO_PORTAL_PUBLICO_V7.md) para o estado efetivamente validado.
+**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Extensão da V4; não representa SUS/gov.br nem concede acesso a prontuário. Pacientes continuam usando o contrato V3/V4 com seu próprio JWT. Backend V7 publicado no Render e portal no Firebase; autenticação/isolamento em produção, E2E desktop e recebimento de consulta no iPhone físico aprovados. Conferir o [relatório](../../docs/RELATORIO_PORTAL_PUBLICO_V7.md) para as evidências e limites da validação.
 
 ## Ativação e identidade
 
