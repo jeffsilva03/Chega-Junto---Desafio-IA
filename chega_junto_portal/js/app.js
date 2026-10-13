@@ -1,4 +1,4 @@
-import {createApi} from './api.js';
+import {createApi, PUBLIC_API} from './api.js';
 import {filtersFrom, localParts, payloadFrom, statuses, withLoading} from './domain.js';
 
 const $ = selector => document.querySelector(selector);
@@ -214,13 +214,37 @@ form.onsubmit=event=>{
   } catch(error) { message(error.message,true); }
 };
 
-async function start() {
+function showLogin(text='') {
+  api?.logout();
+  listGeneration++; editorGeneration++; clearTimeout(filterTimer);
+  patient=null; editorPatient=null; editingId=null; offset=0; busy=false;
+  $('#login-screen').hidden=false; $('.workspace').hidden=true;
+  $('#operator-identity').hidden=true; $('#logout').hidden=true;
+  $('#operator-name').textContent='';
+  $('#appointment-form').reset(); $('#search-form').reset(); $('#filter-form').reset();
+  $('#login-form').reset(); $('#editor').hidden=true;
+  $('#patient-result').replaceChildren(); $('#patient-result').hidden=true;
+  $('#editor-patient').replaceChildren(); $('#checklist').replaceChildren();
+  $('#appointments').replaceChildren(); $('#page-info').textContent='';
+  $('#specialty-options').replaceChildren(); $('#professional-options').replaceChildren();
+  $('#cancel-description').textContent='';
+  if ($('#cancel-dialog').open) $('#cancel-dialog').close('back');
+  $('#message').hidden=true; $('#message-text').textContent='';
+  $('#login-error').textContent=text; $('#login-error').hidden=!text;
+  $('#login-form').elements.namedItem('email').focus();
+}
+
+async function loadDashboard(identity) {
   $('#new-appointment').disabled=true;
   const controls=[...document.querySelectorAll('#search-form button,#filter-form button,.pagination button')];
   controls.forEach(control=>control.disabled=true);
-  const response=await fetch('./config.json',{cache:'no-store'});
-  if (!response.ok) throw new Error('Inicie o portal com serve.py e configure --api-base.');
-  api=createApi((await response.json()).apiBaseUrl);
+  $('#operator-name').textContent=identity.full_name;
+  $('#operator-identity').hidden=false;
+  $('#logout').hidden=portalMode === 'simulator';
+  $('#login-screen').hidden=true; $('.workspace').hidden=false;
+  for (const select of document.querySelectorAll('.facility-select')) {
+    while (select.options.length>1) select.remove(1);
+  }
   let page=0;
   while (true) {
     const result=await api.facilities({limit:100,offset:page});
@@ -235,4 +259,39 @@ async function start() {
   controls.forEach(control=>control.disabled=false);
   await loadList();
 }
-start().catch(error=>message(error.message ?? 'Não foi possível iniciar o portal.',true));
+
+let portalMode='operator';
+$('#logout').onclick=()=>showLogin();
+$('#login-form').onsubmit=event=>{
+  event.preventDefault();
+  if ($('#login-submit').disabled) return;
+  const loginForm=event.currentTarget;
+  $('#login-error').hidden=true;
+  withLoading($('#login-submit'),async()=>{
+    const email=loginForm.elements.namedItem('email').value;
+    let password=loginForm.elements.namedItem('password').value;
+    const pending=api.login(email,password);
+    loginForm.elements.namedItem('password').value=''; password=null;
+    await pending;
+    const identity=await api.me();
+    loginForm.reset();
+    await loadDashboard(identity);
+  }).catch(error=>showLogin(error.message));
+};
+async function start() {
+  const local=['127.0.0.1','localhost','[::1]'].includes(location.hostname);
+  let config={apiBaseUrl:PUBLIC_API,mode:'operator'};
+  if (local) {
+    const response=await fetch('./config.json',{cache:'no-store'});
+    if (!response.ok) throw new Error('Inicie o portal com serve.py e configure --api-base.');
+    config=await response.json();
+  }
+  portalMode=config.mode ?? 'operator';
+  api=createApi(config.apiBaseUrl,fetch,{mode:portalMode,onUnauthorized:()=>showLogin('Sua sessão expirou. Entre novamente.')});
+  $('#login-submit').disabled=false;
+  if (portalMode === 'simulator') await loadDashboard({full_name:'Simulador local'});
+}
+start().catch(error=>{
+  $('#login-error').textContent=error.message ?? 'Não foi possível iniciar o portal.';
+  $('#login-error').hidden=false;
+});

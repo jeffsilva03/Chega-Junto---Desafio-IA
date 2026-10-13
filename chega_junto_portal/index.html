@@ -14,11 +14,25 @@
     <a class="brand" href="./"><img src="assets/portal-mark.svg" width="52" height="52" alt=""><span><strong>Portal da Unidade</strong><small>Simulador de Agendamentos</small></span></a>
     <div class="operator">
       <button class="icon-button header-bell" type="button" disabled aria-label="Notificações indisponíveis no simulador" title="Notificações de operador não fazem parte desta fase"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#bell"></use></svg></button>
-      <span class="operator-identity"><span class="avatar" aria-hidden="true"><svg class="icon"><use href="assets/icons.svg#user"></use></svg></span><span>Operador de Atendimento</span><svg class="icon chevron" aria-hidden="true"><use href="assets/icons.svg#down"></use></svg></span>
-      <button class="header-exit link-button" type="button" disabled title="Ambiente local, sem autenticação de operador"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#exit"></use></svg>Sair</button>
+      <span class="operator-identity" id="operator-identity" hidden><span class="avatar" aria-hidden="true"><svg class="icon"><use href="assets/icons.svg#user"></use></svg></span><span id="operator-name"></span></span>
+      <button id="logout" class="header-exit link-button" type="button" hidden><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#exit"></use></svg>Sair</button>
     </div>
   </header>
-  <div class="workspace">
+  <main id="login-screen" class="login-screen">
+    <section class="login-panel" aria-labelledby="login-title">
+      <img src="assets/portal-mark.svg" width="64" height="64" alt="">
+      <h1 id="login-title">Acesso do operador</h1>
+      <p>Entre para gerenciar os agendamentos demonstrativos do Chega Junto.</p>
+      <form id="login-form">
+        <label>E-mail<input name="email" type="email" required maxlength="254" autocomplete="username"></label>
+        <label>Senha<input name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password"></label>
+        <p id="login-error" role="alert" hidden></p>
+        <button id="login-submit" type="submit" disabled>Entrar</button>
+      </form>
+      <p class="scope-note">Uso exclusivo com contas e dados fictícios. Ao recarregar a página, entre novamente.</p>
+    </section>
+  </main>
+  <div class="workspace" hidden>
     <nav class="sidebar" aria-label="Navegação principal">
       <button type="button" disabled title="Fora do escopo desta fase"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#home"></use></svg>Visão geral</button>
       <a href="#main" aria-current="page"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#calendar"></use></svg>Agendamentos</a>

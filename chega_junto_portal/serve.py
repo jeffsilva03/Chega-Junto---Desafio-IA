@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api-base", required=True)
     parser.add_argument("--port", type=int, default=5500)
+    parser.add_argument("--mode", choices=("operator", "simulator"), default="operator")
     args = parser.parse_args()
     url = urlsplit(args.api_base)
     if url.scheme not in {"http", "https"} or url.hostname not in {"localhost", "127.0.0.1", "::1"} or url.username or url.password or url.path not in {"", "/"} or url.query or url.fragment:
@@ -29,7 +30,7 @@ def main():
                 self.send_error(403)
                 return
             if urlsplit(self.path).path == "/config.json":
-                content = json.dumps({"apiBaseUrl": args.api_base}).encode()
+                content = json.dumps({"apiBaseUrl": args.api_base, "mode": args.mode}).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(content)))

@@ -12,7 +12,7 @@ from app.services.common import pagination, transaction, validate_child_ids
 from app.services.preparation import appointment_dto
 
 
-class SimulatorService:
+class SchedulingService:
     def __init__(self, session):
         self.session = session
         self.repository = SimulatorRepository(session)
@@ -149,3 +149,7 @@ class SimulatorService:
             self.session.flush()
             result = self.get(row.id)
         return result
+
+
+# Compatibilidade da API local V4; ambos os routers usam a mesma implementação.
+SimulatorService = SchedulingService

@@ -1,0 +1,12 @@
+{
+  "projects": {"default": "chega-junto-desafio-ia"},
+  "targets": {
+    "chega-junto-desafio-ia": {
+      "hosting": {
+        "portal": [
+          "chega-junto-agendamentos"
+        ]
+      }
+    }
+  }
+}

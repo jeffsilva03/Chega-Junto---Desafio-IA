@@ -1,6 +1,26 @@
 # Portal Web Simulador de Agendamentos
 
-**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Simulador acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente contas e dados fictícios. Ainda não autorizado para exposição pública.
+**AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Portal acadêmico do Chega Junto, sem integração com SUS, gov.br ou sistemas governamentais. Usar somente dados fictícios de pacientes e agendamentos. O modo simulator continua exclusivamente local; a V7 prepara o modo operator autenticado para publicação. Migration e criação manual do operador concluídas; deploy/E2E pendentes.
+
+## Portal autenticado V7
+
+Reutiliza esta aplicação, com login de operador e JWT próprio na FastAPI. Sem signup público/Firebase Auth. Token somente em memória: reload exige novo login. Logout e 401 limpam sessão, paciente, lista, editor e filtros; respostas antigas são descartadas. O operador pode identificar usuário por e-mail exato e gerenciar agendamentos/checklist, sem acesso a dados clínicos. Cadastro manual seguro explicado no [README backend](../chega_junto_backend/README.md#portal-autenticado--preparação-v7).
+
+Segundo site já criado no projeto `chega-junto-desafio-ia`, Site ID `chega-junto-agendamentos`, target `portal`. URLs reservadas https://chega-junto-agendamentos.web.app e https://chega-junto-agendamentos.firebaseapp.com; **conteúdo ainda não publicado**. App Flutter permanece no site original.
+
+Após backend V7 publicado e operador criado, na pasta portal:
+
+```powershell
+npm test
+npm run build
+firebase deploy --only hosting:portal --project chega-junto-desafio-ia
+```
+
+Build usa allowlist, sem dependências adicionais, copiando somente index.html/css/js/assets para dist ignorado. Firebase publica somente dist com target explícito. Não publicar a raiz da pasta. HTML/JS/CSS usam no-cache; assets max-age=3600, CSP/nosniff/no-referrer. Configuração separada preserva a publicação Flutter. Sem auto-deploy/PWA/service worker.
+
+No domínio público, API é HTTPS Render e namespace `/api/v1/operator` com Bearer; não envia header simulator. Login aceita e-mail válido de qualquer domínio, inclusive `@gmail.com`, e senha de 8–128 caracteres, conforme o cadastro administrativo. Localmente, `serve.py --api-base http://127.0.0.1:8000 --mode operator` oferece o mesmo login contra API local explicitamente configurada. Backend local exige chave efêmera privada e flag de operador quando esse modo for testado; o segredo de produção permanece só no Render. O modo simulator exige `--mode simulator`, API/servidor loopback e os guards V4 abaixo.
+
+[Contrato V7](../chega_junto_backend/docs/API_CONTRACT_V7.md) e [estado da publicação V7](../docs/RELATORIO_PORTAL_PUBLICO_V7.md). Sem recuperação de senha/MFA/refresh/RBAC avançado/auditoria completa/cadastro de unidades. Nenhum commit/tag V7 deve preceder as validações exigidas.
 
 O operador localiza um usuário por e-mail, consulta agendamentos paginados, cria, visualiza, edita e cancela consultas. As unidades vêm de `facilities`. O portal só conversa com FastAPI; não possui driver, credenciais ou acesso ao MySQL. Flutter e portal compartilham a mesma fonte de verdade no Aiven.
 
@@ -37,7 +57,7 @@ uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-proxy-headers
 Portal, em outro terminal na raiz:
 
 ```powershell
-uv run --project chega_junto_backend python chega_junto_portal/serve.py --api-base http://127.0.0.1:8000 --port 5500
+uv run --project chega_junto_backend python chega_junto_portal/serve.py --api-base http://127.0.0.1:8000 --port 5500 --mode simulator
 ```
 
 Abra `http://127.0.0.1:5500`. `--api-base` é obrigatório e gera `config.json` em memória: contém somente a origem pública da API. Não abra `index.html` com `file://`. O servidor aceita somente loopback; a porta adotada é 5500. Para outra porta, ajuste explicitamente `SIMULATOR_ALLOWED_ORIGINS` no backend. Preserve `CORS_ALLOWED_ORIGINS` do Flutter.

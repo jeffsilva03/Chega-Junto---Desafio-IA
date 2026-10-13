@@ -13,7 +13,9 @@ def isolate_environment(monkeypatch):
     monkeypatch.setitem(Settings.model_config, "env_file", None)
     for key in os.environ:
         if (
-            key.startswith(("DATABASE_", "APP_", "DEMO_", "CORS_", "AUTH_", "SIMULATOR_"))
+            key.startswith(
+                ("DATABASE_", "APP_", "DEMO_", "CORS_", "AUTH_", "SIMULATOR_", "OPERATOR_")
+            )
             or key == "LOG_LEVEL"
         ):
             monkeypatch.delenv(key, raising=False)

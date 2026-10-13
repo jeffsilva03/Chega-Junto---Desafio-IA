@@ -1,6 +1,6 @@
 # Chega Junto
 
-Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web Simulador, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint oficial `V4` acrescenta o Portal Simulador integrado à API e ao aplicativo. As tags históricas `V1`, `V2` e `V3` permanecem preservadas.
+Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint oficial `V6` publica o Flutter Web no Firebase, conectado ao Render/Aiven. V1–V5 permanecem preservadas.
 
 Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Hosting Spark → FastAPI no Render → MySQL no Aiven. O Portal Simulador permanece local. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Consulte o [relatório da publicação Web V6](docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).
 
@@ -16,6 +16,8 @@ Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Ho
 - `Landing Page/`: código-fonte da landing page existente.
 
 ## Portal Simulador
+
+A V7 prepara o Portal de Agendamentos com autenticação própria de operador, namespace `/api/v1/operator` e segundo site Firebase `chega-junto-agendamentos`. Migration e criação segura do operador concluídas; publicação ainda pendente de deploy e E2E/iPhone; confira o [relatório V7](docs/RELATORIO_PORTAL_PUBLICO_V7.md). O simulador local abaixo continua separado e não será liberado na internet.
 
 **AMBIENTE DEMONSTRATIVO — SISTEMA NÃO OFICIAL.** Ferramenta acadêmica local para buscar usuários fictícios e criar, visualizar, editar e cancelar agendamentos na mesma API usada pelo aplicativo. Não representa integração real com SUS ou gov.br. Não acessa prontuário ou dados clínicos e não está autorizado para exposição pública.
 

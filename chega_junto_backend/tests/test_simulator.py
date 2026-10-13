@@ -27,6 +27,33 @@ def simulator(api_database):
         yield client, database, application
 
 
+@pytest.fixture(params=["simulator", "operator"])
+def scheduling(request, api_database, monkeypatch):
+    if request.param == "simulator":
+        yield request.getfixturevalue("simulator")
+        return
+    from app.schemas.operator import OperatorCreate
+    from app.services.operator_auth import create_operator
+
+    database = api_database[1]
+    settings = Settings(
+        _env_file=None,
+        auth_mode="jwt",
+        operator_portal_enabled=True,
+        operator_auth_secret_key=secrets.token_urlsafe(32),
+    )
+    credentials = {"email": "operator@example.test", "password": secrets.token_urlsafe(24)}
+    with database.session() as session:
+        create_operator(session, OperatorCreate(full_name="Operador Fictício", **credentials))
+    application = create_app(settings, database)
+    monkeypatch.setattr(__import__(__name__, fromlist=["PREFIX"]), "PREFIX", "/api/v1/operator")
+    with TestClient(application) as client:
+        result = client.post("/api/v1/operator/auth/login", json=credentials)
+        assert result.status_code == 200
+        client.headers["Authorization"] = "Bearer " + result.json()["access_token"]
+        yield client, database, application
+
+
 def account(client):
     password = secrets.token_urlsafe(20)
     email = f"sim-{secrets.token_hex(5)}@example.test"
@@ -148,8 +175,8 @@ def test_cors_preserves_app_and_exact_portal_origins(api_database):
         )
 
 
-def test_search_minimal_normalized_and_unknown(simulator):
-    client, database, _ = simulator
+def test_search_minimal_normalized_and_unknown(scheduling):
+    client, database, _ = scheduling
     session, _ = account(client)
     queries = []
 
@@ -174,8 +201,8 @@ def test_search_minimal_normalized_and_unknown(simulator):
     assert client.get(PREFIX + "/users/search", params={"email": "invalid"}).status_code == 422
 
 
-def test_end_to_end_data_new_account_create_prepare_cancel(simulator):
-    client, database, _ = simulator
+def test_end_to_end_data_new_account_create_prepare_cancel(scheduling):
+    client, database, _ = scheduling
     session, password = account(client)
     user_id = session["user"]["id"]
     auth = {"Authorization": "Bearer " + session["access_token"]}
@@ -224,8 +251,8 @@ def test_end_to_end_data_new_account_create_prepare_cancel(simulator):
 
 
 @pytest.mark.parametrize("items", [[], [{"description": "Opcional", "required": False}]])
-def test_zero_required_documents_done(simulator, items):
-    client = simulator[0]
+def test_zero_required_documents_done(scheduling, items):
+    client = scheduling[0]
     session, record = create(client, checklist=items)
     response = client.get(
         f"/api/v1/appointments/{record['id']}/preparation",
@@ -252,15 +279,15 @@ def test_zero_required_documents_done(simulator, items):
         {"checklist": [{"id": "1", "description": "Documento", "required": True}]},
     ],
 )
-def test_invalid_creation(simulator, changes):
-    client = simulator[0]
+def test_invalid_creation(scheduling, changes):
+    client = scheduling[0]
     session, _ = account(client)
     result = client.post(PREFIX + "/appointments", json=payload(session["user"]["id"], **changes))
     assert result.status_code in {404, 422}
 
 
-def test_inactive_user_and_facility(simulator):
-    client, database, _ = simulator
+def test_inactive_user_and_facility(scheduling):
+    client, database, _ = scheduling
     session, _ = account(client)
     with database.session() as db:
         db.get(User, int(session["user"]["id"])).is_active = False
@@ -280,8 +307,8 @@ def test_inactive_user_and_facility(simulator):
 
 
 @pytest.mark.parametrize("stage", ["checklist", "commit"])
-def test_creation_rollback(simulator, monkeypatch, stage):
-    client, database, _ = simulator
+def test_creation_rollback(scheduling, monkeypatch, stage):
+    client, database, _ = scheduling
     session, _ = account(client)
     with database.session() as db:
         before = db.scalar(select(func.count()).select_from(Appointment))
@@ -311,8 +338,8 @@ def test_creation_rollback(simulator, monkeypatch, stage):
         assert db.scalar(select(func.count()).select_from(AppointmentChecklistItem)) == children
 
 
-def test_patch_fields_checklist_preserve_ids_and_completion(simulator):
-    client = simulator[0]
+def test_patch_fields_checklist_preserve_ids_and_completion(scheduling):
+    client = scheduling[0]
     session, record = create(client, scheduled_at="2026-10-20T09:30:00-03:00")
     assert record["scheduled_at"] == "2026-10-20T12:30:00Z"
     url = f"{PREFIX}/appointments/{record['id']}"
@@ -361,16 +388,16 @@ def test_patch_fields_checklist_preserve_ids_and_completion(simulator):
         {"checklist": [{"id": "99", "description": "Outro", "required": True}]},
     ],
 )
-def test_patch_cannot_change_owner_or_invalid_children(simulator, changes):
-    client = simulator[0]
+def test_patch_cannot_change_owner_or_invalid_children(scheduling, changes):
+    client = scheduling[0]
     _, record = create(client)
     url = f"{PREFIX}/appointments/{record['id']}"
     assert client.patch(url, json=changes).status_code in {404, 422}
     assert client.get(url).json() == record
 
 
-def test_patch_rollback_and_reorder(simulator, monkeypatch):
-    client = simulator[0]
+def test_patch_rollback_and_reorder(scheduling, monkeypatch):
+    client = scheduling[0]
     _, record = create(client)
     url = f"{PREFIX}/appointments/{record['id']}"
     items = [
@@ -390,8 +417,8 @@ def test_patch_rollback_and_reorder(simulator, monkeypatch):
     assert client.get(url).json() == before
 
 
-def test_cancel_rejects_edit_and_completed(simulator):
-    client, database, _ = simulator
+def test_cancel_rejects_edit_and_completed(scheduling):
+    client, database, _ = scheduling
     _, record = create(client)
     url = f"{PREFIX}/appointments/{record['id']}"
     assert client.post(url + "/cancel").status_code == 200
@@ -402,8 +429,8 @@ def test_cancel_rejects_edit_and_completed(simulator):
     assert client.post(url + "/cancel").status_code == 409
 
 
-def test_pagination_filters_and_facilities(simulator):
-    client = simulator[0]
+def test_pagination_filters_and_facilities(scheduling):
+    client = scheduling[0]
     session, record = create(client, scheduled_at="2026-10-20T09:30:00-03:00")
     user_id = session["user"]["id"]
     client.post(
@@ -448,8 +475,8 @@ def test_pagination_filters_and_facilities(simulator):
     assert client.delete(f"{PREFIX}/appointments/{record['id']}").status_code == 405
 
 
-def test_simulator_has_no_clinical_surface_and_app_is_still_isolated(simulator):
-    client = simulator[0]
+def test_simulator_has_no_clinical_surface_and_app_is_still_isolated(scheduling):
+    client = scheduling[0]
     session, record = create(client)
     other, _ = account(client)
     assert (

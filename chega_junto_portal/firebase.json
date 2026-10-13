@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "target": "portal",
+    "public": "dist",
+    "ignore": ["**/.*", "**/*.map"],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {"key": "X-Content-Type-Options", "value": "nosniff"},
+          {"key": "Referrer-Policy", "value": "no-referrer"},
+          {"key": "Content-Security-Policy", "value": "default-src 'self'; connect-src 'self' https://chega-junto-api.onrender.com; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"}
+        ]
+      },
+      {"source": "/", "headers": [{"key": "Cache-Control", "value": "no-cache"}]},
+      {"source": "**/*.@(html|js|css)", "headers": [{"key": "Cache-Control", "value": "no-cache"}]},
+      {"source": "/assets/**", "headers": [{"key": "Cache-Control", "value": "public, max-age=3600"}]}
+    ]
+  }
+}

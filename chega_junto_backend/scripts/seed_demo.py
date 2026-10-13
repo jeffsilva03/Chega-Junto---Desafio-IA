@@ -30,7 +30,7 @@ from app.models import (
     UserProfile,
 )
 
-INITIAL_REVISION = "20261012_0003"
+INITIAL_REVISION = "20261012_0004"
 DEMO_EMAIL = "maria@example.test"
 ZONE = ZoneInfo("America/Sao_Paulo")
 

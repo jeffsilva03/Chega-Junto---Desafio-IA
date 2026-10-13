@@ -34,6 +34,7 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         settings.validate_auth()
+        settings.validate_operator_auth()
         application.state.database = database if database is not None else Database(settings)
         try:
             yield
@@ -157,6 +158,10 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
         return HealthResponse(status="ok", database="ok")
 
     application.include_router(v1_router, prefix="/api/v1")
+    if settings.operator_portal_enabled:
+        from app.api.v1.operator import router as operator_router
+
+        application.include_router(operator_router, prefix="/api/v1")
     if settings.simulator_mode:
         from app.api.v1.simulator import router as simulator_router
 

@@ -27,6 +27,13 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
+    # Conexão explícita para ensaios isolados programáticos; runtime usa TLS abaixo.
+    supplied = context.config.attributes.get("connection")
+    if supplied is not None:
+        context.configure(connection=supplied, target_metadata=target_metadata, compare_type=True)
+        with context.begin_transaction():
+            context.run_migrations()
+        return
     engine = build_engine(load_settings())
     try:
         with engine.connect() as connection:

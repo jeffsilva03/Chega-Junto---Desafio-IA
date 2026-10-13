@@ -15,6 +15,14 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 [hidden] { display: none !important; }
+.login-screen { display: grid; place-items: center; min-height: calc(100vh - 105px); padding: 36px 20px; }
+.login-panel { width: 100%; max-width: 440px; padding: 32px; background: white; border: 1px solid var(--border); border-radius: 6px; }
+.login-panel h1 { margin-top: 18px; font-size: 25px; }
+.login-panel > p { margin: 12px 0 22px; color: var(--muted); }
+.login-panel form { display: grid; gap: 18px; }
+.login-panel label { display: grid; gap: 7px; }
+.login-panel button { width: 100%; min-height: 44px; }
+#login-error { color: #a31c30; }
 button, input, select, textarea { font: inherit; }
 button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 40px; padding: 9px 17px; border: 1px solid #064caa; border-radius: 4px; background: var(--blue); color: white; font-weight: 600; cursor: pointer; }
 button:hover:not(:disabled) { background: #084895; }

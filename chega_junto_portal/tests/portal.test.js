@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {apiOrigin,createApi} from '../js/api.js';
+import {apiOrigin,createSimulatorApi as createApi} from '../js/api.js';
 import {filtersFrom,localParts,payloadFrom,toInstant,withLoading} from '../js/domain.js';
 
 const base='http://localhost:8000';

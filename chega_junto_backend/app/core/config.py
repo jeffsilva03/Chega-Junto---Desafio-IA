@@ -49,6 +49,21 @@ class Settings(BaseSettings):
     auth_mode: Literal["jwt", "demo"] = "jwt"
     auth_secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
     auth_access_token_expire_minutes: int = Field(default=60, ge=1, le=1440)
+    operator_portal_enabled: bool = False
+    operator_auth_secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
+    operator_auth_access_token_expire_minutes: int = Field(default=60, ge=1, le=1440)
+
+    def validate_operator_auth(self) -> None:
+        if not self.operator_portal_enabled:
+            return
+        key = self.operator_auth_secret_key
+        if key is None or len(key.get_secret_value().encode()) < 32:
+            raise ConfigurationError()
+        if (
+            self.auth_secret_key
+            and key.get_secret_value() == self.auth_secret_key.get_secret_value()
+        ):
+            raise ConfigurationError()
 
     def validate_auth(self) -> None:
         from app.core.errors import ConfigurationError
@@ -110,6 +125,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def complete_database_configuration(self) -> Self:
+        self.validate_operator_auth()
         if self.simulator_mode and self.app_env == "production":
             raise ValueError("Simulador proibido em produção")
         for origin in self.simulator_allowed_origins:
