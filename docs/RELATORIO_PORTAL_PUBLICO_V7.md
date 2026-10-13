@@ -42,6 +42,8 @@ Operador só acessa identificação mínima e dados de agendamento/unidade/check
 
 Aplicação vanilla existente preservada; nova tela/estado de login de operador, aviso demonstrativo permanente, sem signup. Token exclusivamente em memória; reload exige login. Logout/401 limpam sessão e dados visíveis. Requests pendentes são abortados; respostas tardias não restauram dados após logout. Sem retry automático de POST/PATCH/cancelamento. Erros são sanitizados e nome/e-mail são renderizados como texto.
 
+Durante a verificação pública em janela estreita, a regra CSS histórica até 800px ocultava todo o bloco de operador, incluindo Sair. Ajustada para ocultar somente identidade/sino nesse tamanho, preservando o botão de logout. Os 29 testes do portal e o build foram reexecutados com sucesso após o ajuste; conferência visual autenticada ainda pendente após nova publicação/reload.
+
 Modo público usa `https://chega-junto-api.onrender.com` e `/api/v1/operator`, com Authorization Bearer; não envia header simulator. Configuração local gerada em memória por serve.py permite modo operator ou simulator explícito, apenas com API loopback. Nenhum SDK/Auth Firebase, PWA ou service worker novo.
 
 ## Firebase e pacote estático

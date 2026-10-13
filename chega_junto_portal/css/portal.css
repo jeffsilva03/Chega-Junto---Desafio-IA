@@ -206,7 +206,7 @@ dialog p { margin-top: 12px; }
   .header { padding: 0 16px; }
   .brand { gap: 12px; }
   .brand strong { font-size: 21px; }
-  .operator { display: none; }
+  .operator-identity, .header-bell { display: none; }
   main { padding: 20px 16px; }
   .search-form { flex-wrap: wrap; }
   .search-form label { flex-basis: 100%; }
