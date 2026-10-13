@@ -98,7 +98,9 @@ class AiSummaryPage extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Nesta demonstração, a organização é simulada.',
+                controller.realAudio
+                    ? 'Este resumo foi organizado por IA. Revise e edite antes de continuar.'
+                    : 'Nesta demonstração, a organização é simulada.',
                 style: TextStyle(color: context.appColors.textSecondary),
               ),
             ],
