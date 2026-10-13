@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import '../config/data_config.dart';
 import 'api_exception.dart';
@@ -43,31 +45,52 @@ class ApiClient {
     Json? body,
     Map<String, String>? query,
     bool authenticated = true,
+    Duration? timeout,
+    Uint8List? audioBytes,
   }) async {
     if (_closed) throw const NetworkException();
     final token = authenticated ? await tokenStore?.read() : null;
     if (_closed) throw const NetworkException();
     final abort = Completer<void>();
     _pending.add(abort);
-    final request =
-        http.AbortableRequest(
-            method,
-            base.replace(path: path, queryParameters: query),
-            abortTrigger: abort.future,
-          )
-          ..headers.addAll({
-            'Accept': 'application/json',
-            if (token != null) 'Authorization': 'Bearer $token',
-            if (body != null) 'Content-Type': 'application/json',
-          })
-          ..followRedirects = false;
-    if (body != null) request.body = jsonEncode(body);
+    final http.BaseRequest request;
+    final uri = base.replace(path: path, queryParameters: query);
+    if (audioBytes != null) {
+      request =
+          http.AbortableMultipartRequest(
+              method,
+              uri,
+              abortTrigger: abort.future,
+            )
+            ..files.add(
+              http.MultipartFile.fromBytes(
+                'file',
+                audioBytes,
+                filename: 'recording.wav',
+                contentType: MediaType('audio', 'wav'),
+              ),
+            );
+    } else {
+      final jsonRequest = http.AbortableRequest(
+        method,
+        base.replace(path: path, queryParameters: query),
+        abortTrigger: abort.future,
+      );
+      if (body != null) jsonRequest.body = jsonEncode(body);
+      request = jsonRequest;
+    }
+    request.headers.addAll({
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+      if (body != null) 'Content-Type': 'application/json',
+    });
+    request.followRedirects = false;
     try {
       final response =
           await (() async => http.Response.fromStream(
             await _transport.send(request),
           ))().timeout(
-            requestTimeout,
+            timeout ?? requestTimeout,
             onTimeout: () {
               if (!abort.isCompleted) abort.complete();
               throw RequestTimeoutException(uncertain: method != 'GET');
@@ -91,6 +114,31 @@ class ApiClient {
       final code = envelope is Map && envelope['code'] is String
           ? envelope['code'] as String
           : 'api_error';
+      if ({
+        'ai_daily_limit_reached',
+        'ai_unavailable',
+        'ai_invalid_output',
+        'audio_invalid',
+        'audio_too_large',
+        'transcription_failed',
+        'transcription_too_long',
+      }.contains(code)) {
+        throw ApiException(
+          switch (code) {
+            'ai_daily_limit_reached' =>
+              'Limite diário da demonstração atingido. Tente novamente mais tarde.',
+            'audio_too_large' => 'O áudio deve ter no máximo 10 MB.',
+            'transcription_too_long' =>
+              'Transcrição muito longa. Faça uma gravação menor.',
+            'audio_invalid' =>
+              'Áudio inválido. Grave novamente em um formato compatível.',
+            _ =>
+              'Não foi possível processar com IA agora. Tente novamente mais tarde.',
+          },
+          code: code,
+          status: response.statusCode,
+        );
+      }
       if (response.statusCode == 401) {
         if (!_closed &&
             authenticated &&

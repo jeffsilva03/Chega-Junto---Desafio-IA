@@ -7,8 +7,6 @@ import '../core/state/preparation_controller.dart';
 import '../core/state/report_controller.dart';
 import '../core/services/ai_assistant_service.dart';
 import '../core/services/audio_draft_service.dart';
-import '../data/mock/mock_ai_assistant_service.dart';
-import '../data/mock/mock_audio_draft_service.dart';
 import '../core/state/profile_controller.dart';
 import '../core/state/speech_controller.dart';
 import '../core/services/speech_engine.dart';
@@ -155,8 +153,11 @@ class _AccountAppState extends State<_AccountApp> {
     );
     _report = ReportController(
       _preparation,
-      widget.options.aiAssistant ?? const MockAiAssistantService(),
-      widget.options.audioDraftService ?? const MockAudioDraftService(),
+      widget.options.aiAssistant ?? _dependencies.assistant,
+      widget.options.audioDraftService ?? _dependencies.audioDraft,
+      capture: widget.options.audioDraftService == null
+          ? _dependencies.audioCapture
+          : null,
       autosaveDelay: _dependencies.reportAutosaveDelay,
     );
     _profile = ProfileController(
@@ -194,7 +195,7 @@ class _AccountAppState extends State<_AccountApp> {
 
   void _stopReading() {
     _speech.stop();
-    _report.pauseAudio();
+    _report.leaveAudio();
     _report.flushPendingEdits();
   }
 

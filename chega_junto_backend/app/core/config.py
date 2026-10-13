@@ -52,6 +52,24 @@ class Settings(BaseSettings):
     operator_portal_enabled: bool = False
     operator_auth_secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
     operator_auth_access_token_expire_minutes: int = Field(default=60, ge=1, le=1440)
+    ai_enabled: bool = False
+    openai_api_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
+    openai_text_model: str = Field(default="", max_length=200)
+    openai_transcription_model: str = Field(default="", max_length=200)
+    openai_timeout_seconds: int = Field(default=45, ge=10, le=120)
+    ai_organize_user_daily_limit: int = Field(default=10, ge=0, le=1000)
+    ai_organize_global_daily_limit: int = Field(default=50, ge=0, le=10000)
+    ai_transcribe_user_daily_limit: int = Field(default=3, ge=0, le=1000)
+    ai_transcribe_global_daily_limit: int = Field(default=10, ge=0, le=10000)
+
+    def validate_ai(self) -> None:
+        if self.ai_enabled and (
+            self.openai_api_key is None
+            or not self.openai_api_key.get_secret_value().strip()
+            or not self.openai_text_model.strip()
+            or not self.openai_transcription_model.strip()
+        ):
+            raise ConfigurationError()
 
     def validate_operator_auth(self) -> None:
         if not self.operator_portal_enabled:

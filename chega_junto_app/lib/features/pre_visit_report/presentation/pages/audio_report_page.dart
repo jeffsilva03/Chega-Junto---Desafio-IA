@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_surface.dart';
 import '../../../../core/widgets/appointment_summary_card.dart';
@@ -16,11 +17,14 @@ class AudioReportPage extends StatelessWidget {
   Future<void> _finish(BuildContext context) async {
     try {
       await controller.finishAudio();
-    } catch (_) {
+    } catch (error) {
       if (context.mounted) {
         reportMessage(
           context,
-          'Não foi possível preparar a transcrição demonstrativa. Tente novamente.',
+          userError(
+            error,
+            'Não foi possível transcrever o áudio. Seu relato foi preservado.',
+          ),
         );
       }
     }
@@ -36,6 +40,12 @@ class AudioReportPage extends StatelessWidget {
         final recording = status == AudioDraftStatus.recording;
         final busy = status == AudioDraftStatus.transcribing;
         final review = status == AudioDraftStatus.review;
+        final real = controller.realAudio;
+        final canStart = {
+          AudioDraftStatus.idle,
+          AudioDraftStatus.permissionDenied,
+          AudioDraftStatus.error,
+        }.contains(status);
         return ReportScaffold(
           controller: controller,
           title: 'Gravação de áudio',
@@ -57,12 +67,22 @@ class AudioReportPage extends StatelessWidget {
                       switch (status) {
                         AudioDraftStatus.idle => 'Pronto para começar',
                         AudioDraftStatus.recording =>
-                          '● Gravação simulada em andamento',
+                          real
+                              ? '● Gravação em andamento'
+                              : '● Gravação simulada em andamento',
                         AudioDraftStatus.paused => 'Gravação pausada',
                         AudioDraftStatus.transcribing =>
-                          'Preparando transcrição simulada...',
+                          real
+                              ? 'Transcrevendo áudio...'
+                              : 'Preparando transcrição simulada...',
                         AudioDraftStatus.review =>
-                          'Transcrição simulada pronta',
+                          real
+                              ? 'Transcrição pronta para revisão'
+                              : 'Transcrição simulada pronta',
+                        AudioDraftStatus.permissionDenied =>
+                          'Permissão de microfone necessária',
+                        AudioDraftStatus.error =>
+                          'Não foi possível concluir a gravação',
                       },
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -105,12 +125,16 @@ class AudioReportPage extends StatelessWidget {
                       ),
                       child: IconButton.filled(
                         key: const ValueKey('audio-toggle'),
-                        tooltip: status == AudioDraftStatus.idle
-                            ? 'Iniciar gravação simulada'
+                        tooltip: canStart
+                            ? (real
+                                  ? 'Iniciar gravação'
+                                  : 'Iniciar gravação simulada')
                             : recording
                             ? 'Pausar gravação'
                             : 'Continuar gravação',
-                        onPressed: status == AudioDraftStatus.idle
+                        onPressed: controller.audioBusy
+                            ? null
+                            : canStart
                             ? controller.startAudio
                             : controller.toggleAudio,
                         style: IconButton.styleFrom(
@@ -128,7 +152,7 @@ class AudioReportPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      status == AudioDraftStatus.idle
+                      canStart
                           ? 'Toque no microfone para começar'
                           : recording
                           ? 'Toque no microfone para pausar'
@@ -145,16 +169,28 @@ class AudioReportPage extends StatelessWidget {
                       onChanged: controller.setTranscription,
                       minLines: 3,
                       maxLines: null,
-                      decoration: const InputDecoration(
-                        labelText: 'Revise a transcrição simulada',
+                      decoration: InputDecoration(
+                        labelText: real
+                            ? 'Revise a transcrição'
+                            : 'Revise a transcrição simulada',
                         alignLabelWithHint: true,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Este exemplo usa seu relato escrito ou uma frase fictícia. Edite o texto antes de usá-lo.',
+                    Text(
+                      real
+                          ? 'Revise e corrija o texto antes de usá-lo no relato.'
+                          : 'Este exemplo usa seu relato escrito ou uma frase fictícia. Edite o texto antes de usá-lo.',
                     ),
                   ],
+                  if (controller.audioError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        userError(controller.audioError),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -167,9 +203,11 @@ class AudioReportPage extends StatelessWidget {
                 children: [
                   Icon(Icons.shield_outlined, color: context.appColors.primary),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Demonstração: o microfone não é acessado e nenhum áudio é gravado ou enviado. A transcrição é simulada.',
+                      real
+                          ? 'Use apenas dados fictícios. O áudio será enviado ao serviço de IA para transcrição. O Chega Junto não armazena o arquivo de áudio no banco após o processamento. Limite: 5 minutos e 10 MB.'
+                          : 'Demonstração: o microfone não é acessado e nenhum áudio é gravado ou enviado. A transcrição é simulada.',
                     ),
                   ),
                 ],
@@ -187,7 +225,12 @@ class AudioReportPage extends StatelessWidget {
                     );
                     return;
                   }
-                  controller.useTranscription();
+                  try {
+                    controller.useTranscription();
+                  } catch (error) {
+                    reportMessage(context, userError(error));
+                    return;
+                  }
                   reportBack(context, AppRoutes.report);
                   reportMessage(
                     context,
@@ -197,13 +240,17 @@ class AudioReportPage extends StatelessWidget {
               ),
               TextButton(
                 onPressed: controller.startAudio,
-                child: const Text('Recomeçar demonstração'),
+                child: Text(
+                  real ? 'Gravar novamente' : 'Recomeçar demonstração',
+                ),
               ),
             ] else
               AppButton(
                 label: 'Concluir gravação',
                 busy: busy,
-                onPressed: recording || status == AudioDraftStatus.paused
+                onPressed:
+                    !controller.audioBusy &&
+                        (recording || status == AudioDraftStatus.paused)
                     ? () => _finish(context)
                     : null,
               ),
@@ -213,7 +260,7 @@ class AudioReportPage extends StatelessWidget {
               outlined: true,
               icon: null,
               onPressed: () {
-                controller.pauseAudio();
+                controller.leaveAudio();
                 context.go(AppRoutes.report);
               },
             ),

@@ -15,6 +15,7 @@ from app.schemas.common import DatabaseId
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_TABLES = {
+    "ai_usage_events",
     "operators",
     "users",
     "user_profiles",
@@ -156,6 +157,13 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
     spec.loader.exec_module(operators)
     monkeypatch.setattr(operators, "op", operations)
     operators.upgrade()
+    spec = importlib.util.spec_from_file_location(
+        "ai_usage_migration", ROOT / "migrations/versions/20261013_0005_ai_usage.py"
+    )
+    usage = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(usage)
+    monkeypatch.setattr(usage, "op", operations)
+    usage.upgrade()
     assert set(operations.metadata.tables) == EXPECTED_TABLES == set(Base.metadata.tables)
     for name, expected in Base.metadata.tables.items():
         actual = operations.metadata.tables[name]
@@ -173,6 +181,7 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
             (i.name, tuple(c.name for c in i.columns)) for i in expected.indexes
         }
         assert all(len(str(c.name)) <= 64 for c in actual.constraints)
+    usage.downgrade()
     operators.downgrade()
     simulator.downgrade()
     authentication.downgrade()
@@ -182,7 +191,9 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
 
 def test_no_transcription_progress_or_secrets_in_business_schema():
     for table in Base.metadata.tables.values():
-        assert {"created_at", "updated_at"}.issubset(table.c.keys())
+        assert {"created_at"}.issubset(table.c.keys())
+        if table.name != "ai_usage_events":
+            assert "updated_at" in table.c
         assert not {
             "transcription_text",
             "transcription_used_at",
@@ -205,7 +216,7 @@ def test_alembic_offline_compiles_mysql_without_credentials():
     config = Config(str(ROOT / "alembic.ini"), output_buffer=output)
     command.upgrade(config, "head", sql=True)
     ddl = output.getvalue()
-    assert ddl.count("CREATE TABLE ") == 18  # 17 de domínio + controle alembic_version.
+    assert ddl.count("CREATE TABLE ") == 19  # 17 domínio + usage + alembic_version.
     assert "BIGINT UNSIGNED" in ddl and "AUTO_INCREMENT" in ddl
     assert "ENGINE=InnoDB" in ddl and "utf8mb4" in ddl
     assert "transcription_text" not in ddl and "INSERT INTO users" not in ddl

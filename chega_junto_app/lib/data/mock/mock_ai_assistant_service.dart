@@ -8,7 +8,10 @@ class MockAiAssistantService implements AiAssistantService {
   });
   final Duration delay;
   @override
-  Future<OrganizedReport> organize(String originalText) async {
+  Future<OrganizedReport> organize(
+    String originalText, {
+    String? appointmentId,
+  }) async {
     if (originalText.trim().isEmpty) throw ArgumentError('Relato vazio.');
     await Future<void>.delayed(delay);
     final paragraphs = originalText.trim().split(RegExp(r'\n\s*\n'));

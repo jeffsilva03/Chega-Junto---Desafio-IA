@@ -5,9 +5,18 @@ import '../../data/models/pre_visit_report.dart';
 import '../network/api_exception.dart';
 import '../services/ai_assistant_service.dart';
 import '../services/audio_draft_service.dart';
+import '../services/audio_capture_service.dart';
 import 'preparation_controller.dart';
 
-enum AudioDraftStatus { idle, recording, paused, transcribing, review }
+enum AudioDraftStatus {
+  idle,
+  recording,
+  paused,
+  transcribing,
+  review,
+  permissionDenied,
+  error,
+}
 
 /// One draft per appointment, kept outside routes for the lifetime of the session.
 class ReportController extends ChangeNotifier {
@@ -16,6 +25,7 @@ class ReportController extends ChangeNotifier {
     this.assistant,
     this.audio, {
     this.autosaveDelay,
+    this.capture,
   }) {
     preparation.addListener(_initialize);
     _initialize();
@@ -23,6 +33,11 @@ class ReportController extends ChangeNotifier {
   final PreparationController preparation;
   final AiAssistantService assistant;
   final AudioDraftService audio;
+  final AudioCaptureService? capture;
+  bool get realAudio => capture != null;
+  bool audioBusy = false;
+  Object? audioError, organizationError;
+  int _audioGeneration = 0;
   final Duration? autosaveDelay;
   String contentRevision = '0';
   String? reviewedRevision, finalReviewRevision;
@@ -80,6 +95,8 @@ class ReportController extends ChangeNotifier {
     final nextId = preparation.overview!.nextAppointment.id;
     if (_initialized && nextId == _appointmentId) return;
     if (_initialized) {
+      cancelProcessing(notify: false);
+      unawaited(cancelAudio(notify: false));
       if (_dirty || saveError != null) preservedDraft = _snapshot();
       _autosave?.cancel();
       _revision++;
@@ -303,6 +320,7 @@ class ReportController extends ChangeNotifier {
     text = value;
     _markChanged();
     failed = false;
+    organizationError = null;
     notifyListeners();
   }
 
@@ -314,7 +332,10 @@ class ReportController extends ChangeNotifier {
     failed = false;
     notifyListeners();
     try {
-      final result = await assistant.organize(source);
+      final result = await assistant.organize(
+        source,
+        appointmentId: _appointmentId,
+      );
       if (_disposed || generation != _generation) return false;
       if (text != source) {
         processing = false;
@@ -330,10 +351,11 @@ class ReportController extends ChangeNotifier {
       processing = false;
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (error) {
       if (_disposed || generation != _generation) return false;
       processing = false;
       failed = true;
+      organizationError = error;
       notifyListeners();
       return false;
     }
@@ -436,13 +458,47 @@ class ReportController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startAudio() {
-    if (audioStatus == AudioDraftStatus.transcribing) return;
-    seconds = 0;
-    transcription = '';
-    audioStatus = AudioDraftStatus.recording;
-    _startTimer();
+  Future<void> startAudio() async {
+    if (_disposed ||
+        audioBusy ||
+        audioStatus == AudioDraftStatus.transcribing ||
+        audioStatus == AudioDraftStatus.recording ||
+        audioStatus == AudioDraftStatus.paused) {
+      return;
+    }
+    final generation = ++_audioGeneration;
+    audioBusy = true;
+    audioError = null;
     notifyListeners();
+    try {
+      if (capture != null && !await capture!.start()) {
+        if (_disposed || generation != _audioGeneration) return;
+        audioStatus = AudioDraftStatus.permissionDenied;
+        audioError = const ApiException(
+          'Não foi possível acessar o microfone. Você pode liberar a permissão nas configurações do navegador/dispositivo ou continuar digitando seu relato.',
+          code: 'microphone_denied',
+        );
+        return;
+      }
+      if (_disposed || generation != _audioGeneration) return;
+      seconds = 0;
+      transcription = '';
+      audioStatus = AudioDraftStatus.recording;
+      _startTimer();
+    } catch (_) {
+      if (!_disposed && generation == _audioGeneration) {
+        audioStatus = AudioDraftStatus.error;
+        audioError = const ApiException(
+          'Não foi possível iniciar o microfone. Você pode continuar digitando seu relato.',
+          code: 'microphone_unavailable',
+        );
+      }
+    } finally {
+      if (!_disposed && generation == _audioGeneration) {
+        audioBusy = false;
+        notifyListeners();
+      }
+    }
   }
 
   void _startTimer() {
@@ -450,45 +506,109 @@ class ReportController extends ChangeNotifier {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       seconds++;
       notifyListeners();
+      if (seconds >= audioMaxSeconds) {
+        _timer?.cancel();
+        unawaited(finishAudio().catchError((Object _) {}));
+      }
     });
   }
 
-  void toggleAudio() {
-    if (audioStatus == AudioDraftStatus.recording) {
-      _timer?.cancel();
-      audioStatus = AudioDraftStatus.paused;
-    } else if (audioStatus == AudioDraftStatus.paused) {
-      audioStatus = AudioDraftStatus.recording;
-      _startTimer();
-    } else {
-      return;
+  Future<void> toggleAudio() async {
+    if (_disposed || audioBusy) return;
+    final generation = _audioGeneration;
+    audioBusy = true;
+    try {
+      if (audioStatus == AudioDraftStatus.recording) {
+        _timer?.cancel();
+        if (capture != null) await capture!.pause();
+        if (_disposed || generation != _audioGeneration) return;
+        audioStatus = AudioDraftStatus.paused;
+      } else if (audioStatus == AudioDraftStatus.paused) {
+        if (capture != null) await capture!.resume();
+        if (_disposed || generation != _audioGeneration) return;
+        audioStatus = AudioDraftStatus.recording;
+        _startTimer();
+      } else {
+        return;
+      }
+    } catch (_) {
+      if (!_disposed && generation == _audioGeneration) {
+        audioError = const ApiException(
+          'Não foi possível pausar ou continuar. Recomece a gravação ou continue digitando.',
+          code: 'audio_invalid',
+        );
+        await cancelAudio();
+      }
+    } finally {
+      if (!_disposed && generation == _audioGeneration) {
+        audioBusy = false;
+        notifyListeners();
+      }
     }
-    notifyListeners();
   }
 
   void pauseAudio() {
-    if (audioStatus == AudioDraftStatus.recording) toggleAudio();
+    if (audioStatus == AudioDraftStatus.recording) unawaited(toggleAudio());
+  }
+
+  void leaveAudio() {
+    if (realAudio &&
+        (audioBusy ||
+            audioStatus == AudioDraftStatus.recording ||
+            audioStatus == AudioDraftStatus.paused ||
+            audioStatus == AudioDraftStatus.transcribing)) {
+      unawaited(cancelAudio());
+    } else {
+      pauseAudio();
+    }
+  }
+
+  Future<void> cancelAudio({bool notify = true}) async {
+    _audioGeneration++;
+    _timer?.cancel();
+    audioBusy = false;
+    audioStatus = AudioDraftStatus.idle;
+    if (notify && !_disposed) notifyListeners();
+    try {
+      await capture?.cancel();
+    } catch (_) {
+      /* Encerramento sem expor erro nativo. */
+    }
   }
 
   Future<void> finishAudio() async {
-    if (audioStatus != AudioDraftStatus.recording &&
-        audioStatus != AudioDraftStatus.paused) {
+    if (_disposed ||
+        audioBusy ||
+        (audioStatus != AudioDraftStatus.recording &&
+            audioStatus != AudioDraftStatus.paused)) {
       return;
     }
+    final generation = _audioGeneration;
+    RecordedAudio? recording;
     _timer?.cancel();
     audioStatus = AudioDraftStatus.transcribing;
     notifyListeners();
     try {
-      final result = await audio.transcribeDemo(text);
-      if (_disposed) return;
+      recording = await capture?.stop();
+      if (_disposed || generation != _audioGeneration) return;
+      final result = await audio.transcribe(
+        text,
+        appointmentId: _appointmentId,
+        recording: recording,
+      );
+      if (_disposed || generation != _audioGeneration) return;
       transcription = result;
       audioStatus = AudioDraftStatus.review;
-    } catch (_) {
-      if (_disposed) return;
-      audioStatus = AudioDraftStatus.paused;
+    } catch (error) {
+      if (_disposed || generation != _audioGeneration) return;
+      audioError = error;
+      audioStatus = realAudio
+          ? AudioDraftStatus.error
+          : AudioDraftStatus.paused;
       rethrow;
     } finally {
-      if (!_disposed) notifyListeners();
+      recording?.clear();
+      if (!_disposed && generation == _audioGeneration) notifyListeners();
     }
   }
 
@@ -500,13 +620,18 @@ class ReportController extends ChangeNotifier {
     final value = transcription.trim();
     if (value.isEmpty) return;
     // A demo of the existing text must not duplicate it or overwrite the draft.
-    setText(
-      text.trim().isEmpty
-          ? value
-          : text.trim() == value
-          ? text
-          : '$text\n\n$value',
-    );
+    final merged = text.trim().isEmpty
+        ? value
+        : text.trim() == value
+        ? text
+        : '$text\n\n$value';
+    if (merged.length > 20000) {
+      throw const ApiException(
+        'O relato completo deve ter no máximo 20.000 caracteres. Revise o texto antes de continuar.',
+        code: 'report_too_long',
+      );
+    }
+    setText(merged);
     audioStatus = AudioDraftStatus.idle;
     notifyListeners();
   }
@@ -584,6 +709,10 @@ class ReportController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _generation++;
+    _audioGeneration++;
+    unawaited(
+      capture?.dispose().catchError((Object _) {}) ?? Future<void>.value(),
+    );
     _timer?.cancel();
     _autosave?.cancel();
     preparation.removeListener(_initialize);

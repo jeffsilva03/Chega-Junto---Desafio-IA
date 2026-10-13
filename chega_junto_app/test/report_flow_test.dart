@@ -337,7 +337,7 @@ void main() {
       await tester.enterText(find.byKey(const ValueKey('report-text')), '');
       await _tap(tester, find.text('Salvar e continuar'));
       expect(
-        find.textContaining('Escreva seu relato ou utilize'),
+        find.textContaining('Escreva seu relato ou grave'),
         findsOneWidget,
       );
       await tester.enterText(

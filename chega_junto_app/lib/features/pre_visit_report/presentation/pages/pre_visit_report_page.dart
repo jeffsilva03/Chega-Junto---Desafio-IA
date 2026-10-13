@@ -47,10 +47,7 @@ class _PreVisitReportPageState extends State<PreVisitReportPage> {
   Future<void> _continue() async {
     final controller = widget.controller;
     if (controller.text.trim().isEmpty) {
-      reportMessage(
-        context,
-        'Escreva seu relato ou utilize a demonstração de áudio.',
-      );
+      reportMessage(context, 'Escreva seu relato ou grave um áudio.');
       return;
     }
     if (controller.hasSummary && !controller.summaryOutdated) {
@@ -187,6 +184,13 @@ class _PreVisitReportPageState extends State<PreVisitReportPage> {
             ),
           ),
           const SizedBox(height: 16),
+          if (widget.controller.realAudio)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 12),
+              child: Text(
+                'Use apenas dados fictícios nesta demonstração. Seu relato será enviado ao serviço de IA para organização. A IA organiza apenas o que você contou. Revise o resultado antes de continuar. Não substitui orientação de um profissional de saúde.',
+              ),
+            ),
           AppButton(label: 'Salvar e continuar', onPressed: _continue),
           const SizedBox(height: 10),
           AppButton(

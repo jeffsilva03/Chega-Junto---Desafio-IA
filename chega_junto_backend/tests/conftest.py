@@ -6,6 +6,12 @@ import pytest
 from app.core.config import Settings
 
 
+def pytest_make_parametrize_id(config, val, argname):
+    if isinstance(val, (bytes, str)) and len(val) > 100:
+        return f"{argname}-length-{len(val)}"
+    return None
+
+
 @pytest.fixture(autouse=True)
 def isolate_environment(monkeypatch):
     # Nenhum teste herda credenciais reais do desenvolvedor.
@@ -14,7 +20,17 @@ def isolate_environment(monkeypatch):
     for key in os.environ:
         if (
             key.startswith(
-                ("DATABASE_", "APP_", "DEMO_", "CORS_", "AUTH_", "SIMULATOR_", "OPERATOR_")
+                (
+                    "DATABASE_",
+                    "APP_",
+                    "DEMO_",
+                    "CORS_",
+                    "AUTH_",
+                    "SIMULATOR_",
+                    "OPERATOR_",
+                    "AI_",
+                    "OPENAI_",
+                )
             )
             or key == "LOG_LEVEL"
         ):

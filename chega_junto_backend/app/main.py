@@ -35,10 +35,18 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         settings.validate_auth()
         settings.validate_operator_auth()
+        settings.validate_ai()
+        ai_provider = None
+        if settings.ai_enabled:
+            from app.services.openai_provider import OpenAiProvider
+
+            ai_provider = application.state.ai_provider = OpenAiProvider(settings)
         application.state.database = database if database is not None else Database(settings)
         try:
             yield
         finally:
+            if ai_provider is not None:
+                ai_provider.close()
             if database is None:
                 application.state.database.dispose()
 
@@ -84,7 +92,12 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
                 return JSONResponse(status_code=500, content={"detail": "Erro interno."})
             return error_response(500, "internal_error", "Erro interno.")
 
-    # CORS envolve também a resposta sanitizada de erro inesperado.
+    if settings.ai_enabled:
+        from app.api.audio_upload_limit import AudioUploadLimit
+
+        application.add_middleware(AudioUploadLimit)
+
+    # CORS envolve também erros inesperados e limite de upload.
     application.add_middleware(
         CORSMiddleware,
         allow_origins=list(
@@ -158,6 +171,10 @@ def create_app(settings: Settings | None = None, database: Database | None = Non
         return HealthResponse(status="ok", database="ok")
 
     application.include_router(v1_router, prefix="/api/v1")
+    if settings.ai_enabled:
+        from app.api.v1.ai import router as ai_router
+
+        application.include_router(ai_router, prefix="/api/v1")
     if settings.operator_portal_enabled:
         from app.api.v1.operator import router as operator_router
 

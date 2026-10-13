@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chega_junto_app/core/services/ai_assistant_service.dart';
 import 'package:chega_junto_app/core/services/audio_draft_service.dart';
+import 'package:chega_junto_app/core/services/audio_capture_service.dart';
 import 'package:chega_junto_app/core/state/preparation_controller.dart';
 import 'package:chega_junto_app/core/state/report_controller.dart';
 import 'package:chega_junto_app/data/mock/mock_ai_assistant_service.dart';
@@ -12,19 +13,25 @@ import 'package:chega_junto_app/data/models/organized_report.dart';
 class _DeferredAssistant implements AiAssistantService {
   final result = Completer<OrganizedReport>();
   @override
-  Future<OrganizedReport> organize(String text) => result.future;
+  Future<OrganizedReport> organize(String text, {String? appointmentId}) =>
+      result.future;
 }
 
 class _FailedAudio implements AudioDraftService {
   @override
-  Future<String> transcribeDemo(String text) async =>
-      throw StateError('offline');
+  Future<String> transcribe(
+    String text, {
+    String? appointmentId,
+    RecordedAudio? recording,
+  }) async => throw StateError('offline');
 }
 
 class _FailedAssistant implements AiAssistantService {
   @override
-  Future<OrganizedReport> organize(String text) async =>
-      throw StateError('offline');
+  Future<OrganizedReport> organize(
+    String text, {
+    String? appointmentId,
+  }) async => throw StateError('offline');
 }
 
 void main() {

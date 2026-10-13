@@ -18,6 +18,8 @@ dependencies = [
   "tzdata>=2025.1",
   "argon2-cffi>=25.1,<26",
   "pyjwt>=2.10,<3",
+  "openai>=2,<3",
+  "python-multipart>=0.0.20,<1",
 ]
 
 [dependency-groups]

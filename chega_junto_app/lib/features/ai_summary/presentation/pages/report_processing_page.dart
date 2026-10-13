@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/state/report_controller.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../features/pre_visit_report/presentation/widgets/report_components.dart';
 
@@ -58,8 +59,11 @@ class _ReportProcessingPageState extends State<ReportProcessingPage> {
       if (widget.controller.failed) ...[
         Icon(Icons.refresh_rounded, size: 52, color: context.appColors.primary),
         const SizedBox(height: 20),
-        const Text(
-          'Não foi possível organizar seu relato. O texto continua salvo nesta sessão.',
+        Text(
+          userError(
+            widget.controller.organizationError,
+            'Não foi possível organizar seu relato. O texto continua salvo nesta sessão.',
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
@@ -83,8 +87,10 @@ class _ReportProcessingPageState extends State<ReportProcessingPage> {
         const SizedBox(height: 28),
         Semantics(
           liveRegion: true,
-          child: const Text(
-            'Organização demonstrativa, sem conexão com serviços de IA.',
+          child: Text(
+            widget.controller.realAudio
+                ? 'Este conteúdo é processado por IA. Revise e edite antes de continuar.'
+                : 'Organização demonstrativa, sem conexão com serviços de IA.',
             textAlign: TextAlign.center,
           ),
         ),

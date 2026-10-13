@@ -128,6 +128,28 @@ O alias público está em `.firebaserc`; `firebase.json` publica somente `build/
 
 JWT continua somente em memória: reload completo ou fechamento exige novo login. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Cadastro pelo domínio Firebase e persistência de perfil após novo login integram a validação V6. Resultados, limitações, comandos e evidências estão no [relatório de publicação Web](../docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).
 
+## APK Android demonstrativo — 0.7.0
+
+[Baixar APK Android (55 MiB)](https://github.com/jeffsilva03/Chega-Junto-Android/releases/download/android-v0.7.0/chega-junto-0.7.0.apk). Download público sem login, hospedado em um [repositório separado de binários e instruções](https://github.com/jeffsilva03/Chega-Junto-Android); o repositório do código continua privado.
+
+Abra o link no Android 7.0 ou superior, baixe o arquivo, permita a instalação pelo navegador quando solicitado e instale. Entre com a mesma conta demonstrativa de paciente do Web, ou cadastre dados fictícios. A conta do operador pertence ao Portal. O APK requer internet e acessa a API pública do Render; não depende de computador ou rede local.
+
+Build reproduzível nesta pasta:
+
+```powershell
+flutter build apk --release --build-name=0.7.0 --build-number=7001 --dart-define=DATA_SOURCE=api --dart-define=API_BASE_URL=https://chega-junto-api.onrender.com
+```
+
+O manifesto principal inclui `android.permission.INTERNET` para permitir acesso à API também no build release. O APK universal usa a chave de teste Android existente e serve para instalação demonstrativa direta; publicação na Play Store requer configuração própria de assinatura. Versão `0.7.0+7001`, SHA-256 `6da3a3a0ef8da83748b6f56489d784472f9c07541e0a0dc294783bd8e4f639f9`. Token continua somente em memória. Evidências e limites constam no [relatório do APK](../docs/RELATORIO_APK_ANDROID_0_7_0.md).
+
+## IA e áudio reais — V8 candidata
+
+Em modo API, organização e transcrição passam exclusivamente pelo FastAPI; a chave OpenAI permanece somente no Render. O relato é organizado em quatro seções editáveis e até cinco perguntas inicialmente desmarcadas. Fonte alterada durante processamento é descartada; salvamento versionado, conflitos e revisão humana permanecem obrigatórios. Sem diagnóstico, prescrição, interpretação de exames ou triagem; somente dados fictícios.
+
+Gravação real usa `record` 6.2.1: PCM16 mono de 16 kHz/WAV em memória, cinco minutos ativos e até 10 MiB. Android pede RECORD_AUDIO em runtime somente ao tocar; Web/Safari exige HTTPS e permissão do navegador. Negação mantém alternativa digitada. Áudio passa pelo backend, não é armazenado no banco e é liberado após processamento/cancelamento/logout. Revise a transcrição e toque “Usar transcrição no relato” antes de organizar. Mock mantém áudio/IA simulados sem permissão ou consumo de créditos.
+
+Build Web e APK de validação com DATA_SOURCE=api e API_BASE_URL=https://chega-junto-api.onrender.com usam os comandos das seções anteriores; para esta candidata, o build Android exigido é `flutter build apk --debug` com esses dois dart-defines. Publique somente o site do app com a configuração existente. Não criar tag V8; consulte o [relatório de validação V8](../docs/RELATORIO_IA_REAL_V8.md).
+
 ## Organização
 
 ```text
