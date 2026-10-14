@@ -32,6 +32,16 @@ class PreparationController extends ChangeNotifier {
   }
 
   PreparationOverview? overview;
+  void acceptReport(PreVisitReport report) {
+    if (_disposed ||
+        overview?.hasNextAppointment != true ||
+        overview!.nextAppointment.id != report.appointmentId) {
+      return;
+    }
+    overview = overview!.withReport(report).withFinalReview(report.finalDone);
+    notifyListeners();
+  }
+
   List<Appointment> appointments = const [];
   List<AppointmentReminder> reminders = const [];
   bool loading = true;

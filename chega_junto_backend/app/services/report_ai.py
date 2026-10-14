@@ -3,6 +3,7 @@ from pathlib import PurePath
 from pydantic import ValidationError
 
 from app.core.errors import ApiError
+from app.repositories.reports import ReportRepository
 from app.schemas.ai import (
     AiContent,
     GeneratedQuestion,
@@ -13,6 +14,12 @@ from app.schemas.ai import (
 from app.services.ai_provider import AiProviderError
 from app.services.ai_quota import AiQuota
 from app.services.appointments import AppointmentService
+from app.services.report_source import (
+    answered_context,
+    clarifications_current,
+    organization_source_hash,
+    source_hash,
+)
 
 AUDIO_MAX_BYTES = 10 * 1024 * 1024
 SECTIONS = (
@@ -84,6 +91,20 @@ class ReportAiService:
 
     def organize(self, appointment_id, original_text):
         self.owned(appointment_id)
+        report = ReportRepository(self.session).report(appointment_id)
+        context = []
+        digest = source_hash(original_text)
+        if report and report.original_text == original_text:
+            if clarifications_current(report) and not report.clarifications_completed_at:
+                self.session.rollback()
+                raise ApiError(
+                    409,
+                    "clarification_pending",
+                    "Conclua ou pule o complemento antes de organizar.",
+                )
+            context = answered_context(report)
+            digest = organization_source_hash(report)
+        self.session.rollback()
 
         def validate(value):
             try:
@@ -98,9 +119,18 @@ class ReportAiService:
                     for key, title in SECTIONS
                 ],
                 questions=[GeneratedQuestion(text=text) for text in content.questions],
+                source_hash=digest,
             )
 
-        return self.run("organize", lambda: self.provider.organize_report(original_text), validate)
+        return self.run(
+            "organize",
+            lambda: (
+                self.provider.organize_report(original_text, context)
+                if context
+                else self.provider.organize_report(original_text)
+            ),
+            validate,
+        )
 
     def transcribe(self, appointment_id, content, extension, mime):
         self.owned(appointment_id)

@@ -122,6 +122,10 @@ class ApiClient {
         'audio_too_large',
         'transcription_failed',
         'transcription_too_long',
+        'clarification_busy',
+        'clarification_pending',
+        'clarifications_stale',
+        'clarification_option_invalid',
       }.contains(code)) {
         throw ApiException(
           switch (code) {
@@ -132,6 +136,14 @@ class ApiClient {
               'Transcrição muito longa. Faça uma gravação menor.',
             'audio_invalid' =>
               'Áudio inválido. Grave novamente em um formato compatível.',
+            'clarification_busy' =>
+              'Uma pergunta está sendo preparada. Aguarde e confira novamente.',
+            'clarification_pending' =>
+              'Conclua ou pule o complemento antes de organizar.',
+            'clarifications_stale' =>
+              'O relato mudou. Retome o complemento atualizado.',
+            'clarification_option_invalid' =>
+              'Escolha uma opção disponível ou responda com suas palavras.',
             _ =>
               'Não foi possível processar com IA agora. Tente novamente mais tarde.',
           },

@@ -63,7 +63,7 @@ class AiQuota:
                     )
                 model = (
                     self.settings.openai_text_model
-                    if operation == "organize"
+                    if operation in {"organize", "clarify"}
                     else self.settings.openai_transcription_model
                 )
                 event = connection.execute(

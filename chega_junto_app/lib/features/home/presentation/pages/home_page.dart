@@ -210,7 +210,7 @@ class _QuickAccessGrid extends StatelessWidget {
         icon: Icons.notes_rounded,
         color: context.appColors.purple,
         background: context.appColors.purpleSoft,
-        onTap: () => context.push(AppRoutes.summary),
+        onTap: () => context.go(AppRoutes.report),
       ),
     ];
     return Column(

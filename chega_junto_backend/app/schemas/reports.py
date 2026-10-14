@@ -2,6 +2,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field, StrictBool, model_validator
 
+from app.schemas.clarifications import ClarificationRead
 from app.schemas.common import DTO, DatabaseId, NonEmpty, Revision, UtcDatetime
 
 
@@ -25,6 +26,7 @@ class ReportWrite(DTO):
     questions: list[QuestionWrite] = Field(max_length=200)
     intent: Literal["edit", "organize"] = "edit"
     organization_source_text: str | None = Field(default=None, max_length=20000)
+    organization_source_hash: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
     @model_validator(mode="after")
     def validate_aggregate(self):
@@ -40,7 +42,7 @@ class ReportWrite(DTO):
                 raise ValueError("Fonte da organização deve corresponder ao original enviado.")
             if not self.original_text.strip() or not self.sections:
                 raise ValueError("Organização exige original e seções.")
-        elif self.organization_source_text is not None:
+        elif self.organization_source_text is not None or self.organization_source_hash is not None:
             raise ValueError("Fonte de organização exige intent=organize.")
         if sum(len(item.text) for item in [*self.sections, *self.questions]) > 100000:
             raise ValueError("Conteúdo agregado excede o limite operacional.")
@@ -90,3 +92,7 @@ class ReportRead(ReportState):
     updated_at: UtcDatetime
     sections: list[SectionRead]
     questions: list[QuestionRead]
+    current_source_hash: str
+    clarifications_current: bool
+    clarifications_completed: bool
+    clarifications: list[ClarificationRead]

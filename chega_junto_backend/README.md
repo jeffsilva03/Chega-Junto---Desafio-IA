@@ -195,7 +195,11 @@ Alembic permanece `20261012_0003 (head)`, sem operações pendentes. Sem nova mi
 
 Free pode dormir após 15 minutos sem tráfego e apresenta cold start/cotas; não há keep-alive. Consulte o [relatório V5](../docs/RELATORIO_DEPLOY_RENDER_V5.md) para todos os resultados e limites. **A senha Aiven e o segredo JWT envolvidos no incidente relatado ainda precisam ser substituídos pelo usuário**, que autorizou continuar com os atuais temporariamente. Nenhum segredo foi incluído nos documentos ou builds. O checkpoint oficial V5 registra esta entrega documental; Auto-Deploy Off preserva o serviço funcional durante o fechamento Git.
 
-## IA e transcrição — V8 candidata
+## Complemento conversacional — V9 candidata
+
+Migration `20261013_0006`, nova operação `clarify` e três endpoints de paciente `report/clarifications/next`, `/{clarification_id}` e `/skip`. Uma pergunta adaptativa por chamada, 0–3 por fonte, respostas separadas do relato e reuso da pergunta pendente. Fingerprint mantém compatibilidade V8 sem complemento; edição invalida resumo/revisões sem apagar conteúdo anterior. Acrescentar no Render somente `AI_CLARIFY_USER_DAILY_LIMIT=9` e `AI_CLARIFY_GLOBAL_DAILY_LIMIT=45`; modelos/chave/flags/quotas V8 permanecem. Antes do deploy, validar MySQL isolado e integridade Aiven, aplicar somente upgrade 0006 e executar current/check. Sem downgrade Aiven ou tag V9. [Contrato V9](docs/API_CONTRACT_V9.md) e [relatório](../docs/RELATORIO_PREPARACAO_CONVERSACIONAL_V9.md).
+
+## IA e transcrição — base V8 oficial (histórico da implementação)
 
 Integração `ReportAiService → AiProvider → OpenAiProvider`, usando SDK oficial OpenAI e Responses/Structured Outputs com store=false; áudio via Transcriptions API. Chamada externa recebe somente relato ou áudio, sem perfil ou identificadores. FakeAiProvider nos testes não abre rede. Sem retries/fallback automático; respostas e erros validados/sanitizados. Chave somente no Render, nunca copiar para o cliente ou para arquivos locais.
 

@@ -19,7 +19,7 @@ import 'package:chega_junto_app/data/api/api_profile_repository.dart';
 import 'package:chega_junto_app/features/home/presentation/pages/home_page.dart';
 import 'package:chega_junto_app/features/auth/presentation/pages/login_page.dart';
 import 'package:chega_junto_app/features/auth/presentation/pages/registration_page.dart';
-import 'package:chega_junto_app/features/pre_visit_report/presentation/pages/pre_visit_report_page.dart';
+import 'package:chega_junto_app/features/pre_visit_report/presentation/pages/consultation_preparation_page.dart';
 import 'support/fake_api.dart';
 
 class _Speech implements SpeechEngine {
@@ -506,8 +506,8 @@ void main() {
       final router = GoRouter.of(t.element(find.byType(HomePage)));
       router.go(AppRoutes.report);
       await t.pumpAndSettle();
-      final page = t.widget<PreVisitReportPage>(
-        find.byType(PreVisitReportPage),
+      final page = t.widget<ConsultationPreparationPage>(
+        find.byType(ConsultationPreparationPage),
       );
       final ReportController reportA = page.controller;
       reportA.setText('Texto privado fictício da conta A');

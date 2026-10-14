@@ -1,12 +1,8 @@
 import 'package:go_router/go_router.dart';
 import '../../core/state/preparation_controller.dart';
 import '../../core/state/report_controller.dart';
-import '../../features/pre_visit_report/presentation/pages/pre_visit_report_page.dart';
-import '../../features/pre_visit_report/presentation/pages/audio_report_page.dart';
-import '../../features/ai_summary/presentation/pages/report_processing_page.dart';
-import '../../features/ai_summary/presentation/pages/ai_summary_page.dart';
-import '../../features/questions/presentation/pages/consultation_questions_page.dart';
-import '../../features/final_review/presentation/pages/final_review_page.dart';
+import '../../features/pre_visit_report/presentation/pages/consultation_preparation_page.dart';
+import '../../core/state/consultation_preparation_controller.dart';
 import '../../core/state/profile_controller.dart';
 import '../../core/state/speech_controller.dart';
 import '../../features/profile/presentation/pages/personal_data_page.dart';
@@ -36,6 +32,7 @@ GoRouter createAppRouter({
   required ProfileController profile,
   required SpeechController speech,
   required ReportController report,
+  required ConsultationPreparationController conversation,
   String? initialLocation,
 }) => GoRouter(
   initialLocation: initialLocation ?? AppRoutes.welcome,
@@ -139,30 +136,30 @@ GoRouter createAppRouter({
     ),
     GoRoute(
       path: AppRoutes.report,
-      builder: (context, state) => PreVisitReportPage(controller: report),
-    ),
-    GoRoute(
-      path: AppRoutes.audio,
-      builder: (context, state) => AudioReportPage(controller: report),
-    ),
-    GoRoute(
-      path: AppRoutes.processing,
-      builder: (context, state) => ReportProcessingPage(controller: report),
-    ),
-    GoRoute(
-      path: AppRoutes.summary,
-      builder: (context, state) => AiSummaryPage(controller: report),
-    ),
-    GoRoute(
-      path: AppRoutes.questions,
-      builder: (context, state) => ConsultationQuestionsPage(
+      builder: (context, state) => ConsultationPreparationPage(
         controller: report,
-        returnToReview: state.uri.queryParameters['from'] == 'review',
+        conversation: conversation,
       ),
     ),
     GoRoute(
+      path: AppRoutes.audio,
+      redirect: (context, state) => AppRoutes.report,
+    ),
+    GoRoute(
+      path: AppRoutes.processing,
+      redirect: (context, state) => AppRoutes.report,
+    ),
+    GoRoute(
+      path: AppRoutes.summary,
+      redirect: (context, state) => AppRoutes.report,
+    ),
+    GoRoute(
+      path: AppRoutes.questions,
+      redirect: (context, state) => AppRoutes.report,
+    ),
+    GoRoute(
       path: AppRoutes.finalReview,
-      builder: (context, state) => FinalReviewPage(controller: report),
+      redirect: (context, state) => AppRoutes.report,
     ),
   ],
   errorBuilder: (context, state) =>

@@ -279,7 +279,7 @@ class ChecklistPage extends StatelessWidget {
                     label: 'Preparar para compartilhar',
                     icon: Icons.edit_note_rounded,
                     outlined: true,
-                    onPressed: () => context.push(AppRoutes.report),
+                    onPressed: () => context.go(AppRoutes.report),
                   ),
                 ],
               ),

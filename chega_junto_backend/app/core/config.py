@@ -61,6 +61,8 @@ class Settings(BaseSettings):
     ai_organize_global_daily_limit: int = Field(default=50, ge=0, le=10000)
     ai_transcribe_user_daily_limit: int = Field(default=3, ge=0, le=1000)
     ai_transcribe_global_daily_limit: int = Field(default=10, ge=0, le=10000)
+    ai_clarify_user_daily_limit: int = Field(default=9, ge=0, le=1000)
+    ai_clarify_global_daily_limit: int = Field(default=45, ge=0, le=10000)
 
     def validate_ai(self) -> None:
         if self.ai_enabled and (

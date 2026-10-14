@@ -18,6 +18,7 @@ class ApiAiAssistantService implements AiAssistantService {
       timeout: const Duration(seconds: 140),
     );
     return OrganizedReport(
+      sourceHash: json['source_hash'] as String?,
       sections: [
         for (final s in json['sections'] as List)
           ReportSection(

@@ -5,8 +5,11 @@ from fastapi import APIRouter, Depends, File, Request, UploadFile
 from app.api.dependencies import AuthenticatedUser, DatabaseSession
 from app.core.errors import ApiError
 from app.schemas.ai import OrganizationRequest, OrganizationResponse, TranscriptionResponse
+from app.schemas.clarifications import ClarificationAnswer, ClarificationNext
 from app.schemas.common import DatabaseId
+from app.schemas.reports import ReportRead
 from app.services.ai_provider import AiProvider
+from app.services.clarifications import ClarificationService
 from app.services.report_ai import AUDIO_MAX_BYTES, ReportAiService, audio_format
 
 router = APIRouter(prefix="/appointments/{appointment_id}/report", tags=["Report AI"])
@@ -17,6 +20,47 @@ def get_ai_provider(request: Request) -> AiProvider:
 
 
 Provider = Annotated[AiProvider, Depends(get_ai_provider)]
+
+
+@router.post("/clarifications/next", response_model=ClarificationNext)
+def next_clarification(
+    appointment_id: DatabaseId,
+    session: DatabaseSession,
+    user: AuthenticatedUser,
+    request: Request,
+    provider: Provider,
+):
+    return ClarificationService(session, user, request.app.state.settings, provider).next(
+        appointment_id
+    )
+
+
+@router.put("/clarifications/{clarification_id}", response_model=ReportRead)
+def answer_clarification(
+    appointment_id: DatabaseId,
+    clarification_id: DatabaseId,
+    payload: ClarificationAnswer,
+    session: DatabaseSession,
+    user: AuthenticatedUser,
+    request: Request,
+    provider: Provider,
+):
+    return ClarificationService(session, user, request.app.state.settings, provider).answer(
+        appointment_id, clarification_id, payload
+    )
+
+
+@router.post("/clarifications/skip", response_model=ReportRead)
+def skip_clarifications(
+    appointment_id: DatabaseId,
+    session: DatabaseSession,
+    user: AuthenticatedUser,
+    request: Request,
+    provider: Provider,
+):
+    return ClarificationService(session, user, request.app.state.settings, provider).skip(
+        appointment_id
+    )
 
 
 @router.post(

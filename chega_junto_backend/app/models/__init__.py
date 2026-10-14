@@ -6,7 +6,7 @@ from app.models.health import Allergy, HealthRecord, HealthRecordDocument, Medic
 from app.models.notifications import Notification
 from app.models.operators import Operator
 from app.models.preferences import AccessibilityPreferences, NotificationPreferences
-from app.models.reports import PreVisitReport, ReportQuestion, ReportSection
+from app.models.reports import PreVisitReport, ReportClarification, ReportQuestion, ReportSection
 from app.models.users import User, UserProfile
 
 __all__ = [
@@ -24,6 +24,7 @@ __all__ = [
     "Operator",
     "PreVisitReport",
     "Reminder",
+    "ReportClarification",
     "ReportQuestion",
     "ReportSection",
     "User",

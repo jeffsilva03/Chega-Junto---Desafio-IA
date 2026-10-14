@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import '../core/widgets/mobile_frame.dart';
 import '../core/state/preparation_controller.dart';
 import '../core/state/report_controller.dart';
+import '../core/state/consultation_preparation_controller.dart';
+import '../data/repositories/clarification_repository.dart';
+import 'theme/app_tokens.dart';
 import '../core/services/ai_assistant_service.dart';
 import '../core/services/audio_draft_service.dart';
 import '../core/state/profile_controller.dart';
@@ -44,6 +47,7 @@ class ChegaJuntoApp extends StatefulWidget {
     this.apiClient,
     this.tokenStore,
     this.authRepository,
+    this.clarificationRepository,
   });
   final DemoSession? session;
   final PreparationRepository? repository;
@@ -58,6 +62,7 @@ class ChegaJuntoApp extends StatefulWidget {
   final ApiClient? apiClient;
   final AuthTokenStore? tokenStore;
   final AuthRepository? authRepository;
+  final ClarificationRepository? clarificationRepository;
   @override
   State<ChegaJuntoApp> createState() => _ChegaJuntoAppState();
 }
@@ -128,6 +133,7 @@ class _AccountAppState extends State<_AccountApp> {
   late final GoRouter _router;
   late final PreparationController _preparation;
   late final ReportController _report;
+  late final ConsultationPreparationController _conversation;
   late final ProfileController _profile;
   late final SpeechController _speech;
   late final AppDependencies _dependencies;
@@ -160,6 +166,10 @@ class _AccountAppState extends State<_AccountApp> {
           : null,
       autosaveDelay: _dependencies.reportAutosaveDelay,
     );
+    _conversation = ConsultationPreparationController(
+      _report,
+      widget.options.clarificationRepository ?? _dependencies.clarifications,
+    );
     _profile = ProfileController(
       widget.options.profileRepository ?? _dependencies.profile,
       preferences:
@@ -179,6 +189,7 @@ class _AccountAppState extends State<_AccountApp> {
       profile: _profile,
       speech: _speech,
       report: _report,
+      conversation: _conversation,
       initialLocation: _session.signedIn
           ? (widget.options.initialLocation == null ||
                     widget.options.initialLocation == AppRoutes.welcome ||
@@ -193,7 +204,12 @@ class _AccountAppState extends State<_AccountApp> {
     _router.routeInformationProvider.addListener(_stopReading);
   }
 
+  String get _activePath => _router.routeInformationProvider.value.uri.path;
+
   void _stopReading() {
+    if (_activePath != AppRoutes.report) {
+      _conversation.leave();
+    }
     _speech.stop();
     _report.leaveAudio();
     _report.flushPendingEdits();
@@ -203,6 +219,7 @@ class _AccountAppState extends State<_AccountApp> {
   void dispose() {
     _router.routeInformationProvider.removeListener(_stopReading);
     _router.dispose();
+    _conversation.dispose();
     _report.dispose();
     _preparation.dispose();
     _profile.dispose();
@@ -267,11 +284,17 @@ class _AccountAppState extends State<_AccountApp> {
                   HapticFeedback.selectionClick();
                 }
               },
-              child: MobileFrame(
-                child: AppReadingTools(
-                  profile: _profile,
-                  speech: _speech,
-                  child: child ?? const SizedBox.shrink(),
+              child: ListenableBuilder(
+                listenable: _router.routeInformationProvider,
+                builder: (context, _) => MobileFrame(
+                  maxWidth: _activePath == AppRoutes.report
+                      ? 760
+                      : AppLayout.maxWidth,
+                  child: AppReadingTools(
+                    profile: _profile,
+                    speech: _speech,
+                    child: child ?? const SizedBox.shrink(),
+                  ),
                 ),
               ),
             ),

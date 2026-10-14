@@ -41,8 +41,10 @@ class OrganizedReport {
   OrganizedReport({
     required List<ReportSection> sections,
     required List<ConsultationQuestion> questions,
+    this.sourceHash,
   }) : sections = List.unmodifiable(sections),
        questions = List.unmodifiable(questions);
   final List<ReportSection> sections;
   final List<ConsultationQuestion> questions;
+  final String? sourceHash;
 }

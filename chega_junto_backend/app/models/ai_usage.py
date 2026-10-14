@@ -12,7 +12,7 @@ from app.database.base import Base, IdentityMixin, utc_now
 class AiUsageEvent(IdentityMixin, Base):
     __tablename__ = "ai_usage_events"
     __table_args__ = (
-        CheckConstraint("operation IN ('organize', 'transcribe')", name="operation"),
+        CheckConstraint("operation IN ('organize', 'transcribe', 'clarify')", name="operation"),
         CheckConstraint("outcome IN ('started', 'succeeded', 'failed')", name="outcome"),
         Index("ix_ai_usage_user_operation_created", "user_id", "operation", "created_at"),
         Index("ix_ai_usage_operation_created", "operation", "created_at"),

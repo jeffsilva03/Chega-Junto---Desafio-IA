@@ -40,11 +40,12 @@ class MockPreparationRepository implements PreparationRepository {
     String expectedRevision,
   ) async {
     final old = (await loadOverview()).report;
-    final value = PreVisitReport(
-      appointmentId: appointmentId,
-      originalText: old.originalText,
-      updatedAt: DateTime.now(),
+    final value = old.copyWith(
       sections: [for (final section in old.sections) section.withText('')],
+      questions: const [],
+      organizationCurrent: false,
+      reviewed: false,
+      finalDone: false,
     );
     await saveReport(value);
     return value;

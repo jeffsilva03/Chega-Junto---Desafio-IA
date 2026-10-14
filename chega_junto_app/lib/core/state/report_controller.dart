@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../data/models/organized_report.dart';
 import '../../data/models/pre_visit_report.dart';
+import '../../data/models/report_clarification.dart';
 import '../network/api_exception.dart';
 import '../services/ai_assistant_service.dart';
 import '../services/audio_draft_service.dart';
@@ -49,6 +50,16 @@ class ReportController extends ChangeNotifier {
   Object? saveError;
   PreVisitReport? preservedDraft;
   String? _appointmentId;
+  String? get appointmentId => _appointmentId;
+  int get editEpoch => _revision;
+  String? currentSourceHash, _generatedSourceHash, _clarificationsSourceText;
+  List<ReportClarification> _clarifications = const [];
+  bool _clarificationsCompleted = false;
+  bool get clarificationsCurrent => _clarificationsSourceText == text;
+  bool get clarificationsCompleted =>
+      clarificationsCurrent && _clarificationsCompleted;
+  List<ReportClarification> get clarifications =>
+      clarificationsCurrent ? _clarifications : const [];
   Timer? _autosave;
   Future<void> _pendingWrite = Future.value();
   String text = '', processedText = '', transcription = '';
@@ -65,7 +76,12 @@ class ReportController extends ChangeNotifier {
   Timer? _timer;
   bool get hasSummary => sections.isNotEmpty;
   bool get hasUnsavedChanges => _dirty;
-  bool get summaryOutdated => hasSummary && processedText != text;
+  bool get summaryOutdated =>
+      hasSummary &&
+      (processedText != text ||
+          (_generatedSourceHash != null &&
+              currentSourceHash != null &&
+              _generatedSourceHash != currentSourceHash));
   bool get hasContent =>
       sections.any((section) => section.text.trim().isNotEmpty);
   List<ConsultationQuestion> get selectedQuestions =>
@@ -122,6 +138,15 @@ class ReportController extends ChangeNotifier {
     reviewedAt = value.reviewedAt;
     finalReviewRevision = value.finalReviewRevision;
     finalReviewAt = value.finalReviewAt;
+    currentSourceHash = value.currentSourceHash;
+    _generatedSourceHash = value.organizationCurrent
+        ? value.currentSourceHash
+        : null;
+    _clarifications = value.clarifications;
+    _clarificationsSourceText = value.clarificationsCurrent
+        ? value.originalText
+        : value.clarificationsSourceText;
+    _clarificationsCompleted = value.clarificationsCompleted;
   }
 
   PreVisitReport _snapshot() => PreVisitReport(
@@ -131,14 +156,46 @@ class ReportController extends ChangeNotifier {
     contentRevision: contentRevision,
     sections: sections,
     questions: questions,
-    organizationCurrent: processedText == text,
+    organizationCurrent: hasSummary && !summaryOutdated,
     reviewed: reviewed,
     organizedSummary: sections
         .where((s) => s.text.trim().isNotEmpty)
         .map((s) => '${s.title}\n${s.text}')
         .join('\n\n'),
     suggestedQuestions: selectedQuestions.map((q) => q.text).toList(),
+    currentSourceHash: currentSourceHash,
+    organizationSourceHash: _generatedSourceHash,
+    clarifications: _clarifications,
+    clarificationsCurrent: clarificationsCurrent,
+    clarificationsCompleted: clarificationsCompleted,
+    clarificationsSourceText: _clarificationsSourceText,
   );
+
+  Future<void> acceptExternal(
+    PreVisitReport value, {
+    required int expectedEditEpoch,
+  }) => _serialize(() async {
+    if (_disposed || value.appointmentId != _appointmentId) return;
+    if (expectedEditEpoch != _revision || _dirty) {
+      preservedDraft = _snapshot();
+      conflict = true;
+      saveError = const ConflictException(code: 'revision_conflict');
+      notifyListeners();
+      return;
+    }
+    _hydrate(value);
+    preparation.acceptReport(value);
+    notifyListeners();
+  });
+
+  Future<void> refreshPersisted() async {
+    await saveDraft();
+    final epoch = _revision, id = _appointmentId;
+    if (id == null) return;
+    final value = await preparation.repository.loadReport(id);
+    if (value != null) await acceptExternal(value, expectedEditEpoch: epoch);
+  }
+
   Future<T> _serialize<T>(Future<T> Function() action) {
     final next = _pendingWrite.then((_) => action());
     _pendingWrite = next.then<void>(
@@ -345,6 +402,7 @@ class ReportController extends ChangeNotifier {
       sections = result.sections;
       questions = result.questions;
       processedText = source;
+      _generatedSourceHash = result.sourceHash;
       _markChanged();
       await saveDraft(intent: 'organize', organizationSourceText: source);
       if (_disposed || generation != _generation) return false;
@@ -719,6 +777,7 @@ class ReportController extends ChangeNotifier {
     text = processedText = transcription = '';
     sections = const [];
     questions = const [];
+    _clarifications = const [];
     preservedDraft = null;
     saveError = null;
     _dirty = false;

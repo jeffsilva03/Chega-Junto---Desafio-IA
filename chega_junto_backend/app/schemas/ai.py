@@ -46,6 +46,7 @@ class GeneratedQuestion(DTO):
 class OrganizationResponse(DTO):
     sections: list[GeneratedSection]
     questions: list[GeneratedQuestion]
+    source_hash: str | None = None
 
 
 class TranscriptionResponse(DTO):

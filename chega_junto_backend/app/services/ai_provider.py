@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from app.schemas.ai import AiContent
+from app.schemas.clarifications import ClarificationContent
 
 
 @dataclass(frozen=True)
 class ProviderResult:
-    content: AiContent | str
+    content: AiContent | ClarificationContent | str
     input_units: int | None = None
     output_units: int | None = None
 
@@ -21,6 +22,12 @@ class AiProviderError(Exception):
 
 
 class AiProvider(Protocol):
-    def organize_report(self, original_text: str) -> ProviderResult: ...
+    def organize_report(
+        self, original_text: str, clarifications: list[dict] | None = None
+    ) -> ProviderResult: ...
+
+    def next_clarification(
+        self, original_text: str, clarifications: list[dict]
+    ) -> ProviderResult: ...
 
     def transcribe_audio(self, content: bytes, extension: str, mime: str) -> ProviderResult: ...

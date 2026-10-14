@@ -1,5 +1,7 @@
 # Chega Junto
 
+**Estado atual:** V8 é o checkpoint oficial de IA e transcrição reais. A V9 candidata implementa preparação guiada em uma única página, com até três perguntas adaptativas, resumo editável e revisão humana. Consulte o [relatório V9](docs/RELATORIO_PREPARACAO_CONVERSACIONAL_V9.md) e o [contrato V9](chega_junto_backend/docs/API_CONTRACT_V9.md). Não há tag V9; aguarda revisão do usuário. As seções abaixo também preservam o histórico das versões anteriores.
+
 Projeto para o Desafio Salte com a IA. Reúne o aplicativo Flutter, backend FastAPI/MySQL, Portal Web, documentação oficial, protótipos aprovados, identidade visual e código-fonte da landing page. O checkpoint `V7` publica o Portal de Agendamentos autenticado, conectado ao Render/Aiven e ao aplicativo Flutter Web da V6. V1–V6 permanecem preservadas.
 
 Flutter Web publicado em **https://chega-junto-desafio-ia.web.app**: Firebase Hosting Spark → FastAPI no Render → MySQL no Aiven. O Portal Simulador permanece local. Validação manual realizada com sucesso no Safari de um iPhone físico utilizando a URL pública HTTPS. Consulte o [relatório da publicação Web V6](docs/RELATORIO_DEPLOY_FLUTTER_WEB_V6.md).

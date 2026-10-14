@@ -5,6 +5,7 @@ import '../models/appointment_reminder.dart';
 import '../models/checklist_item.dart';
 import '../models/organized_report.dart';
 import '../models/pre_visit_report.dart';
+import '../models/report_clarification.dart';
 
 String decimalId(Object? value) {
   if (value is! String || !RegExp(r'^[0-9]+$').hasMatch(value)) {
@@ -110,6 +111,16 @@ PreVisitReport reportFromJson(Json j) {
         .map((q) => q.text)
         .toList(),
     organizationCurrent: j['organization_current'],
+    currentSourceHash: j['current_source_hash'] as String?,
+    clarificationsCurrent: j['clarifications_current'] == true,
+    clarificationsCompleted: j['clarifications_completed'] == true,
+    clarificationsSourceText: j['clarifications_current'] == true
+        ? j['original_text'] as String
+        : null,
+    clarifications: [
+      for (final row in objects(j['clarifications'] ?? const []))
+        clarificationFromJson(row),
+    ],
     reviewed: j['reviewed'],
     finalDone: j['final_done'],
     reviewedRevision: j['reviewed_revision'] == null
@@ -134,6 +145,8 @@ Json reportToJson(
   'original_text': report.originalText,
   'intent': intent,
   if (intent == 'organize') 'organization_source_text': organizationSourceText,
+  if (intent == 'organize' && report.organizationSourceHash != null)
+    'organization_source_hash': report.organizationSourceHash,
   'sections': [
     for (final s in report.sections)
       {
@@ -152,3 +165,17 @@ Json reportToJson(
       },
   ],
 };
+
+ReportClarification clarificationFromJson(Json j) => ReportClarification(
+  id: decimalId(j['id']),
+  questionText: j['question_text'],
+  position: j['position'],
+  options: (j['options'] as List).cast<String>(),
+  answerKind: j['answer_kind'] == null
+      ? null
+      : ClarificationAnswerKind.values.firstWhere(
+          (kind) => kind.wire == j['answer_kind'],
+        ),
+  answerText: j['answer_text'] as String?,
+  answeredAt: j['answered_at'] == null ? null : instant(j['answered_at']),
+);

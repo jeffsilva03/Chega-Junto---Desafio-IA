@@ -142,13 +142,17 @@ flutter build apk --release --build-name=0.7.0 --build-number=7001 --dart-define
 
 O manifesto principal inclui `android.permission.INTERNET` para permitir acesso à API também no build release. O APK universal usa a chave de teste Android existente e serve para instalação demonstrativa direta; publicação na Play Store requer configuração própria de assinatura. Versão `0.7.0+7001`, SHA-256 `6da3a3a0ef8da83748b6f56489d784472f9c07541e0a0dc294783bd8e4f639f9`. Token continua somente em memória. Evidências e limites constam no [relatório do APK](../docs/RELATORIO_APK_ANDROID_0_7_0.md).
 
-## IA e áudio reais — V8 candidata
+## Preparação guiada — V9 candidata
+
+A rota principal de relato reúne introdução, escolha texto/áudio, complemento adaptativo, resumo, perguntas para levar ao profissional e conclusão. `ConsultationPreparationController` coordena etapas; `ReportController` conserva relato, áudio, autosave, conflito e revisões. Rotas antigas de áudio/processamento/resumo/perguntas/revisão redirecionam para a principal e derivam o estado salvo sem gerar IA automaticamente. `ClarificationRepository` possui implementações API e mock; complementos ficam separados do texto original. A referência `Design Telas ChegaJunto/V9 DESIGN.png` foi lida e preservada integralmente. Veja o [relatório V9](../docs/RELATORIO_PREPARACAO_CONVERSACIONAL_V9.md).
+
+## IA e áudio reais — base V8 oficial
 
 Em modo API, organização e transcrição passam exclusivamente pelo FastAPI; a chave OpenAI permanece somente no Render. O relato é organizado em quatro seções editáveis e até cinco perguntas inicialmente desmarcadas. Fonte alterada durante processamento é descartada; salvamento versionado, conflitos e revisão humana permanecem obrigatórios. Sem diagnóstico, prescrição, interpretação de exames ou triagem; somente dados fictícios.
 
 Gravação real usa `record` 6.2.1: PCM16 mono de 16 kHz/WAV em memória, cinco minutos ativos e até 10 MiB. Android pede RECORD_AUDIO em runtime somente ao tocar; Web/Safari exige HTTPS e permissão do navegador. Negação mantém alternativa digitada. Áudio passa pelo backend, não é armazenado no banco e é liberado após processamento/cancelamento/logout. Revise a transcrição e toque “Usar transcrição no relato” antes de organizar. Mock mantém áudio/IA simulados sem permissão ou consumo de créditos.
 
-Build Web e APK de validação com DATA_SOURCE=api e API_BASE_URL=https://chega-junto-api.onrender.com usam os comandos das seções anteriores; para esta candidata, o build Android exigido é `flutter build apk --debug` com esses dois dart-defines. Publique somente o site do app com a configuração existente. Não criar tag V8; consulte o [relatório de validação V8](../docs/RELATORIO_IA_REAL_V8.md).
+Build Web e APK de validação com DATA_SOURCE=api e API_BASE_URL=https://chega-junto-api.onrender.com usam os comandos das seções anteriores; na V9 candidata, o build Android exigido é `flutter build apk --debug` com esses dois dart-defines. Publique somente o site do app com a configuração existente. V8 está oficialmente tagueada; não criar tag V9. O [relatório V8](../docs/RELATORIO_IA_REAL_V8.md) registra a validação daquela candidata antes do fechamento oficial.
 
 ## Organização
 

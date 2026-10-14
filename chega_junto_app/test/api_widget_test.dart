@@ -149,10 +149,7 @@ void main() {
       await tester.tap(find.text('Atualizar atendimentos'));
       await tester.pumpAndSettle();
       expect(empty, findsNothing);
-      expect(
-        find.text('O que você gostaria de contar ao profissional?'),
-        findsOneWidget,
-      );
+      expect(find.text('Preparação concluída!'), findsOneWidget);
       expect(api.mutations, isEmpty);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());

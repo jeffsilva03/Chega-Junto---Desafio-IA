@@ -1,21 +1,24 @@
-import hashlib
-
 from app.core.errors import ApiError, conflict, not_found
 from app.database.base import utc_now
 from app.repositories.appointments import AppointmentRepository
 from app.repositories.reports import ReportRepository
+from app.schemas.clarifications import ClarificationRead
 from app.schemas.report_content import QuestionContent, ReportContent, SectionContent
 from app.schemas.reports import QuestionRead, ReportRead, ReportState, SectionRead
 from app.services.common import transaction, validate_child_ids
 from app.services.report_revision import advance_content_revision
-
-
-def source_hash(text):
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+from app.services.report_source import (
+    clarifications_current,
+    current_clarifications,
+    organization_source_hash,
+)
+from app.services.report_source import (
+    source_hash as source_hash,
+)
 
 
 def report_state(report, sections):
-    current = bool(report and report.organized_source_hash == source_hash(report.original_text))
+    current = bool(report and report.organized_source_hash == organization_source_hash(report))
     content = any(section.text.strip() for section in sections)
     reviewed = bool(
         report
@@ -71,13 +74,30 @@ class ReportService:
         fields = {
             field: getattr(report, field)
             for field in ReportRead.model_fields
-            if field not in {*ReportState.model_fields, "sections", "questions"}
+            if field
+            not in {
+                *ReportState.model_fields,
+                "sections",
+                "questions",
+                "current_source_hash",
+                "clarifications_current",
+                "clarifications_completed",
+                "clarifications",
+            }
         }
         return ReportRead(
             **fields,
             **state.model_dump(),
             sections=[SectionRead.model_validate(row) for row in sections],
             questions=[QuestionRead.model_validate(row) for row in questions],
+            current_source_hash=organization_source_hash(report),
+            clarifications_current=clarifications_current(report),
+            clarifications_completed=bool(
+                clarifications_current(report) and report.clarifications_completed_at
+            ),
+            clarifications=[
+                ClarificationRead.model_validate(row) for row in current_clarifications(report)
+            ],
         )
 
     def get(self, appointment_id):
@@ -119,11 +139,18 @@ class ReportService:
                     expected_revision=payload.expected_revision,
                 )
             if changed:
+                if report.original_text != payload.original_text:
+                    report.clarification_request_id = report.clarification_requested_at = None
                 report.original_text = payload.original_text
                 sections, questions = self.repository.replace(report, sections, questions, payload)
                 report.updated_at = utc_now()
             if payload.intent == "organize":
-                digest = source_hash(payload.original_text)
+                digest = organization_source_hash(report)
+                if (
+                    payload.organization_source_hash is not None
+                    and payload.organization_source_hash != digest
+                ):
+                    raise conflict()
                 if report.organized_source_hash != digest:
                     report.organized_source_hash, report.organized_at = digest, utc_now()
                     report.updated_at = utc_now()

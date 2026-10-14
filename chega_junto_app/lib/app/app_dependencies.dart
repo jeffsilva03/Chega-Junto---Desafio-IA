@@ -19,7 +19,10 @@ import '../core/services/audio_capture_service.dart';
 import '../core/services/record_audio_capture_service.dart';
 import '../data/api/api_ai_assistant_service.dart';
 import '../data/api/api_audio_draft_service.dart';
-import '../data/mock/mock_ai_assistant_service.dart';
+import '../data/mock/mock_conversation_assistant.dart';
+import '../data/repositories/clarification_repository.dart';
+import '../data/api/api_clarification_repository.dart';
+import '../data/mock/mock_clarification_repository.dart';
 import '../data/mock/mock_audio_draft_service.dart';
 
 /// The source is chosen once. Features never choose or fall back to mocks.
@@ -48,6 +51,7 @@ class AppDependencies {
       reportAutosaveDelay = const Duration(milliseconds: 600);
       persistDraftInvalidation = false;
       assistant = ApiAiAssistantService(_client!);
+      clarifications = ApiClarificationRepository(_client!);
       audioDraft = ApiAudioDraftService(_client!);
       audioCapture = RecordAudioCaptureService();
     } else {
@@ -57,7 +61,8 @@ class AppDependencies {
       notifications = MockNotificationRepository(preparation, preferences);
       reportAutosaveDelay = null;
       persistDraftInvalidation = true;
-      assistant = const MockAiAssistantService();
+      assistant = MockConversationAssistant(preparation);
+      clarifications = MockClarificationRepository(preparation);
       audioDraft = const MockAudioDraftService();
       audioCapture = null;
     }
@@ -71,6 +76,7 @@ class AppDependencies {
   late final Duration? reportAutosaveDelay;
   late final bool persistDraftInvalidation;
   late final AiAssistantService assistant;
+  late final ClarificationRepository clarifications;
   late final AudioDraftService audioDraft;
   late final AudioCaptureService? audioCapture;
   void dispose() {

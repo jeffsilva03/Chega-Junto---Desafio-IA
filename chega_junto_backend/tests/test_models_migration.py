@@ -15,6 +15,7 @@ from app.schemas.common import DatabaseId
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_TABLES = {
+    "report_clarifications",
     "ai_usage_events",
     "operators",
     "users",
@@ -164,6 +165,14 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
     spec.loader.exec_module(usage)
     monkeypatch.setattr(usage, "op", operations)
     usage.upgrade()
+    spec = importlib.util.spec_from_file_location(
+        "clarifications_migration",
+        ROOT / "migrations/versions/20261013_0006_report_clarifications.py",
+    )
+    clarifications = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(clarifications)
+    monkeypatch.setattr(clarifications, "op", operations)
+    clarifications.upgrade()
     assert set(operations.metadata.tables) == EXPECTED_TABLES == set(Base.metadata.tables)
     for name, expected in Base.metadata.tables.items():
         actual = operations.metadata.tables[name]
@@ -181,6 +190,18 @@ def test_mysql_schema_and_frozen_migration_agree(monkeypatch):
             (i.name, tuple(c.name for c in i.columns)) for i in expected.indexes
         }
         assert all(len(str(c.name)) <= 64 for c in actual.constraints)
+    from types import SimpleNamespace
+
+    offline_context = operations.get_context
+    monkeypatch.setattr(operations, "get_context", lambda: SimpleNamespace(as_sql=False))
+    monkeypatch.setattr(
+        operations,
+        "get_bind",
+        lambda: SimpleNamespace(execute=lambda _: SimpleNamespace(first=lambda: None)),
+        raising=False,
+    )
+    clarifications.downgrade()
+    monkeypatch.setattr(operations, "get_context", offline_context)
     usage.downgrade()
     operators.downgrade()
     simulator.downgrade()
@@ -216,7 +237,7 @@ def test_alembic_offline_compiles_mysql_without_credentials():
     config = Config(str(ROOT / "alembic.ini"), output_buffer=output)
     command.upgrade(config, "head", sql=True)
     ddl = output.getvalue()
-    assert ddl.count("CREATE TABLE ") == 19  # 17 domínio + usage + alembic_version.
+    assert ddl.count("CREATE TABLE ") == 20  # Domínio V8 + clarifications + alembic_version.
     assert "BIGINT UNSIGNED" in ddl and "AUTO_INCREMENT" in ddl
     assert "ENGINE=InnoDB" in ddl and "utf8mb4" in ddl
     assert "transcription_text" not in ddl and "INSERT INTO users" not in ddl

@@ -120,7 +120,14 @@ class PreparationCard extends StatelessWidget {
                 button: true,
                 excludeSemantics: true,
                 child: InkWell(
-                  onTap: () => context.push(stage.$3),
+                  onTap: () {
+                    if (stage.$1 == PreparationStage.report ||
+                        stage.$1 == PreparationStage.finalReview) {
+                      context.go(AppRoutes.report);
+                    } else {
+                      context.push(stage.$3);
+                    }
+                  },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),

@@ -1,4 +1,5 @@
 import 'organized_report.dart';
+import 'report_clarification.dart';
 
 class PreVisitReport {
   const PreVisitReport({
@@ -17,6 +18,12 @@ class PreVisitReport {
     this.reviewedAt,
     this.finalReviewRevision,
     this.finalReviewAt,
+    this.currentSourceHash,
+    this.organizationSourceHash,
+    this.clarifications = const [],
+    this.clarificationsCurrent = false,
+    this.clarificationsCompleted = false,
+    this.clarificationsSourceText,
   });
   final String appointmentId;
   final String originalText;
@@ -29,22 +36,47 @@ class PreVisitReport {
   final bool organizationCurrent, reviewed, finalDone;
   final String? reviewedRevision, finalReviewRevision;
   final DateTime? reviewedAt, finalReviewAt;
+  final String? currentSourceHash,
+      organizationSourceHash,
+      clarificationsSourceText;
+  final List<ReportClarification> clarifications;
+  final bool clarificationsCurrent, clarificationsCompleted;
 
-  PreVisitReport copyWith({bool? reviewed, bool? finalDone}) => PreVisitReport(
+  PreVisitReport copyWith({
+    bool? reviewed,
+    bool? finalDone,
+    bool? organizationCurrent,
+    String? contentRevision,
+    String? currentSourceHash,
+    String? clarificationsSourceText,
+    bool? clarificationsCurrent,
+    bool? clarificationsCompleted,
+    List<ReportClarification>? clarifications,
+    List<ReportSection>? sections,
+    List<ConsultationQuestion>? questions,
+  }) => PreVisitReport(
     appointmentId: appointmentId,
     originalText: originalText,
     updatedAt: updatedAt,
     organizedSummary: organizedSummary,
     suggestedQuestions: suggestedQuestions,
-    sections: sections,
-    questions: questions,
-    contentRevision: contentRevision,
-    organizationCurrent: organizationCurrent,
+    sections: sections ?? this.sections,
+    questions: questions ?? this.questions,
+    contentRevision: contentRevision ?? this.contentRevision,
+    organizationCurrent: organizationCurrent ?? this.organizationCurrent,
     reviewed: reviewed ?? this.reviewed,
     finalDone: finalDone ?? this.finalDone,
     reviewedRevision: reviewedRevision,
     reviewedAt: reviewedAt,
     finalReviewRevision: finalReviewRevision,
     finalReviewAt: finalReviewAt,
+    currentSourceHash: currentSourceHash ?? this.currentSourceHash,
+    organizationSourceHash: organizationSourceHash,
+    clarifications: clarifications ?? this.clarifications,
+    clarificationsCurrent: clarificationsCurrent ?? this.clarificationsCurrent,
+    clarificationsCompleted:
+        clarificationsCompleted ?? this.clarificationsCompleted,
+    clarificationsSourceText:
+        clarificationsSourceText ?? this.clarificationsSourceText,
   );
 }
