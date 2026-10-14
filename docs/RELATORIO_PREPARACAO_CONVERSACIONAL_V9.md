@@ -1,6 +1,6 @@
 # V9 candidata — preparação conversacional guiada
 
-Base oficial: V8 `6819ae7a6a306c963797c5caac22c56450c0ce11`, tag anotada preservada. Implementação candidata `f31c18b9cad3f9c908b76a1faf18ef90c6bc8cac` enviada à main/origin e publicada, sem tag V9. Smoke público em andamento; resultados ainda pendentes estão indicados explicitamente.
+Base oficial: V8 `6819ae7a6a306c963797c5caac22c56450c0ce11`, tag anotada preservada. Implementação candidata `f31c18b9cad3f9c908b76a1faf18ef90c6bc8cac`, com proteção dos controles Flutter no commit `861c4a4fc65039407aec71113f2b4f13feff4364`, enviada à main/origin e publicada, sem tag V9. Um smoke público de texto no desktop e um de áudio no Safari do iPhone físico foram concluídos. Fechamento em 14/10/2026; candidata disponível para revisão do usuário.
 
 ## Produto e referência
 
@@ -31,6 +31,7 @@ Fingerprint V8 `SHA256(original UTF-8)` permanece idêntico sem respostas atuais
 | MySQL 8.4 descartável | 0001→0006, metadata equivalente, downgrade vazio/reupgrade, V8 concluída preservada, downgrade ocupado recusado e reservas concorrentes de quota aprovados. Container exclusivo removido. |
 | Aiven current/check | `20261013_0006 (head)`; nenhum novo upgrade detectado. |
 | Integridade Aiven | 18 tabelas anteriores e todos os registros preservados imediatamente após migration; 20→21 FKs; zero órfãos; consulta V8 continua ativa. |
+| Integridade após os dois smokes | Demais registros protegidos idênticos ao baseline; 21 FKs, zero órfãos. Exceções registradas: preparo da fixture, presença confirmada na mesma consulta e tema escuro da mesma conta demonstrativa. Data, horário, vínculo e status ativo conferidos. |
 | Auditoria fonte | Zero achados; `.env`, CA, caches, capturas e builds ignorados. |
 | Builds/auditoria Web e APK | Web release API e APK debug API aprovados; 43 arquivos Web e 172 entradas APK, zero segredos/configuração privada. `record_web` registrado. |
 
@@ -56,18 +57,24 @@ Uma falha de conexão ao enviar uma omissão foi tratada sem retry automático. 
 
 Banco após desktop: revisão 31, organização/revisão/final atuais, três complementos respondidos e concluídos, uma pergunta profissional selecionada. Relato original permanece separado das respostas. Consulta ativa sem alterações de agendamento ou presença. Home 75% porque a confirmação de presença já estava pendente na fixture V8; a revisão final está concluída. Usage V9 desktop: `clarify` 3 succeeded, 1.792 unidades de entrada/604 de saída; `organize` 1 succeeded, 772/284. Nenhuma transcrição desktop, falha de provedor ou estimativa monetária.
 
+No Safari do iPhone físico, o usuário confirmou “Funcionou e concluí a preparação” após o roteiro autorizado: uma gravação fictícia de 10–20 segundos, pausa/retomada/parada, revisão/edição e uso explícito da transcrição, complemento, uma organização, resumo, perguntas e conclusão. A confirmação inclui teclado/stepper e preservação das dúvidas sem diagnóstico/tratamento. Conferência independente do banco: revisão 42, organização/revisão/final atuais, dois complementos respondidos e concluídos, quatro seções e três perguntas profissionais, duas selecionadas pelo usuário. O terceiro `clarify` encerrou o ciclo sem uma terceira pergunta. Nenhuma gravação ou organização foi repetida para a conferência.
+
+Usage incremental do iPhone: `clarify` 3 succeeded, 1.553 unidades de entrada/405 de saída; `organize` 1 succeeded, 636/364; `transcribe` 1 succeeded, sem contadores de unidades disponibilizados. Total dos dois smokes V9: **6 clarify** (3.345/1.009), **2 organize** (1.408/648) e **1 transcribe**, todos succeeded, sem eventos failed/started remanescentes. O acumulado histórico, incluindo V8, é 6 clarify, 7 organize (3.763/1.712) e 4 transcribe. Nenhum valor monetário foi estimado.
+
+Na conferência final, a presença da consulta demonstrativa estava confirmada às 13:48 UTC e a preferência de aparência da mesma conta estava em dark. Essas duas linhas diferem do baseline e foram registradas como exceções de interação da conta demonstrativa; não foram restauradas ou alteradas pela auditoria. A consulta permanece scheduled em 22/10/2026 às 14:30 de São Paulo. Todos os demais registros protegidos coincidem com seus fingerprints anteriores; eventos de uso antigos preservados, novos acrescentados. Após atualizar atendimentos no desktop, a Home exibiu 100%, com presença e revisão final concluídas. Migration atual 0006 e `alembic check` sem operações pendentes.
+
 Conferência visual local em 390×844: introdução, modalidade, texto, gravação/pausa/retomada/revisão de transcrição, perguntas individuais com opções/texto, resumo único, perguntas inicialmente desmarcadas, revisão e conclusão com consulta do mock aprovados. Capturas permanecem apenas em `.local/v9-qa`, ignoradas. A abertura pela Home foi corrigida para manter a URL principal e a largura de desktop, com teste de regressão dedicado. Nenhuma chamada real foi usada nessa conferência.
 
 ## Checkpoint
 
-Commit candidato, deploy, hashes, usage real, smoke desktop/iPhone, integridade final, status main/origin e preservação V1–V8 serão preenchidos com evidências observadas. Não criar tag V9. A aprovação do usuário é necessária somente para o checkpoint oficial posterior à revisão desta candidata.
+Render executa o backend de `f31c18b9cad3f9c908b76a1faf18ef90c6bc8cac`; os arquivos de backend/migrations são idênticos aos de `861c4a4fc65039407aec71113f2b4f13feff4364`. Firebase executa o Flutter desse segundo commit, com SHA público correspondente ao build final auditado. O fechamento documental é um commit normal separado na main, sem novo deploy de código. O recibo final informa seu hash, obtido após o commit; este relatório não tenta referenciar o próprio hash. Main/origin sincronizadas e árvore limpa após o envio. Objetos V1–V8 locais e remotos conferidos contra o baseline. Nenhuma tag V9 criada. O checkpoint oficial V9 fica para depois da revisão desta candidata pelo usuário.
 
 ## Conferência dos 49 itens solicitados
 
 | Item | Resultado observado |
 | --- | --- |
-| 1. Commit candidato | `f31c18b9cad3f9c908b76a1faf18ef90c6bc8cac` — implementação. |
-| 2. Hash final | Documentação de smoke ainda em fechamento; commit de implementação acima é o publicado. |
+| 1. Commit candidato | `f31c18b9cad3f9c908b76a1faf18ef90c6bc8cac` — implementação; `861c4a4fc65039407aec71113f2b4f13feff4364` — proteção Flutter e documentação. |
+| 2. Hash final | Código final `861c4a4fc65039407aec71113f2b4f13feff4364`; hash do fechamento documental separado no recibo final. |
 | 3. Arquivos principais | Nova página/widgets, orquestração, repositories/mappers/modelos Flutter; schemas/models/services/endpoints/backend; migration 0006; testes e documentos. |
 | 4. Design | Original aberto, estudado e preservado; SHA informado acima. |
 | 5. Página | Dez estados internos; stepper de cinco etapas; máximo 760 no desktop. |
@@ -93,25 +100,25 @@ Commit candidato, deploy, hashes, usage real, smoke desktop/iPhone, integridade 
 | 25. MySQL isolado | Cadeia, metadata, dados V8, downgrade seguro e quota concorrente aprovados. |
 | 26. Current | `20261013_0006 (head)`. |
 | 27. Check | Nenhum upgrade pendente. |
-| 28. Aiven | Dados anteriores preservados após migration; 21 FKs, zero órfãos; conferência final após smoke pendente. |
+| 28. Aiven | Conferência final aprovada: 21 FKs, zero órfãos; demais registros protegidos iguais. Exceções explícitas da fixture/preferências descritas acima. |
 | 29. Render | Live no commit candidato; health/database 200/ok. |
 | 30. Simulador | 404 e ausente do OpenAPI. |
 | 31. OpenAPI | Cinco rotas de IA/complemento presentes, sem chave/prompt secreto. |
 | 32. Smoke texto | Um único fluxo desktop aprovado, conclusão persistida e reentrada validada. |
 | 33. Injection no relato | Não obedecida; resumo sem diagnóstico, dose, segredo ou fatos inventados. |
 | 34. Resposta maliciosa | Não obedecida; contexto adaptativo e resumo mantiveram só informação relatada. |
-| 35. Áudio | V8 e testes preservados; simulação local aprovada; gravação real V9 no iPhone pendente. |
+| 35. Áudio | Gravação/transcrição real no Safari do iPhone aprovadas pelo usuário; uma chamada transcribe confirmada no banco. |
 | 36. Desktop | Público 1366×900, URL/largura corretas; reentrada pending validada sem nova chamada. |
-| 37. iPhone | Smoke físico V9 pendente de participação do usuário. |
+| 37. iPhone | Smoke físico Safari aprovado pelo usuário; revisão 42, organização/revisão/final atuais confirmadas no banco. |
 | 38. Android | Build/auditoria aprovados; instalação no AVD recusada por falta de espaço. |
 | 39. Firebase | App publicado; bytes/SHA públicos iguais ao build auditado. |
 | 40. Portal preservado | Código sem alterações/deploy; index público idêntico. |
 | 41. Auditoria Web | 43 arquivos, zero achados; record_web registrado. |
 | 42. Auditoria APK | 172 entradas, zero segredos/configuração privada; exemplos SDK verificados. |
 | 43. Segredos | Zero em fonte/staging/Web/APK; chave Render não lida; `.env`/CA ignorados. |
-| 44. Usage real | Desktop V9: 3 clarify + 1 organize succeeded, unidades descritas acima; iPhone pendente. |
-| 45. Limitações | AVD sem espaço; SDK Wasm dry-run/avisos conhecidos; física Safari ainda pendente. |
-| 46. Git status | Somente relatório em edição para registrar smoke; código já commitado. |
-| 47. Main/origin | Sincronizadas no candidato; fechamento documental será enviado. |
-| 48. V1–V8 | Objetos locais preservados e comparados ao baseline. |
+| 44. Usage real | Total V9: 6 clarify (3.345/1.009), 2 organize (1.408/648), 1 transcribe; todos succeeded. |
+| 45. Limitações | Android nativo não validado por espaço do AVD; avisos conhecidos do dry-run Wasm/flutter_tts, build JS aprovado; cold start do Render Free. |
+| 46. Git status | Árvore limpa após commit normal de fechamento documental. |
+| 47. Main/origin | Sincronizadas após envio do fechamento; sem commits divergentes. |
+| 48. V1–V8 | Objetos locais e remotos preservados e comparados ao baseline. |
 | 49. Sem tag V9 | Nenhuma tag V9 criada. |
