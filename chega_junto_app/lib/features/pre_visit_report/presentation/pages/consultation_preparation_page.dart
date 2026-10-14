@@ -152,7 +152,11 @@ class _ConsultationPreparationPageState
           busy: report.processing,
         ),
         const SizedBox(height: 18),
-        if (report.hasSummary) OrganizedReportCard(controller: report),
+        if (report.hasSummary)
+          OrganizedReportCard(
+            controller: report,
+            enabled: !conversation.busy && !report.processing,
+          ),
         if (report.summaryOutdated && !report.processing) ...[
           const SizedBox(height: 16),
           const Text(
@@ -242,7 +246,10 @@ class _ConsultationPreparationPageState
                 'Aqui estão algumas perguntas que você pode levar para a consulta. Selecione as que deseja e edite se quiser.',
           ),
           const SizedBox(height: 20),
-          ConsultationQuestionsCard(controller: report),
+          ConsultationQuestionsCard(
+            controller: report,
+            enabled: !conversation.busy,
+          ),
           const SizedBox(height: 22),
           AppButton(
             label: 'Continuar',
@@ -265,6 +272,7 @@ class _ConsultationPreparationPageState
           OrganizedReportCard(
             controller: report,
             readOnly: true,
+            enabled: !conversation.busy,
             onEdit: () => conversation.go(PreparationConversationStep.summary),
           ),
           const SizedBox(height: 16),

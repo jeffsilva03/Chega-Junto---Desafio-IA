@@ -87,10 +87,7 @@ class _PreparationClarificationViewState
           const SizedBox(height: 20),
         ],
         if (conversation.busy)
-          const PreparationMessage(
-            text: 'Preparando a próxima pergunta…',
-            busy: true,
-          ),
+          const PreparationMessage(text: 'Aguarde um instante…', busy: true),
         if (!conversation.busy && report.clarificationsCompleted) ...[
           const Text(
             'Você já complementou seu relato. Pode seguir para o resumo.',
@@ -166,6 +163,7 @@ class _ClarificationComposerState extends State<ClarificationComposer> {
           RadioGroup<String>(
             groupValue: selected,
             onChanged: (value) {
+              if (widget.conversation.busy) return;
               setState(() => selected = value);
               if (!widget.editing && value != null) {
                 widget.conversation.selectOption(value);
@@ -189,6 +187,7 @@ class _ClarificationComposerState extends State<ClarificationComposer> {
                         borderRadius: BorderRadius.circular(AppRadii.medium),
                       ),
                       child: RadioListTile<String>(
+                        enabled: !widget.conversation.busy,
                         key: ValueKey('v9-option-${entry.$1}'),
                         value: entry.$2,
                         title: Text(entry.$2),
@@ -212,6 +211,7 @@ class _ClarificationComposerState extends State<ClarificationComposer> {
           TextField(
             key: const ValueKey('v9-answer-input'),
             controller: input,
+            enabled: !widget.conversation.busy,
             minLines: 2,
             maxLines: 6,
             maxLength: 2000,
@@ -225,6 +225,7 @@ class _ClarificationComposerState extends State<ClarificationComposer> {
             },
           ),
         PopupMenuButton<ClarificationAnswerKind>(
+          enabled: !widget.conversation.busy,
           tooltip: 'Outras respostas',
           onSelected: (kind) => widget.onSubmit(kind, null),
           itemBuilder: (_) => [

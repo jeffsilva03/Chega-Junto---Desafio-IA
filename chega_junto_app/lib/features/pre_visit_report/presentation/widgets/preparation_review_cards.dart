@@ -10,10 +10,12 @@ class OrganizedReportCard extends StatelessWidget {
     super.key,
     required this.controller,
     this.readOnly = false,
+    this.enabled = true,
     this.onEdit,
   });
   final ReportController controller;
   final bool readOnly;
+  final bool enabled;
   final VoidCallback? onEdit;
   Future<void> edit(BuildContext context, ReportSection section) async {
     final value = await editReportText(
@@ -75,9 +77,13 @@ class OrganizedReportCard extends StatelessWidget {
               ),
             ),
             if (readOnly)
-              TextButton(onPressed: onEdit, child: const Text('Editar')),
+              TextButton(
+                onPressed: enabled ? onEdit : null,
+                child: const Text('Editar'),
+              ),
             if (!readOnly)
               PopupMenuButton<String>(
+                enabled: enabled,
                 tooltip: 'Opções do resumo',
                 onSelected: (_) => clear(context),
                 itemBuilder: (_) => const [
@@ -103,7 +109,7 @@ class OrganizedReportCard extends StatelessWidget {
                 IconButton(
                   key: ValueKey('edit-${section.id}'),
                   tooltip: 'Editar ${section.title}',
-                  onPressed: () => edit(context, section),
+                  onPressed: enabled ? () => edit(context, section) : null,
                   icon: Icon(
                     Icons.edit_outlined,
                     size: 19,
@@ -130,8 +136,13 @@ class OrganizedReportCard extends StatelessWidget {
 }
 
 class ConsultationQuestionsCard extends StatelessWidget {
-  const ConsultationQuestionsCard({super.key, required this.controller});
+  const ConsultationQuestionsCard({
+    super.key,
+    required this.controller,
+    this.enabled = true,
+  });
   final ReportController controller;
+  final bool enabled;
   Future<void> edit(
     BuildContext context, [
     ConsultationQuestion? question,
@@ -159,7 +170,7 @@ class ConsultationQuestionsCard extends StatelessWidget {
           ),
           TextButton.icon(
             key: const ValueKey('v9-question-add'),
-            onPressed: () => edit(context),
+            onPressed: enabled ? () => edit(context) : null,
             icon: const Icon(Icons.add_circle_outline_rounded),
             label: const Text('Adicionar'),
           ),
@@ -181,11 +192,16 @@ class ConsultationQuestionsCard extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 activeColor: context.appColors.tealDark,
                 title: Text(question.text),
-                onChanged: (selected) =>
-                    controller.selectQuestion(question.id, selected ?? false),
+                onChanged: !enabled
+                    ? null
+                    : (selected) => controller.selectQuestion(
+                        question.id,
+                        selected ?? false,
+                      ),
               ),
             ),
             PopupMenuButton<String>(
+              enabled: enabled,
               key: ValueKey('v9-question-actions-${question.id}'),
               tooltip: 'Opções da pergunta',
               icon: Icon(
