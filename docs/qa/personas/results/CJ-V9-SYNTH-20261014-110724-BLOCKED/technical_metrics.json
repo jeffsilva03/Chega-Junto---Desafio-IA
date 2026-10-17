@@ -1,0 +1,110 @@
+{
+  "total_personas_planned": 15,
+  "total_personas_executed": 0,
+  "total_tasks_planned": 65,
+  "total_tasks_executed": 0,
+  "completed_no_help": 0,
+  "completed_with_help": 0,
+  "partial": 0,
+  "failed": 0,
+  "blocked": 65,
+  "not_implemented": 0,
+  "not_applicable": 0,
+  "technical_success_rate": null,
+  "success_rate_formula": "(completed_no_help + completed_with_help) / tasks_executed_excluding_NA; null se denominador = 0.",
+  "success_rate_denominator": 0,
+  "issues": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0
+  },
+  "issue_count_interpretation": "Nenhuma issue de produto constatada; produto não avaliado. Não indica ausência de bugs.",
+  "by_area": {
+    "scheduling": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "attendance": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "text preparation": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "professional questions": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "agenda": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "barriers": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "clarifications": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "auth": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "final review": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "AI safety": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "checklist": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "accessibility": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "organization": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "audio": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "network": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    },
+    "privacy/isolation": {
+      "observed": null,
+      "executed": 0,
+      "status": "blocked_preflight"
+    }
+  },
+  "requests": 0,
+  "writes": 0,
+  "fake_provider_calls": 0,
+  "openai_calls": 0,
+  "database_rows": null
+}

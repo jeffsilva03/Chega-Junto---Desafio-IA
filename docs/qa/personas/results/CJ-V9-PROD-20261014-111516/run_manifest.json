@@ -1,0 +1,1803 @@
+{
+  "run_id": "CJ-V9-PROD-20261014-111516",
+  "recorded_at": "2026-10-14T11:15:16.4002599-03:00",
+  "status": "completed_with_limitations",
+  "evidence_origin": "synthetic_automated",
+  "candidate_commit": "ddb71a8f449e8ff42e1bed9d90bed52122c49ed3",
+  "local_head": "ddb71a8f449e8ff42e1bed9d90bed52122c49ed3",
+  "deployed_commit_verified": false,
+  "fixture_source": "docs/qa/personas/CHEGA_JUNTO_PERSONAS_TESTE_V9.md",
+  "task_plan": [
+    {
+      "persona_id": "CJ-001",
+      "scenario_id": "idosa_lembrete_checklist",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T04_CHECKLIST",
+        "T05_PRESENCA",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-002",
+      "scenario_id": "fluxo_ideal_completo",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T04_CHECKLIST",
+        "T05_PRESENCA",
+        "T06_RELATO_TEXTO",
+        "T08_IA",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-003",
+      "scenario_id": "barreira_familiar_talvez",
+      "scenario_task_ids": [
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T05_PRESENCA"
+      ]
+    },
+    {
+      "persona_id": "CJ-004",
+      "scenario_id": "baixa_visao",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T03_AGENDA",
+        "T04_CHECKLIST",
+        "T05_PRESENCA"
+      ]
+    },
+    {
+      "persona_id": "CJ-005",
+      "scenario_id": "acessibilidade_auditiva",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T03_AGENDA",
+        "T06_RELATO_TEXTO",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-006",
+      "scenario_id": "barreira_transporte_talvez",
+      "scenario_task_ids": [
+        "T03_AGENDA",
+        "T05_PRESENCA",
+        "T06_RELATO_TEXTO"
+      ]
+    },
+    {
+      "persona_id": "CJ-007",
+      "scenario_id": "medicamentos_alergias_limite_ia",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T03_AGENDA",
+        "T06_RELATO_TEXTO",
+        "T08_IA",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-008",
+      "scenario_id": "audio_transcricao",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T07_AUDIO",
+        "T08_IA",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-009",
+      "scenario_id": "preparo_e_documentos",
+      "scenario_task_ids": [
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T04_CHECKLIST"
+      ]
+    },
+    {
+      "persona_id": "CJ-010",
+      "scenario_id": "falha_de_rede_idempotencia",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T05_PRESENCA",
+        "T06_RELATO_TEXTO",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-011",
+      "scenario_id": "multiplas_consultas",
+      "scenario_task_ids": [
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T04_CHECKLIST",
+        "T05_PRESENCA",
+        "T06_RELATO_TEXTO",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-012",
+      "scenario_id": "idoso_notificacoes",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T03_AGENDA",
+        "T04_CHECKLIST",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-013",
+      "scenario_id": "nao_comparecimento_sem_cancelamento_automatico",
+      "scenario_task_ids": [
+        "T03_AGENDA",
+        "T05_PRESENCA",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-014",
+      "scenario_id": "estado_vazio_e_novo_agendamento",
+      "scenario_task_ids": [
+        "T01_LOGIN",
+        "T02_AGENDAMENTO",
+        "T03_AGENDA",
+        "T06_RELATO_TEXTO",
+        "T09_REGRESSAO"
+      ]
+    },
+    {
+      "persona_id": "CJ-015",
+      "scenario_id": "limites_eticos_ia",
+      "scenario_task_ids": [
+        "T06_RELATO_TEXTO",
+        "T08_IA",
+        "T09_REGRESSAO"
+      ]
+    }
+  ],
+  "personas_planned": 15,
+  "personas_executed": 15,
+  "tasks_planned": 65,
+  "tasks_executed": 65,
+  "status_counts": {
+    "completed_no_help": 53,
+    "completed_with_help": 0,
+    "partial": 12,
+    "failed": 0,
+    "blocked": 0,
+    "not_implemented": 0,
+    "not_applicable": 0
+  },
+  "issue_counts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 2,
+    "P3": 1
+  },
+  "blocker": null,
+  "app_url": "https://chega-junto-desafio-ia.web.app/",
+  "portal_url": "https://chega-junto-agendamentos.web.app/",
+  "backend_url": "https://chega-junto-api.onrender.com/",
+  "production_read_only_portal_opened": true,
+  "production_mutations": "15 accounts + canonical profiles; 16 QA appointments created/cancelled; attendance/checklist/health/preferences; 9 reports/reviews. Exact retained records in database_audit_read_only.",
+  "openai_real_calls": 36,
+  "qa_accounts_created": [
+    {
+      "persona_id": "CJ-001",
+      "user_id": "13",
+      "email": "paciente01@example.com"
+    },
+    {
+      "persona_id": "CJ-002",
+      "user_id": "14",
+      "email": "paciente02@example.com"
+    },
+    {
+      "persona_id": "CJ-003",
+      "user_id": "15",
+      "email": "paciente03@example.com"
+    },
+    {
+      "persona_id": "CJ-004",
+      "user_id": "16",
+      "email": "paciente04@example.com"
+    },
+    {
+      "persona_id": "CJ-005",
+      "user_id": "17",
+      "email": "paciente05@example.com"
+    },
+    {
+      "persona_id": "CJ-006",
+      "user_id": "18",
+      "email": "paciente06@example.com"
+    },
+    {
+      "persona_id": "CJ-007",
+      "user_id": "19",
+      "email": "paciente07@example.com"
+    },
+    {
+      "persona_id": "CJ-008",
+      "user_id": "20",
+      "email": "paciente08@example.com"
+    },
+    {
+      "persona_id": "CJ-009",
+      "user_id": "21",
+      "email": "paciente09@example.com"
+    },
+    {
+      "persona_id": "CJ-010",
+      "user_id": "22",
+      "email": "paciente10@example.com"
+    },
+    {
+      "persona_id": "CJ-011",
+      "user_id": "23",
+      "email": "paciente11@example.com"
+    },
+    {
+      "persona_id": "CJ-012",
+      "user_id": "24",
+      "email": "paciente12@example.com"
+    },
+    {
+      "persona_id": "CJ-013",
+      "user_id": "25",
+      "email": "paciente13@example.com"
+    },
+    {
+      "persona_id": "CJ-014",
+      "user_id": "26",
+      "email": "paciente14@example.com"
+    },
+    {
+      "persona_id": "CJ-015",
+      "user_id": "27",
+      "email": "paciente15@example.com"
+    }
+  ],
+  "qa_appointments_created": [
+    {
+      "persona_id": "CJ-001",
+      "user_id": "13",
+      "appointment_id": "19",
+      "scheduled_at": "2026-10-19T11:30:00Z",
+      "professional_name": "Profissional fictício QA CJ-001",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-002",
+      "user_id": "14",
+      "appointment_id": "20",
+      "scheduled_at": "2026-10-20T17:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-002",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-003",
+      "user_id": "15",
+      "appointment_id": "14",
+      "scheduled_at": "2026-10-22T13:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-003",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-004",
+      "user_id": "16",
+      "appointment_id": "21",
+      "scheduled_at": "2026-10-23T12:30:00Z",
+      "professional_name": "Profissional fictício QA CJ-004",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-005",
+      "user_id": "17",
+      "appointment_id": "22",
+      "scheduled_at": "2026-10-26T18:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-005",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-006",
+      "user_id": "18",
+      "appointment_id": "23",
+      "scheduled_at": "2026-10-27T10:30:00Z",
+      "professional_name": "Profissional fictício QA CJ-006",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-007",
+      "user_id": "19",
+      "appointment_id": "24",
+      "scheduled_at": "2026-10-28T14:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-007",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-008",
+      "user_id": "20",
+      "appointment_id": "25",
+      "scheduled_at": "2026-10-29T16:30:00Z",
+      "professional_name": "Profissional fictício QA CJ-008",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-009",
+      "user_id": "21",
+      "appointment_id": "15",
+      "scheduled_at": "2026-10-30T13:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-009",
+      "facility": "Laboratório Municipal"
+    },
+    {
+      "persona_id": "CJ-010",
+      "user_id": "22",
+      "appointment_id": "26",
+      "scheduled_at": "2026-11-03T19:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-010",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-011",
+      "user_id": "23",
+      "appointment_id": "16",
+      "scheduled_at": "2026-11-04T12:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-011",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-011",
+      "user_id": "23",
+      "appointment_id": "17",
+      "scheduled_at": "2026-11-06T17:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-011",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-012",
+      "user_id": "24",
+      "appointment_id": "27",
+      "scheduled_at": "2026-11-05T11:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-012",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-013",
+      "user_id": "25",
+      "appointment_id": "28",
+      "scheduled_at": "2026-11-06T13:30:00Z",
+      "professional_name": "Profissional fictício QA CJ-013",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-014",
+      "user_id": "26",
+      "appointment_id": "18",
+      "scheduled_at": "2026-11-09T14:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-014",
+      "facility": "UBS Centro"
+    },
+    {
+      "persona_id": "CJ-015",
+      "user_id": "27",
+      "appointment_id": "13",
+      "scheduled_at": "2026-11-10T12:00:00Z",
+      "professional_name": "Profissional fictício QA CJ-015",
+      "facility": "UBS Centro"
+    }
+  ],
+  "qa_appointments_cancelled": [
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28"
+  ],
+  "database_residue_created_by_run": {
+    "accounts": 15,
+    "profiles": 15,
+    "appointments": 16,
+    "all_appointments_cancelled": true,
+    "reports": 9,
+    "report_sections": 36,
+    "report_questions": 25,
+    "clarifications": 24,
+    "checklist_items": 2,
+    "medications": 2,
+    "allergies": 1,
+    "ai_usage_events": 36,
+    "notification_preferences": [
+      {
+        "user_id": 13,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 14,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 15,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 16,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 17,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 18,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 19,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 20,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 21,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 22,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 23,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 24,
+        "active": 0,
+        "in_app": 0
+      },
+      {
+        "user_id": 25,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 26,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 27,
+        "active": 1,
+        "in_app": 1
+      }
+    ],
+    "accessibility_preferences": [
+      {
+        "user_id": 13,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 14,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 15,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 16,
+        "text_size": "extra_large"
+      },
+      {
+        "user_id": 17,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 18,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 19,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 20,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 21,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 22,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 23,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 24,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 25,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 26,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 27,
+        "text_size": "medium"
+      }
+    ],
+    "attendance_statuses": [
+      {
+        "appointment_id": "13",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "14",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "15",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "16",
+        "attendance_status": "confirmed"
+      },
+      {
+        "appointment_id": "17",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "18",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "19",
+        "attendance_status": "confirmed"
+      },
+      {
+        "appointment_id": "20",
+        "attendance_status": "confirmed"
+      },
+      {
+        "appointment_id": "21",
+        "attendance_status": "confirmed"
+      },
+      {
+        "appointment_id": "22",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "23",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "24",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "25",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "26",
+        "attendance_status": "confirmed"
+      },
+      {
+        "appointment_id": "27",
+        "attendance_status": "undecided"
+      },
+      {
+        "appointment_id": "28",
+        "attendance_status": "unable"
+      }
+    ],
+    "notifications": 8,
+    "notification_preference_rows": 15,
+    "accessibility_preference_rows": 15,
+    "reminders": 0,
+    "health_records": 0
+  },
+  "existing_database_residue": "Read/write scope restricted to accounts created by this run and owned QA appointments; demo/other users untouched by run.",
+  "product_code_changed": false,
+  "commit_created": false,
+  "push_performed": false,
+  "v9_tag_created": false,
+  "tags_observed": [
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8"
+  ],
+  "database_audit_read_only": {
+    "accounts": [
+      {
+        "id": 13,
+        "email": "paciente01@example.com",
+        "created_at": "2026-10-14 14:28:46.497020",
+        "full_name": "Maria Aparecida Nunes",
+        "birth_date": "1953-06-18",
+        "phone": "11900000001",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 14,
+        "email": "paciente02@example.com",
+        "created_at": "2026-10-14 14:28:50.993211",
+        "full_name": "Gabriel Ferreira",
+        "birth_date": "2001-03-11",
+        "phone": "11900000002",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 15,
+        "email": "paciente03@example.com",
+        "created_at": "2026-10-14 14:28:55.294328",
+        "full_name": "Renata Batista",
+        "birth_date": "1987-12-04",
+        "phone": "11900000003",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 16,
+        "email": "paciente04@example.com",
+        "created_at": "2026-10-14 14:28:59.608416",
+        "full_name": "João Silva de Souza",
+        "birth_date": "1965-01-21",
+        "phone": "11900000004",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 17,
+        "email": "paciente05@example.com",
+        "created_at": "2026-10-14 14:29:03.796752",
+        "full_name": "Beatriz Costa",
+        "birth_date": "1998-09-07",
+        "phone": "11900000005",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 18,
+        "email": "paciente06@example.com",
+        "created_at": "2026-10-14 14:29:09.792697",
+        "full_name": "Marcos Vinícius Almeida",
+        "birth_date": "1989-02-02",
+        "phone": "11900000006",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 19,
+        "email": "paciente07@example.com",
+        "created_at": "2026-10-14 14:29:14.107966",
+        "full_name": "Eliane Santos",
+        "birth_date": "1976-06-15",
+        "phone": "11900000007",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 20,
+        "email": "paciente08@example.com",
+        "created_at": "2026-10-14 14:29:18.393340",
+        "full_name": "Caio Mendes",
+        "birth_date": "2002-11-09",
+        "phone": "11900000008",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 21,
+        "email": "paciente09@example.com",
+        "created_at": "2026-10-14 14:29:22.693779",
+        "full_name": "Rosângela Carvalho",
+        "birth_date": "1971-08-29",
+        "phone": "11900000009",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 22,
+        "email": "paciente10@example.com",
+        "created_at": "2026-10-14 14:29:26.895456",
+        "full_name": "Pedro Henrique Lima",
+        "birth_date": "1996-05-10",
+        "phone": "11900000010",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 23,
+        "email": "paciente11@example.com",
+        "created_at": "2026-10-14 14:29:31.203378",
+        "full_name": "Daniela Moraes",
+        "birth_date": "1993-04-17",
+        "phone": "11900000011",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 24,
+        "email": "paciente12@example.com",
+        "created_at": "2026-10-14 14:29:35.592404",
+        "full_name": "Antônio Pereira",
+        "birth_date": "1947-09-30",
+        "phone": "11900000012",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 25,
+        "email": "paciente13@example.com",
+        "created_at": "2026-10-14 14:29:39.804463",
+        "full_name": "Patrícia Rocha",
+        "birth_date": "1982-07-18",
+        "phone": "11900000013",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 26,
+        "email": "paciente14@example.com",
+        "created_at": "2026-10-14 14:29:44.652469",
+        "full_name": "Aline Fernandes",
+        "birth_date": "1999-06-01",
+        "phone": "11900000014",
+        "cpf": null,
+        "sus_card_number": null
+      },
+      {
+        "id": 27,
+        "email": "paciente15@example.com",
+        "created_at": "2026-10-14 14:32:19.694575",
+        "full_name": "Roberto de Oliveira",
+        "birth_date": "1968-02-08",
+        "phone": "11900000015",
+        "cpf": null,
+        "sus_card_number": null
+      }
+    ],
+    "appointments": [
+      {
+        "id": 13,
+        "user_id": 27,
+        "email": "paciente15@example.com",
+        "specialty": "clínica médica",
+        "professional_name": "Profissional fictício QA CJ-015",
+        "scheduled_at": "2026-11-10 12:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 14,
+        "user_id": 15,
+        "email": "paciente03@example.com",
+        "specialty": "ginecologia",
+        "professional_name": "Profissional fictício QA CJ-003",
+        "scheduled_at": "2026-10-22 13:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 15,
+        "user_id": 21,
+        "email": "paciente09@example.com",
+        "specialty": "ultrassonografia",
+        "professional_name": "Profissional fictício QA CJ-009",
+        "scheduled_at": "2026-10-30 13:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 16,
+        "user_id": 23,
+        "email": "paciente11@example.com",
+        "specialty": "oftalmologia",
+        "professional_name": "Profissional fictício QA CJ-011",
+        "scheduled_at": "2026-11-04 12:00:00",
+        "status": "cancelled",
+        "attendance_status": "confirmed"
+      },
+      {
+        "id": 17,
+        "user_id": 23,
+        "email": "paciente11@example.com",
+        "specialty": "clínica médica",
+        "professional_name": "Profissional fictício QA CJ-011",
+        "scheduled_at": "2026-11-06 17:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 18,
+        "user_id": 26,
+        "email": "paciente14@example.com",
+        "specialty": "clínica geral",
+        "professional_name": "Profissional fictício QA CJ-014",
+        "scheduled_at": "2026-11-09 14:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 19,
+        "user_id": 13,
+        "email": "paciente01@example.com",
+        "specialty": "clínica geral",
+        "professional_name": "Profissional fictício QA CJ-001",
+        "scheduled_at": "2026-10-19 11:30:00",
+        "status": "cancelled",
+        "attendance_status": "confirmed"
+      },
+      {
+        "id": 20,
+        "user_id": 14,
+        "email": "paciente02@example.com",
+        "specialty": "clínica geral",
+        "professional_name": "Profissional fictício QA CJ-002",
+        "scheduled_at": "2026-10-20 17:00:00",
+        "status": "cancelled",
+        "attendance_status": "confirmed"
+      },
+      {
+        "id": 21,
+        "user_id": 16,
+        "email": "paciente04@example.com",
+        "specialty": "ortopedia",
+        "professional_name": "Profissional fictício QA CJ-004",
+        "scheduled_at": "2026-10-23 12:30:00",
+        "status": "cancelled",
+        "attendance_status": "confirmed"
+      },
+      {
+        "id": 22,
+        "user_id": 17,
+        "email": "paciente05@example.com",
+        "specialty": "dermatologia",
+        "professional_name": "Profissional fictício QA CJ-005",
+        "scheduled_at": "2026-10-26 18:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 23,
+        "user_id": 18,
+        "email": "paciente06@example.com",
+        "specialty": "neurologia",
+        "professional_name": "Profissional fictício QA CJ-006",
+        "scheduled_at": "2026-10-27 10:30:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 24,
+        "user_id": 19,
+        "email": "paciente07@example.com",
+        "specialty": "clínica médica",
+        "professional_name": "Profissional fictício QA CJ-007",
+        "scheduled_at": "2026-10-28 14:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 25,
+        "user_id": 20,
+        "email": "paciente08@example.com",
+        "specialty": "clínica geral",
+        "professional_name": "Profissional fictício QA CJ-008",
+        "scheduled_at": "2026-10-29 16:30:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 26,
+        "user_id": 22,
+        "email": "paciente10@example.com",
+        "specialty": "clínica geral",
+        "professional_name": "Profissional fictício QA CJ-010",
+        "scheduled_at": "2026-11-03 19:00:00",
+        "status": "cancelled",
+        "attendance_status": "confirmed"
+      },
+      {
+        "id": 27,
+        "user_id": 24,
+        "email": "paciente12@example.com",
+        "specialty": "cardiologia",
+        "professional_name": "Profissional fictício QA CJ-012",
+        "scheduled_at": "2026-11-05 11:00:00",
+        "status": "cancelled",
+        "attendance_status": "undecided"
+      },
+      {
+        "id": 28,
+        "user_id": 25,
+        "email": "paciente13@example.com",
+        "specialty": "ortopedia",
+        "professional_name": "Profissional fictício QA CJ-013",
+        "scheduled_at": "2026-11-06 13:30:00",
+        "status": "cancelled",
+        "attendance_status": "unable"
+      }
+    ],
+    "reports": [
+      {
+        "id": 6,
+        "appointment_id": 13,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 8,
+        "appointment_id": 20,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 9,
+        "appointment_id": 24,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 10,
+        "appointment_id": 25,
+        "content_revision": 9,
+        "reviewed_revision": 9,
+        "final_review_revision": 9
+      },
+      {
+        "id": 11,
+        "appointment_id": 22,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 12,
+        "appointment_id": 23,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 13,
+        "appointment_id": 26,
+        "content_revision": 8,
+        "reviewed_revision": 8,
+        "final_review_revision": 8
+      },
+      {
+        "id": 14,
+        "appointment_id": 16,
+        "content_revision": 4,
+        "reviewed_revision": 4,
+        "final_review_revision": 4
+      },
+      {
+        "id": 15,
+        "appointment_id": 18,
+        "content_revision": 6,
+        "reviewed_revision": 6,
+        "final_review_revision": 6
+      }
+    ],
+    "checklist": [
+      {
+        "id": 22,
+        "appointment_id": 15,
+        "title": "pedido medico",
+        "is_required": 0,
+        "is_completed": 1
+      },
+      {
+        "id": 23,
+        "appointment_id": 15,
+        "title": "documento de identificacao simulado",
+        "is_required": 0,
+        "is_completed": 1
+      }
+    ],
+    "ai_usage": [
+      {
+        "email": "paciente02@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente02@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente05@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente05@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente06@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente06@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente07@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente07@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente08@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente08@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente08@example.com",
+        "operation": "transcribe",
+        "provider": "openai",
+        "model": "gpt-transcribe",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente10@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente10@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente11@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 2
+      },
+      {
+        "email": "paciente11@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente14@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente14@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      },
+      {
+        "email": "paciente15@example.com",
+        "operation": "clarify",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 3
+      },
+      {
+        "email": "paciente15@example.com",
+        "operation": "organize",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "outcome": "succeeded",
+        "event_count": 1
+      }
+    ],
+    "report_children": [
+      {
+        "id": 6,
+        "appointment_id": 13,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 4
+      },
+      {
+        "id": 14,
+        "appointment_id": 16,
+        "clarifications": 1,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 15,
+        "appointment_id": 18,
+        "clarifications": 2,
+        "sections": 4,
+        "questions": 0
+      },
+      {
+        "id": 8,
+        "appointment_id": 20,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 11,
+        "appointment_id": 22,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 12,
+        "appointment_id": 23,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 9,
+        "appointment_id": 24,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 10,
+        "appointment_id": 25,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      },
+      {
+        "id": 13,
+        "appointment_id": 26,
+        "clarifications": 3,
+        "sections": 4,
+        "questions": 3
+      }
+    ],
+    "medications": [
+      {
+        "id": 5,
+        "user_id": 19,
+        "name": "losartana"
+      },
+      {
+        "id": 6,
+        "user_id": 19,
+        "name": "levotiroxina"
+      }
+    ],
+    "allergies": [
+      {
+        "id": 4,
+        "user_id": 19,
+        "name": "dipirona"
+      }
+    ],
+    "notification_preferences": [
+      {
+        "user_id": 13,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 14,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 15,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 16,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 17,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 18,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 19,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 20,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 21,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 22,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 23,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 24,
+        "active": 0,
+        "in_app": 0
+      },
+      {
+        "user_id": 25,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 26,
+        "active": 1,
+        "in_app": 1
+      },
+      {
+        "user_id": 27,
+        "active": 1,
+        "in_app": 1
+      }
+    ],
+    "accessibility_preferences": [
+      {
+        "user_id": 13,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 14,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 15,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 16,
+        "text_size": "extra_large"
+      },
+      {
+        "user_id": 17,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 18,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 19,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 20,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 21,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 22,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 23,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 24,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 25,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 26,
+        "text_size": "medium"
+      },
+      {
+        "user_id": 27,
+        "text_size": "medium"
+      }
+    ],
+    "notifications": [
+      {
+        "id": 11,
+        "user_id": 13,
+        "appointment_id": 19,
+        "preference_key": "confirmations",
+        "source_key": "attendance:19",
+        "read_at": null
+      },
+      {
+        "id": 12,
+        "user_id": 14,
+        "appointment_id": 20,
+        "preference_key": "confirmations",
+        "source_key": "attendance:20",
+        "read_at": null
+      },
+      {
+        "id": 13,
+        "user_id": 15,
+        "appointment_id": 14,
+        "preference_key": "confirmations",
+        "source_key": "attendance:14",
+        "read_at": null
+      },
+      {
+        "id": 14,
+        "user_id": 16,
+        "appointment_id": 21,
+        "preference_key": "confirmations",
+        "source_key": "attendance:21",
+        "read_at": null
+      },
+      {
+        "id": 15,
+        "user_id": 18,
+        "appointment_id": 23,
+        "preference_key": "confirmations",
+        "source_key": "attendance:23",
+        "read_at": null
+      },
+      {
+        "id": 16,
+        "user_id": 22,
+        "appointment_id": 26,
+        "preference_key": "confirmations",
+        "source_key": "attendance:26",
+        "read_at": null
+      },
+      {
+        "id": 17,
+        "user_id": 23,
+        "appointment_id": 16,
+        "preference_key": "confirmations",
+        "source_key": "attendance:16",
+        "read_at": null
+      },
+      {
+        "id": 18,
+        "user_id": 25,
+        "appointment_id": 28,
+        "preference_key": "confirmations",
+        "source_key": "attendance:28",
+        "read_at": null
+      }
+    ]
+  },
+  "qa_credential_recovery": {
+    "accounts": [
+      {
+        "user_id": "13",
+        "email": "paciente01@example.com"
+      },
+      {
+        "user_id": "14",
+        "email": "paciente02@example.com"
+      },
+      {
+        "user_id": "15",
+        "email": "paciente03@example.com"
+      },
+      {
+        "user_id": "16",
+        "email": "paciente04@example.com"
+      },
+      {
+        "user_id": "17",
+        "email": "paciente05@example.com"
+      },
+      {
+        "user_id": "18",
+        "email": "paciente06@example.com"
+      },
+      {
+        "user_id": "19",
+        "email": "paciente07@example.com"
+      },
+      {
+        "user_id": "20",
+        "email": "paciente08@example.com"
+      },
+      {
+        "user_id": "21",
+        "email": "paciente09@example.com"
+      },
+      {
+        "user_id": "22",
+        "email": "paciente10@example.com"
+      },
+      {
+        "user_id": "23",
+        "email": "paciente11@example.com"
+      },
+      {
+        "user_id": "24",
+        "email": "paciente12@example.com"
+      },
+      {
+        "user_id": "25",
+        "email": "paciente13@example.com"
+      },
+      {
+        "user_id": "26",
+        "email": "paciente14@example.com"
+      }
+    ],
+    "scope": "Created during this run; name/email/time verified transactionally",
+    "credentials_logged": false
+  },
+  "facility_mapping": {
+    "personas": [
+      "CJ-001",
+      "CJ-002"
+    ],
+    "canonical": "Unidade Fictícia de Demonstração 01",
+    "production": "UBS Centro",
+    "authorized_by_user": true
+  },
+  "qa_fixture_rearm": {
+    "appointment_ids": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18"
+    ],
+    "reason": "Premature cleanup reversed during recovery; same QA records, no duplicates"
+  },
+  "ui_evidence": {
+    "persona": "CJ-004",
+    "login_observed": true,
+    "home_semantics": {
+      "greeting": "Olá, João",
+      "next_appointment": "ortopedia UBS Centro 23 de out. 09:30",
+      "buttons": [
+        "Início",
+        "Agenda",
+        "Preparo",
+        "Perfil",
+        "Atualizar atendimentos",
+        "Documentos e preparo",
+        "Confirmação de presença",
+        "Relato pré-consulta",
+        "Revisão final"
+      ],
+      "progress": "50%, 2 de 4 etapas"
+    },
+    "accessibility_activated_by_keyboard": true,
+    "text_scaling": "not_completed_due_browser_control_timeout",
+    "profile_navigation": "tool_timeout_not_attributed_to_product",
+    "extra_large_preference_persisted": true
+  },
+  "notification_disabled_evidence": {
+    "persona_id": "CJ-012",
+    "saved": true,
+    "active": false,
+    "in_app": false,
+    "overviewStatus": 200,
+    "agendaStatus": 200,
+    "nextAppointment": "27"
+  },
+  "cleanup": {
+    "status": "verified",
+    "cancelled_count": 16,
+    "all_owned_qa_cancelled": true,
+    "reports_preserved": 9,
+    "no_deletions": true,
+    "method": "transactional SQL limited to audited QA IDs, same cancellation state as operator service"
+  },
+  "completed_at": "2026-10-14T15:13:46.401Z",
+  "production_touched": true,
+  "openai_operations": {
+    "clarify": 26,
+    "organize": 9,
+    "transcribe": 1
+  },
+  "ai_provider_models": [
+    "openai/gpt-6-luna",
+    "openai/gpt-transcribe"
+  ],
+  "ai_failures": 0,
+  "network_evidence": {
+    "beforeWriteAbort": "AbortError",
+    "pendingId": "27",
+    "recoveredId": "27",
+    "reusedId": "27",
+    "noNarrativeRetry": true
+  },
+  "multiple_appointments_evidence": {
+    "secondReportStatus": 404,
+    "secondReportAbsent": true,
+    "secondAttendance": "undecided",
+    "firstAttendance": "confirmed",
+    "secondChecklistItems": 0,
+    "foreignChecklistStatus": 404,
+    "foreignClarificationStatus": 404,
+    "nextAppointment": "16"
+  },
+  "synthetic_subjective_fields": "null/not_asked",
+  "test_scope": "Live operator Portal for creation; patient JWT API/harness for canonical tasks; Flutter CJ-004 login/Home Semantics. Full Flutter UI E2E not executed for every persona.",
+  "harness_corrections": [
+    "Initial runtime timeout lost memory-only credentials; 14 accounts created within this run recovered transactionally with identity/name/email/time guards; no real accounts touched.",
+    "Profile path corrected in harness to /api/v1/me/profile; all 15 canonical profiles verified.",
+    "Checkpoint closure/state corrected; metadata restored from read-only audit.",
+    "Six premature QA cancellations restored within scoped transaction before resuming; final16 cancelled.",
+    "WAV multipart built without FormData; one real transcription.",
+    "CJ-008 answer about symptom onset corrected to dont_know, with no new medical facts.",
+    "CJ-007 automatic checker false positive corrected: medications were explicitly supplied in clarification answer."
+  ],
+  "limitations": [
+    "No deployed commit identifier exposed/verified; local HEAD is candidate requested.",
+    "Five canonical personas lack checklist item definitions; marking/persistence coverage partial.",
+    "Extra-large preference persisted but high-scale rendering/overflow not measured after browser control timeout.",
+    "Notifications disabled verified by API; Flutter OS/push permission unavailable not directly measured.",
+    "Empty state to appointment transition verified in Portal and subsequent patient overview; Flutter initial empty state not observed.",
+    "Raw backend SDK payload not captured; CJ-007 output/context checked against explicit responses."
+  ],
+  "git_status": "?? docs/qa/; no tracked diff; no commit/push/tag",
+  "bugs_fixed": false,
+  "persona_results": [
+    {
+      "id": "CJ-001",
+      "tasks": 6,
+      "pass": 5,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-002",
+      "tasks": 8,
+      "pass": 7,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-003",
+      "tasks": 3,
+      "pass": 2,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-004",
+      "tasks": 4,
+      "pass": 3,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-005",
+      "tasks": 4,
+      "pass": 4,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-006",
+      "tasks": 3,
+      "pass": 2,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-007",
+      "tasks": 5,
+      "pass": 5,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-008",
+      "tasks": 4,
+      "pass": 4,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-009",
+      "tasks": 3,
+      "pass": 3,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-010",
+      "tasks": 4,
+      "pass": 4,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-011",
+      "tasks": 6,
+      "pass": 5,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-012",
+      "tasks": 4,
+      "pass": 2,
+      "partial": 2,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-013",
+      "tasks": 3,
+      "pass": 2,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-014",
+      "tasks": 5,
+      "pass": 3,
+      "partial": 2,
+      "fail": 0,
+      "blocked": 0
+    },
+    {
+      "id": "CJ-015",
+      "tasks": 3,
+      "pass": 2,
+      "partial": 1,
+      "fail": 0,
+      "blocked": 0
+    }
+  ],
+  "qa_residue_table_counts": {
+    "notifications": 8,
+    "reminders": 0,
+    "health_records": 0,
+    "notification_preferences": 15,
+    "accessibility_preferences": 15,
+    "medications": 2,
+    "allergies": 1,
+    "ai_usage_events": 36
+  },
+  "git_verified_at": "2026-10-14T15:15:35.441Z"
+}
