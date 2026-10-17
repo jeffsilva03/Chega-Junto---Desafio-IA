@@ -156,6 +156,6 @@
       const ta = Object.assign(document.createElement('textarea'), { value: text });
       document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove();
     }
-    notify('Link copiado! Cole no Safari do iPhone.');
+    notify(btn.dataset.copyMsg || 'Link copiado! Cole no Safari do iPhone.');
   }));
 })();

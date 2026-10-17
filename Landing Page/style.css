@@ -474,6 +474,13 @@ code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .86
 .checks .muted { color: var(--muted); font-weight: 600; font-size: .92rem; padding-top: 14px; border-top: 1px solid var(--border); }
 .checks .muted .ic { color: var(--muted); }
 
+.portal-info__side { display: grid; gap: 24px; }
+.cred { padding: 20px 22px; border-radius: 20px; background: var(--blue-soft); border: 1px solid #CFE3FF; display: grid; gap: 10px; }
+.cred h4 { display: flex; align-items: center; gap: 8px; font-size: 1rem; color: var(--primary-dark); }
+.cred__row { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--surface); }
+.cred__row small { color: var(--muted); font-weight: 700; font-size: .82rem; }
+.cred__row code { background: none; padding: 0; font-size: .95rem; color: var(--ink); word-break: normal; overflow-wrap: anywhere; min-width: 0; }
+.cred p { color: var(--text-2); font-size: .85rem; }
 .first-use { margin-top: 40px; }
 .first-use h3 { font-size: 1.2rem; margin-bottom: 18px; text-align: center; }
 .first-use__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -602,6 +609,10 @@ code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .86
   .m-app small { font-size: 5px; }
   .m-toolbar { font-size: 11px; } .m-hi { width: 24px; height: 24px; } .m-toolbar .ic { width: 13px; height: 13px; }
   .list-steps { grid-template-columns: 1fr; }
+  .cred__row { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px; }
+  .cred__row code { font-size: .88rem; }
+  .cred__row .btn span { display: none; }
+  .cred__row .btn { padding: 0 12px; }
   .step { grid-template-columns: 1fr; gap: 14px; }
   .step__n { width: 44px; height: 44px; border-radius: 14px; font-size: .95rem; }
   .step__shot { margin-inline: auto; }
