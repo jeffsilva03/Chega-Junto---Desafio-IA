@@ -1,0 +1,23 @@
+Comando: docker version
+Exit code: 1
+Client Version: 29.8.2
+API version: 1.56
+OS/Arch: windows/amd64
+Context: desktop-linux
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: O sistema não pode encontrar o arquivo especificado.
+
+Comando: git rev-parse HEAD
+ddb71a8f449e8ff42e1bed9d90bed52122c49ed3
+
+Comando: git status --short (antes)
+?? docs/qa/
+
+Comando: git tag --list
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+V8

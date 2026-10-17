@@ -2,148 +2,739 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Chega Junto: uma proposta para reduzir barreiras antes de consultas e exames no SUS.">
-  <title>Chega Junto — cuidado começa antes da consulta</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chega Junto — Saúde mais perto de você</title>
+  <meta name="description" content="O Chega Junto ajuda o paciente a se preparar entre o agendamento e o atendimento no SUS: documentos, orientações, presença e um relato organizado com IA, sempre revisado por você.">
+  <meta name="theme-color" content="#F5FAFE">
+  <meta property="og:title" content="Chega Junto — Saúde mais perto de você">
+  <meta property="og:description" content="Prepare-se para consultas e exames de forma simples e guiada. Baixe para iPhone e Android.">
+  <meta property="og:image" content="assets/img/logo-full.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="assets/img/app-icon.png">
+  <link rel="preload" href="assets/fonts/nunito-sans-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/nunito-sans-900.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="reference-sections.css">
-  <link rel="stylesheet" href="ia-exact.css">
-  <link rel="stylesheet" href="ia-vector-core.css">
-  <link rel="stylesheet" href="ethics-footer.css">
-  <link rel="stylesheet" href="story-interaction.css">
-  <link rel="stylesheet" href="responsive.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%23081b36' stroke='%23c8fa4d' stroke-width='5'/%3E%3Cpath d='M32 19v26M19 32h26' stroke='%23c8fa4d' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 </head>
 <body>
-  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <!-- Ícones -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></symbol>
-      <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8 12.3l2.6 2.6L16 9"/></symbol>
-      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-6.8-4.2-9.1-8.6A5.2 5.2 0 0112 6.4a5.2 5.2 0 019.1 4.5c-2.3 4.4-9.1 8.6-9.1 8.6z"/></symbol>
-      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.2l1.7 5 5 1.8-5 1.8-1.7 5-1.7-5-5-1.8 5-1.8 1.7-5z"/></symbol>
-      <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17L17 7M9.5 7H17v7.5"/></symbol>
-      <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4.5v14M6.2 13l5.8 5.5 5.8-5.5"/></symbol>
-      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9.5 5.5l7 6.5-7 6.5"/></symbol>
-      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M14.5 5.5l-7 6.5 7 6.5"/></symbol>
-      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.3v5l3.6 2"/></symbol>
-      <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="5.5" r="2"/><path d="M6 16.5c0-5.2 3-6.3 6-8.3s6-2.7 6-1.5"/></symbol>
-      <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11.5" rx="2"/><path d="M8.2 8V6.2a2 2 0 012-2h3.6a2 2 0 012 2V8M3 13.2h18"/></symbol>
-      <symbol id="i-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.3 9.6a2.7 2.7 0 115.2.9c-.4 1.1-1.8 1.4-1.9 3M12.6 16.9v.1"/></symbol>
-      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.6" y="5.4" width="16.8" height="14.8" rx="2"/><path d="M8 3.4v4M16 3.4v4M3.6 10.2h16.8"/></symbol>
-      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.6l9 15.8H3L12 3.6z"/><path d="M12 10.2v4M12 17.3v.1"/></symbol>
-      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.2 8.8l-1.9 5.6-5.6 1.9 1.9-5.6 5.6-1.9z"/></symbol>
-      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.4l6.6 2.8v5.6c0 4.7-3 7.6-6.6 8.6-3.6-1-6.6-3.9-6.6-8.6V6.2L12 3.4z"/><path d="M8.7 12l2.3 2.2L15.4 9"/></symbol>
-      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9.2" y="3.2" width="5.6" height="10.4" rx="2.8"/><path d="M5.4 10.8a6.6 6.6 0 0013.2 0M12 17.2v3"/></symbol>
-      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r=".8"/></symbol>
-      <symbol id="i-network" viewBox="0 0 24 24"><circle cx="5.2" cy="6.2" r="2"/><circle cx="18.8" cy="6.2" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 7.4L10.6 16M17 7.4L13.4 16M7.2 6.2h9.6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l.9-4.4A8 8 0 1 1 20 12z"/><path d="M9 11h6M9 14h4"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6zM17.5 13l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5M8 10.5H6.5a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-6.5a2 2 0 0 0-2-2H16"/></symbol>
+      <symbol id="i-plus-sq" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+      <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+      <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/></symbol>
+      <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+      <symbol id="i-android" viewBox="0 0 24 24"><path d="M5 10.5a7 7 0 0 1 14 0V17H5zM8 4l1.3 2.2M16 4l-1.3 2.2M9 13.2v.1M15 13.2v.1"/></symbol>
+      <symbol id="i-apple" viewBox="0 0 24 24"><path d="M15.6 3.5c.1 1.2-.4 2.4-1.1 3.2-.8.9-1.9 1.5-3 1.4-.1-1.1.4-2.3 1.1-3.1.8-.9 2-1.5 3-1.5zM19.2 17c-.5 1.1-.8 1.6-1.4 2.6-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9s-2.3.9-3.7.9c-1.6 0-2.8-1.6-3.7-3C.5 15.9.2 11.4 1.8 9c1.1-1.7 2.9-2.7 4.5-2.7 1.7 0 2.7.9 4.1.9 1.3 0 2.1-.9 4.1-.9 1.5 0 3 .8 4.1 2.2-3.6 2-3 7.1.6 8.5z" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></symbol>
+      <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
     </defs>
   </svg>
 
-  <div class="scroll-progress" aria-hidden="true"><i></i></div>
+  <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+  <header class="nav" id="topo">
+    <div class="container nav__inner">
+      <a class="brand" href="#inicio" aria-label="Chega Junto, voltar ao início">
+        <img src="assets/img/logo-mark.png" alt="" width="40" height="40">
+        <span class="brand__name">Chega<b>Junto</b></span>
+      </a>
+      <nav class="nav__links" aria-label="Seções">
+        <a href="#problema">O problema</a>
+        <a href="#solucao">A solução</a>
+        <a href="#jornada">Como funciona</a>
+        <a href="#ia">IA responsável</a>
+        <a href="#pitch">Pitch</a>
+      </nav>
+      <a class="btn btn--primary btn--sm nav__cta" href="#baixar">
+        <svg class="ic"><use href="#i-down"/></svg> Baixar o app
+      </a>
+      <button class="nav__toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu-mobile"><span></span><span></span></button>
+    </div>
+    <div class="nav__mobile" id="menu-mobile" hidden>
+      <a href="#problema">O problema</a>
+      <a href="#solucao">A solução</a>
+      <a href="#jornada">Como funciona</a>
+      <a href="#ia">IA responsável</a>
+      <a href="#pitch">Pitch</a>
+      <a class="btn btn--primary" href="#baixar">Baixar o app</a>
+    </div>
+  </header>
+
+  <!-- Trilha: mesma sequência do pitch -->
+  <aside class="rail" aria-label="Trilha da apresentação">
+    <ol>
+      <li><a href="#inicio" data-rail="inicio"><span>Início</span></a></li>
+      <li><a href="#problema" data-rail="problema"><span>O problema</span></a></li>
+      <li><a href="#existe" data-rail="existe"><span>O que já existe</span></a></li>
+      <li><a href="#solucao" data-rail="solucao"><span>O Chega Junto</span></a></li>
+      <li><a href="#jornada" data-rail="jornada"><span>A jornada</span></a></li>
+      <li><a href="#personas" data-rail="personas"><span>Personas</span></a></li>
+      <li><a href="#proximos" data-rail="proximos"><span>Próximos passos</span></a></li>
+      <li><a href="#baixar" data-rail="baixar" class="rail__dl"><span>Baixar</span></a></li>
+    </ol>
+  </aside>
 
   <main>
-    <section class="hero" id="inicio">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="hero-spot" aria-hidden="true"></div>
-      <nav class="nav container" aria-label="Navegação principal">
-        <a class="brand" href="#inicio" aria-label="Chega Junto — início"><i class="brand-mark"></i><span>chega<b>junto</b></span></a>
-        <div class="nav-links"><a href="#dados">Dados</a><a href="#solucao">A solução</a><a href="#ia">IA responsável</a><a href="#impacto">Sobre</a></div>
-        <a class="nav-cta" href="#dados"><span>Ver as evidências</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a>
-      </nav>
-      <div class="hero-content container">
-        <div class="hero-copy reveal">
-          <p class="pill"><i></i>Projeto de IA aplicada à saúde</p>
-          <h1>Cuidado<br>começa<br><em>antes</em> da<br>consulta.</h1>
-          <p class="hero-lead">Chega Junto ajuda pessoas a se prepararem para consultas e exames, enfrentarem barreiras e aproveitarem oportunidades de cuidado no SUS.</p>
-          <div class="hero-actions">
-            <a class="button button-lime" href="#dados"><span>Ver as evidências</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-down"></use></svg></a>
-            <a class="text-link" href="#solucao"><span>Como funciona</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg></a>
+    <!-- 01 · ABERTURA -->
+    <section class="hero" id="inicio" data-chapter="inicio">
+      <div class="hero__bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <span class="pill reveal"><i class="dot"></i> MVP funcional · Desafio Salte com a IA</span>
+          <h1 class="reveal">Chegue ao seu atendimento <span class="grad">preparado.</span></h1>
+          <p class="lead reveal">Conseguir a vaga no SUS parece a parte mais difícil. O Chega Junto cuida do que vem depois: documentos, orientações, presença e o que você quer conversar com o profissional, tudo de forma simples e guiada.</p>
+          <div class="hero__actions reveal">
+            <a class="btn btn--primary btn--lg" href="#baixar"><svg class="ic"><use href="#i-down"/></svg> Baixar grátis</a>
+            <a class="btn btn--ghost btn--lg" href="#pitch"><svg class="ic ic--fill"><use href="#i-play"/></svg> Assistir ao pitch</a>
           </div>
-          <small>Baseado em fontes públicas oficiais · Dados de saúde usados de forma agregada</small>
+          <ul class="hero__platforms reveal" aria-label="Plataformas disponíveis">
+            <li><svg class="ic ic--fill"><use href="#i-apple"/></svg> iPhone</li>
+            <li><svg class="ic"><use href="#i-android"/></svg> Android</li>
+            <li><svg class="ic"><use href="#i-monitor"/></svg> Navegador</li>
+          </ul>
         </div>
-        <div class="hero-visual" aria-label="Prévia ilustrativa do aplicativo Chega Junto">
-          <i class="orbit orbit-one"></i><i class="orbit orbit-two"></i>
-          <span class="data-chip chip-one">+ preparação</span>
-          <span class="data-chip chip-two"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>presença</span>
-          <div class="phone-shell">
-            <i class="phone-notch"></i><div class="phone-top"><span>09:41</span><span>● ● ●</span></div>
-            <div class="phone-body"><div class="phone-head"><span>Olá, Ana</span><b><svg class="icon icon-fill" aria-hidden="true"><use href="#i-sparkle"></use></svg></b></div><h2>Seu atendimento<br>está chegando.</h2>
-              <div class="appointment-card"><i><svg class="icon icon-fill" aria-hidden="true"><use href="#i-heart"></use></svg></i><div><b>Clínica médica</b><small>quarta, 10:30</small></div><span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg></span></div>
-              <p>ANTES DE SAIR</p>
-              <div class="check-row"><i><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></i>Documento com foto</div>
-              <div class="check-row"><i><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></i>Cartão do SUS</div>
-              <div class="check-row muted"><i></i>Confirmar presença</div>
-              <div class="confirm-button"><span>Vou comparecer</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></div>
-            </div><i class="phone-home"></i>
-          </div><div class="floating-stat"><small>check-in feito</small><b>72h antes</b></div>
+        <div class="hero__visual reveal">
+          <div class="phone phone--hero">
+            <img src="assets/img/home-100.webp" alt="Tela inicial do Chega Junto com a próxima consulta de Ortopedia e a preparação concluída em 100%" width="540" height="1169" fetchpriority="high">
+          </div>
+          <div class="float-card fc1">
+            <span class="fc__icon fc__icon--teal"><svg class="ic"><use href="#i-check"/></svg></span>
+            <div><b>Preparação concluída</b><small>4 de 4 etapas</small></div>
+          </div>
+          <div class="float-card fc2">
+            <span class="fc__icon fc__icon--purple"><svg class="ic"><use href="#i-spark"/></svg></span>
+            <div><b>Relato organizado</b><small>revisado por você</small></div>
+          </div>
+          <div class="float-card fc3">
+            <span class="fc__icon fc__icon--blue"><svg class="ic"><use href="#i-cal"/></svg></span>
+            <div><b>Ortopedia · 14:30</b><small>Presença confirmada</small></div>
+          </div>
         </div>
       </div>
-      <div class="hero-footer container"><span>UMA JORNADA MAIS CLARA</span><i></i><span>MENOS BARREIRAS, MAIS CUIDADO</span></div>
+      <div class="container">
+        <ul class="hero__stats">
+          <li><b data-count="21">21</b><span>telas no aplicativo</span></li>
+          <li><b data-count="5">5</b><span>etapas guiadas de preparo</span></li>
+          <li><b data-count="15">15</b><span>personas simuladas</span></li>
+          <li><b>100%</b><span>revisado pelo usuário</span></li>
+        </ul>
+      </div>
     </section>
 
-    <section class="problem section container reveal">
-      <header class="section-head split-head"><div><p class="eyebrow">O desafio</p><h2>Uma vaga perdida<br>afeta <span>duas pessoas.</span></h2></div><p>Quem falta pode perder uma oportunidade de cuidado. Quem espera, continua na fila. Mas uma ausência nem sempre é descuido: muitas vezes, é uma barreira que poderia ser resolvida antes.</p></header>
-      <div class="problem-path"><article><span>01</span><i class="path-icon">⌁</i><b>Uma barreira aparece</b><small>transporte, informação,<br>preparo ou rotina.</small></article><i></i><article><span>02</span><i class="path-icon">♙</i><b>A pessoa não consegue ir</b><small>a consulta ou exame deixa<br>de acontecer.</small></article><i></i><article class="final"><span>03</span><i class="path-icon">♧</i><b>A fila não anda</b><small>uma vaga fica ociosa e alguém<br>segue esperando.</small></article></div>
-    </section>
-
-    <section class="evidence" id="dados"><div class="container">
-      <header class="section-head evidence-head reveal"><div><p class="eyebrow">Evidências</p><h2>O problema tem<br><span>números.</span></h2></div><p>Indicadores públicos mostram que faltas e vagas não aproveitadas são um desafio recorrente em diferentes territórios e serviços de saúde.</p></header>
-      <div class="evidence-layout reveal"><article class="featured-evidence"><header><span><i class="evidence-icon">▥</i>ATENDIMENTOS DA REDE MUNICIPAL</span><span>SMS-SP · 2025</span></header><strong><span class="count" data-count="25">0</span><small>%</small></strong><h3>das pessoas não compareciam<br>aos atendimentos.</h3><footer><span>⌖ &nbsp; São Paulo</span><i class="data-bars" aria-hidden="true"></i><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></footer></article>
-        <div class="evidence-cards">
-          <article><span><i class="card-icon">↓</i>CEARÁ · 2025</span><strong><span class="count" data-count="18.75" data-decimals="2">0</span>%</strong><h3>menos absenteísmo</h3><p>Redução relativa divulgada após mensagens de confirmação por WhatsApp.</p></article>
-          <article><span><i class="card-icon">□</i>BARUERI · 2025</span><strong><span class="count" data-count="33">0</span>%</strong><h3>de faltas em consultas</h3><p>Percentual informado no balanço de saúde do último quadrimestre.</p></article>
-          <article><span><i class="card-icon">♧</i>ACRE · SET. 2026</span><strong><span class="count" data-count="295">0</span> mil+</strong><h3>pessoas na fila</h3><p>Pessoas aguardando na regulação, segundo painel público estadual.</p><svg class="brasil-map" viewBox="0 0 210 150" role="img" aria-label="Mapa do Brasil com ponto de referência no centro"><path d="M64.2 130.6L77.4 120.0L78.0 116.9L74.7 114.5L75.9 109.2L71.8 108.9L70.3 103.1L62.9 102.3L62.4 94.2L64.7 88.9L61.5 85.5L61.7 82.2L55.3 82.1L54.2 73.5L38.5 67.2L37.1 59.1L25.8 64.1L18.8 63.8L19.2 58.2L13.4 60.2L9.8 58.2L7.0 51.7L10.8 43.3L21.1 40.3L23.1 29.5L20.8 23.3L24.0 23.1L21.5 19.4L30.0 17.9L31.2 21.3L36.7 23.1L44.1 17.5L41.8 16.7L39.2 10.4L45.8 12.9L55.1 7.0L57.5 11.6L56.7 18.9L59.9 21.2L65.2 18.5L70.0 18.9L69.9 16.5L80.4 17.8L85.5 9.9L91.1 21.3L81.3 30.9L87.8 28.5L87.8 32.2L92.8 31.6L91.9 34.7L97.6 27.7L101.8 27.8L109.6 31.4L108.9 36.9L113.7 33.5L125.7 35.3L135.4 42.5L141.3 43.3L143.8 50.4L142.0 57.4L131.5 70.5L129.4 69.8L128.6 87.0L122.1 102.1L118.6 105.5L110.2 105.3L95.1 113.8L95.1 124.8L83.5 137.5L88.8 131.5L86.3 130.0L79.0 143.0L79.9 139.4L77.6 137.1L64.2 130.6Z"/><circle cx="83" cy="79" r="4"/></svg></article>
+    <!-- Contexto -->
+    <section class="section intro">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow">Por que o Chega Junto existe</span>
+          <h2>Depois do agendamento, uma parte importante fica com o paciente.</h2>
+          <p>Quando a consulta ou o exame é marcado, começa uma etapa que ninguém vê: se organizar para chegar bem ao atendimento.</p>
         </div>
-      </div><p class="method-note"><b>Nota metodológica</b> Os dados têm contextos, períodos e métodos de medição diferentes. Eles não formam um ranking entre cidades; evidenciam um desafio real e recorrente.</p>
-    </div></section>
-
-    <section class="capacity section container reveal"><div class="capacity-intro"><p class="eyebrow">Capacidade existente</p><h2>Não é<br>apenas sobre<br>criar novas<br>vagas<span class="lime-dot">.</span></h2><p>Também é sobre tornar mais fácil aproveitar as vagas que já existem. Em Goiás, os dados de regulação mostram como perdas e ausências impactam a jornada.</p><div class="legend"><span><i></i>Ofertadas</span><span><i></i>Agendadas</span><span><i></i>Atendidas</span></div></div>
-      <div class="capacity-chart"><header><span>GOIÁS · AGOSTO DE 2026</span><span>VAGAS / ATENDIMENTOS</span></header><div class="chart-row"><div><b>Consultas</b><small>142.430 ofertadas</small></div><div class="bars"><i data-width="100"><b>142.430</b></i><i data-width="77"><b>109.115</b></i><i data-width="65"><b>92.202</b></i></div><aside><b>8,0%</b><small>faltas</small></aside></div><div class="chart-row"><div><b>Exames</b><small>64.587 ofertadas</small></div><div class="bars"><i data-width="100"><b>64.587</b></i><i data-width="76"><b>48.974</b></i><i data-width="53"><b>34.345</b></i></div><aside><b>19,5%</b><small>faltas</small></aside></div><footer><span>Dados agregados de regulação estadual</span><span>Fonte: SES-GO</span></footer></div>
+        <div class="cards-3">
+          <article class="card reveal">
+            <span class="card__icon card__icon--blue"><svg class="ic"><use href="#i-file"/></svg></span>
+            <h3>Organizar documentos</h3>
+            <p>Documento com foto, cartão SUS, exames anteriores. Saber o que é obrigatório e o que é opcional.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon card__icon--teal"><svg class="ic"><use href="#i-info"/></svg></span>
+            <h3>Entender as orientações</h3>
+            <p>Preparos, horários de chegada e cuidados que precisam ser lembrados antes do procedimento.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon card__icon--purple"><svg class="ic"><use href="#i-chat"/></svg></span>
+            <h3>Saber o que dizer</h3>
+            <p>Conseguir explicar com clareza o que está sentindo e levar as dúvidas certas para o profissional.</p>
+          </article>
+        </div>
+      </div>
     </section>
 
-    <section class="barriers"><div class="container barriers-grid reveal"><div><p class="eyebrow">Antes da ausência</p><h2>A falta não<br>tem<br><span>uma causa<br>única.</span></h2><p>Referências do Ministério da Saúde e de gestores públicos apontam barreiras que se cruzam na vida de quem precisa de atendimento.</p></div><div class="barrier-list">
-      <div><span>01</span><b><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></b><strong>Aviso tarde ou esquecido</strong><i><em data-width="72"></em></i><small>72%</small></div>
-      <div><span>02</span><b><svg class="icon" aria-hidden="true"><use href="#i-route"></use></svg></b><strong>Transporte e distância</strong><i><em data-width="58"></em></i><small>58%</small></div>
-      <div><span>03</span><b><svg class="icon" aria-hidden="true"><use href="#i-briefcase"></use></svg></b><strong>Trabalho e cuidados</strong><i><em data-width="46"></em></i><small>46%</small></div>
-      <div><span>04</span><b><svg class="icon" aria-hidden="true"><use href="#i-help-circle"></use></svg></b><strong>Dúvidas sobre preparo</strong><i><em data-width="39"></em></i><small>39%</small></div>
-      <small>A escala representa presença recorrente nos achados pesquisados, e não a proporção nacional de cada causa.</small>
-    </div></div></section>
+    <!-- 02 · PROBLEMA -->
+    <section class="section problem" id="problema" data-chapter="problema">
+      <div class="container">
+        <div class="section__head section__head--light reveal">
+          <span class="eyebrow eyebrow--light"><b>02</b> O problema</span>
+          <h2>A vaga marcada nem sempre é aproveitada.</h2>
+          <p>O Ministério da Saúde reconhece o absenteísmo como uma barreira ao acesso, com aumento das filas, perda de eficiência e desperdício de recursos públicos.</p>
+        </div>
+        <div class="problem__grid">
+          <div class="big-stat reveal">
+            <span class="big-stat__label">Faltas em consultas e exames em Barueri (SP)</span>
+            <b class="big-stat__num" data-count="70922" data-format="pt">70.922</b>
+            <span class="big-stat__sub">somente entre janeiro e abril de 2026</span>
+          </div>
+          <div class="problem__side">
+            <div class="mini-stat reveal">
+              <div class="mini-stat__top"><b><span data-count="32.57" data-decimals="2">32,57</span>%</b><span>das consultas agendadas</span></div>
+              <div class="bar"><i style="--w:32.57%"></i></div>
+              <small>31.491 faltas em consultas</small>
+            </div>
+            <div class="mini-stat reveal">
+              <div class="mini-stat__top"><b><span data-count="23.62" data-decimals="2">23,62</span>%</b><span>dos exames agendados</span></div>
+              <div class="bar bar--teal"><i style="--w:23.62%"></i></div>
+              <small>39.431 faltas em exames</small>
+            </div>
+          </div>
+        </div>
+        <p class="source reveal">Fonte: Secretaria Municipal de Saúde de Barueri, Audiência Pública do 1º quadrimestre de 2026 (Regulação ambulatorial). <a href="https://portal.barueri.sp.gov.br/arquivos/sites/SS-Secretaria_Saude/Audiencia_Publica_1_quadrimestre_de_2026.pdf" target="_blank" rel="noopener">Ver documento</a> · Ministério da Saúde, <a href="https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2024/manual-instrutivo-ngr-ngc" target="_blank" rel="noopener">Manual instrutivo NGR/NGC</a>.</p>
 
-    <section class="solution section" id="solucao"><div class="container"><header class="section-head solution-head reveal"><div><p class="eyebrow">Chega Junto</p><h2>Uma jornada mais<br><span>clara antes da<br>consulta.</span></h2></div><p>O projeto atua no intervalo entre o agendamento e o atendimento — quando informação e apoio prático podem fazer a diferença.</p></header><div class="flow-grid reveal">
-      <article><header><span>01</span><b><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></b></header><h3>Entender o agendamento</h3><p>Data, horário, local e orientações importantes em uma agenda simples.</p><i></i></article>
-      <article><header><span>02</span><b><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg></b></header><h3>Preparar-se antes</h3><p>Checklist de documentos e preparo, com lembretes no momento certo.</p><i></i></article>
-      <article><header><span>03</span><b><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg></b></header><h3>Resolver uma barreira</h3><p>Um check-in identifica dificuldades antes que elas se tornem uma falta.</p><i></i></article>
-      <article><header><span>04</span><b><svg class="icon" aria-hidden="true"><use href="#i-compass"></use></svg></b></header><h3>Encontrar o canal correto</h3><p>Orientação para confirmar, remarcar ou cancelar pelo serviço oficial.</p><i></i></article>
-    </div></div></section>
-
-    <section class="story-section container reveal">
-      <div class="story-copy"><p class="eyebrow">Minha história</p><h2>Mais foco no<br>cuidado.<br><span>Menos tempo<br>tentando<br>lembrar.</span></h2><p>Antes da consulta, a pessoa pode escrever ou gravar o que está sentindo. A IA ajuda a organizar esse relato em perguntas neutras, para que ela chegue mais preparada à conversa com o profissional.</p><div><b><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></b><span>Sem diagnóstico. Sem prescrição. A pessoa revisa e decide o que compartilhar.</span></div></div>
-      <div class="story-stage"><div class="story-demo" data-story>
-        <header><span><i></i>Minha história</span><small class="story-step">1 de 3</small></header>
-        <h3 class="story-question">O que você gostaria de contar antes da consulta?</h3>
-        <div class="voice-note"><b><svg class="icon" aria-hidden="true"><use href="#i-mic"></use></svg></b><i><em></em><em></em><em></em><em></em><em></em><em></em><em></em><em></em><em></em></i><span class="story-time">0:12</span></div>
-        <p class="story-transcript">Posso começar? Vou tentar explicar direito o que venho sentindo...</p>
-        <p class="story-ai-prompt" aria-live="polite"></p>
-        <label class="story-response-wrap"><span>Sua resposta</span><textarea class="story-response" rows="4" maxlength="360" placeholder="Escreva com suas palavras, se quiser..."></textarea></label>
-        <div class="story-feedback" aria-live="polite"><div class="story-feedback-head"><span class="story-feedback-tag">Resumo para revisão</span><b><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg>Pronto</b></div><h4>Você decide o que compartilhar.</h4><p>A IA organizou seus pontos em uma nota simples para facilitar a conversa com o profissional.</p><div class="story-feedback-summary"><span>O que ficou registrado</span><ul><li><b>Como você tem se sentido</b><em>Ansiedade à noite e dificuldade para dormir.</em></li><li><b>Impacto na rotina</b><em>Queda de concentração no trabalho.</em></li><li class="story-feedback-answer"><b>Sua resposta</b><em>Você pode adicionar uma resposta, se quiser complementar seu relato.</em></li></ul></div><div class="story-feedback-next"><b>Próximo passo</b><span>Revise a nota e escolha o que deseja levar para a consulta.</span></div><small>Sem diagnóstico, interpretação de exames ou prescrição.</small></div>
-        <footer><button type="button" class="story-back" data-story-nav="back" disabled><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg><span>Voltar</span></button><button type="button" class="story-next" data-story-nav="next"><span>Continuar</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg></button></footer>
-      </div></div>
+        <div class="gap reveal">
+          <p class="gap__intro">E comparecer é só uma parte do desafio. Antes do atendimento ainda existem documentos, orientações e informações para organizar.</p>
+          <div class="gap__line">
+            <div class="gap__node">
+              <span class="gap__dot"><svg class="ic"><use href="#i-cal"/></svg></span>
+              <b>Agendamento</b><small>a vaga é marcada</small>
+            </div>
+            <div class="gap__middle">
+              <span class="gap__tag">É aqui que encontramos a oportunidade</span>
+              <i class="gap__track"><i class="gap__fill"></i></i>
+              <div class="gap__chips"><span>Documentos</span><span>Orientações</span><span>Presença</span><span>Relato</span></div>
+            </div>
+            <div class="gap__node">
+              <span class="gap__dot gap__dot--teal"><svg class="ic"><use href="#i-user"/></svg></span>
+              <b>Atendimento</b><small>encontro com o profissional</small>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="ai-section" id="ia"><div class="container ai-grid reveal"><div class="ai-visual" aria-hidden="true"><svg class="ai-links" viewBox="0 0 970 670" preserveAspectRatio="none"><path d="M205 115C242 115 267 147 295 174M615 115C580 115 554 147 527 174M205 378C242 378 267 347 295 319M615 378C580 378 554 347 527 319"></path></svg><div class="ai-orbit"><span>ORGANIZA</span><span>SIMPLIFICA</span><span>APOIA</span><span>CONECTA</span></div><div class="ai-circle"><svg class="icon icon-fill" aria-hidden="true"><use href="#i-sparkle"></use></svg><b>IA</b><small>CHEGA JUNTO</small></div><div class="ai-node node-a"><b><svg class="icon" aria-hidden="true"><use href="#i-mic"></use></svg></b><span><strong>áudio</strong><small>Relatos e<br>conversas</small></span></div><div class="ai-node node-b"><b><svg class="icon" aria-hidden="true"><use href="#i-network"></use></svg></b><span><strong>texto</strong><small>Anotações e<br>dúvidas</small></span></div><div class="ai-node node-c"><b><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></b><span><strong>agenda</strong><small>Datas, consultas<br>e lembretes</small></span></div><div class="ai-node node-d"><b><svg class="icon" aria-hidden="true"><use href="#i-compass"></use></svg></b><span><strong>orientações</strong><small>Recomendações<br>da equipe de saúde</small></span></div><div class="ai-mini-card ai-do"><b><svg class="icon icon-fill" aria-hidden="true"><use href="#i-sparkle"></use></svg></b><span><strong>O que a IA faz</strong><small>Transcreve, organiza e transforma informações em orientações claras, ajudando você a se preparar melhor para a consulta.</small></span></div><div class="ai-mini-card ai-limit"><b><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></b><span><strong>Limites claros</strong><small>Não diagnostica, não interpreta exames e não decide condutas clínicas. A decisão sempre é do profissional de saúde.</small></span></div></div><div class="ai-copy"><p class="eyebrow">IA responsável</p><h2>IA para transformar<br><span>informação em<br>ação.</span></h2><p>A Chega Junto usa inteligência artificial para transformar suas informações em preparação e próximos passos práticos, antes do atendimento.</p><ul><li><b><svg class="icon" aria-hidden="true"><use href="#i-network"></use></svg></b><span>Transcreve e organiza relatos por texto ou áudio.</span></li><li><b><svg class="icon" aria-hidden="true"><use href="#i-help-circle"></use></svg></b><span>Transforma orientações estruturadas em linguagem simples.</span></li><li><b><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg></b><span>Identifica barreiras de preparação e organiza próximos passos.</span></li><li class="no"><b>×</b><span>Não diagnostica, não interpreta exames e não decide condutas clínicas.</span></li></ul></div></div></section>
+    <!-- 03 · O QUE JÁ EXISTE -->
+    <section class="section existe" id="existe" data-chapter="existe">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow"><b>03</b> O que já existe hoje</span>
+          <h2>O SUS já tem importantes soluções digitais.</h2>
+          <p>O Chega Junto não compete com elas. Ele quer somar numa etapa específica da jornada.</p>
+        </div>
+        <div class="existe__grid">
+          <article class="card card--flat reveal">
+            <span class="tag tag--blue">Meu SUS Digital</span>
+            <p>Reúne histórico de saúde, exames e agendamentos. Em serviços integrados, já permite agendar, remarcar ou cancelar consultas.</p>
+          </article>
+          <article class="card card--flat reveal">
+            <span class="tag tag--blue">SUS Digital</span>
+            <p>Avança com notificações, confirmações e lembretes enviados ao cidadão.</p>
+          </article>
+          <div class="beyond reveal">
+            <div class="beyond__col">
+              <small>Hoje, as soluções informam</small>
+              <b>Quando e onde o atendimento acontece</b>
+            </div>
+            <span class="beyond__arrow"><svg class="ic"><use href="#i-arrow"/></svg></span>
+            <div class="beyond__col beyond__col--hi">
+              <small>A oportunidade é ir além</small>
+              <b>Ajudar o paciente a se preparar ativamente para ele</b>
+            </div>
+          </div>
+        </div>
+        <p class="source source--dark reveal">Fontes: <a href="https://www.gov.br/pt-br/servicos/agendar-remarcar-ou-cancelar-consultas-em-unidades-sus-integradas" target="_blank" rel="noopener">gov.br, agendar, remarcar ou cancelar consultas em unidades SUS integradas</a> · <a href="https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2026/nota-tecnica-conjunta-no-48-2026-seidigi-saps-ms.pdf" target="_blank" rel="noopener">Nota Técnica Conjunta nº 48/2026 SEIDIGI/SAPS/MS</a>.</p>
+      </div>
+    </section>
 
-    <section class="impact section container" id="impacto"><header class="section-head impact-head reveal"><div><p class="eyebrow">Impacto que queremos medir</p><h2>Uma ideia só é boa<br>se melhora a vida real.</h2></div><p>O Chega Junto será validado em piloto. Em vez de prometer resolver todas as filas, queremos medir com clareza onde a experiência ajuda.</p></header><div class="impact-grid reveal">
-      <article><b><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg></b><span>Para as pessoas</span><h3>Mais clareza, autonomia e menos deslocamentos em vão.</h3></article>
-      <article><b><svg class="icon icon-fill" aria-hidden="true"><use href="#i-heart"></use></svg></b><span>Para o cuidado</span><h3>Mais preparo para a conversa entre pessoa e profissional.</h3></article>
-      <article><b><svg class="icon" aria-hidden="true"><use href="#i-network"></use></svg></b><span>Para a rede</span><h3>Mais chances de uma vaga ser usada por quem está esperando.</h3></article>
-    </div><div class="metrics-strip"><b>No piloto, vamos acompanhar</b><span>confirmação <i></i> faltas <i></i> checklists concluídos <i></i> barreiras relatadas <i></i> satisfação</span></div></section>
+    <!-- 04 · APRESENTAÇÃO -->
+    <section class="section solution" id="solucao" data-chapter="solucao">
+      <div class="container solution__grid">
+        <div class="solution__brand reveal">
+          <img src="assets/img/logo-full.png" alt="Logotipo Chega Junto: duas pessoas que se unem formando um check" width="520" height="474" loading="lazy">
+          <p class="solution__concept">Duas pessoas que se unem, formando um check e um gesto de cuidado: o paciente e a equipe de saúde, lado a lado.</p>
+        </div>
+        <div>
+          <div class="section__head section__head--left reveal">
+            <span class="eyebrow"><b>04</b> Apresentação</span>
+            <h2>Uma plataforma que ajuda você a se preparar <span class="grad">antes</span> do atendimento.</h2>
+            <p>De forma simples e guiada, você se organiza antes de encontrar o profissional. O Chega Junto não substitui esse profissional: ajuda você a chegar mais preparado até ele.</p>
+          </div>
+          <ul class="pillars">
+            <li class="reveal"><span class="card__icon card__icon--blue"><svg class="ic"><use href="#i-layers"/></svg></span><div><b>Preparação em pequenas etapas</b><p>Documentos, presença, relato e revisão final, com o progresso sempre visível.</p></div></li>
+            <li class="reveal"><span class="card__icon card__icon--purple"><svg class="ic"><use href="#i-spark"/></svg></span><div><b>IA que organiza, não diagnostica</b><p>Transcreve, faz perguntas curtas e organiza o que você contou. Nada além disso.</p></div></li>
+            <li class="reveal"><span class="card__icon card__icon--teal"><svg class="ic"><use href="#i-shield"/></svg></span><div><b>Você no controle</b><p>Tudo é revisado e editável. A decisão sobre o que compartilhar continua sendo sua.</p></div></li>
+            <li class="reveal"><span class="card__icon card__icon--amber"><svg class="ic"><use href="#i-users"/></svg></span><div><b>Acessível de verdade</b><p>Tema escuro, alto contraste, ajuste de texto, leitura por voz e relato por áudio.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <section class="ethics"><div class="container ethics-inner"><span class="ethics-sign ethics-sign-left">CONFIANÇA HOJE.<br>MAIS SAÚDE AMANHÃ.</span><span class="ethics-sign ethics-sign-right">DADOS.<br>MAIS SAÚDE<br>PARA PESSOAS.</span><b><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></b><div><p class="eyebrow">Privacidade e ética</p><h2>Cuidado com dados<br>também é <em>cuidado.</em></h2></div><p>A demonstração usa dados fictícios e fontes públicas agregadas. Em uma implementação real, informações de saúde exigem consentimento, proteção, controle de acesso e parceria institucional.</p></div></section>
+    <!-- 05 · DEMONSTRAÇÃO -->
+    <section class="section journey" id="jornada" data-chapter="jornada">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow"><b>05</b> Demonstração</span>
+          <h2>A jornada completa, do agendamento à consulta.</h2>
+          <p>Telas reais do aplicativo publicado. Role para acompanhar cada etapa.</p>
+        </div>
+        <div class="journey__grid">
+          <div class="journey__stage" aria-hidden="true">
+            <div class="phone phone--stage">
+              <img class="is-on" data-screen="0" src="assets/img/detalhes.webp" alt="" width="540" height="1169">
+              <img data-screen="1" src="assets/img/home.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="2" src="assets/img/checklist.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="3" src="assets/img/presenca.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="4" src="assets/img/relato.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="5" src="assets/img/ia-pergunta.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="6" src="assets/img/resumo.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="7" src="assets/img/perguntas.webp" alt="" width="540" height="1169" loading="lazy">
+              <img data-screen="8" src="assets/img/concluida.webp" alt="" width="540" height="1169" loading="lazy">
+            </div>
+            <div class="stage__dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <ol class="steps">
+            <li class="step is-active" data-step="0">
+              <span class="step__n">01</span>
+              <div>
+                <span class="tag tag--slate">Portal de Agendamentos</span>
+                <h3>A unidade registra o agendamento</h3>
+                <p>Para demonstrar a jornada completa, o MVP tem um portal que simula a etapa feita antes de o paciente chegar ao Chega Junto. O agendamento é salvo no backend, com orientações e documentos de preparo.</p>
+                <figure class="step__portal"><img src="assets/img/portal.webp" alt="Portal de Agendamentos: lista de consultas com especialidade, profissional, unidade, data, horário e status" width="1600" height="1000" loading="lazy"><figcaption>Sistema simulado, não oficial. Nomes de pacientes desfocados.</figcaption></figure>
+                <img class="step__shot" src="assets/img/detalhes.webp" alt="Detalhes da consulta de Ortopedia com local, o que levar e orientações" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="1">
+              <span class="step__n">02</span>
+              <div>
+                <span class="tag tag--blue">Início</span>
+                <h3>O atendimento aparece no app</h3>
+                <p>O paciente encontra a próxima consulta e todas as informações importantes reunidas: especialidade, unidade, data, horário e o quanto já se preparou.</p>
+                <img class="step__shot" src="assets/img/home.webp" alt="Tela inicial com a próxima consulta e preparação em 0 de 4 etapas" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="2">
+              <span class="step__n">03</span>
+              <div>
+                <span class="tag tag--teal">Checklist</span>
+                <h3>Documentos e preparo, item por item</h3>
+                <p>O que levar, o que lembrar e o que é obrigatório ou opcional. O percentual considera só os itens obrigatórios.</p>
+                <img class="step__shot" src="assets/img/checklist.webp" alt="Checklist de preparo com documento com foto, cartão SUS e exames anteriores" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="3">
+              <span class="step__n">04</span>
+              <div>
+                <span class="tag tag--teal">Presença</span>
+                <h3>Confirme se vai comparecer</h3>
+                <p>Se não puder ir, você recebe a orientação para avisar a unidade pelos canais oficiais. O aplicativo não faz alterações automáticas no sistema do SUS.</p>
+                <img class="step__shot" src="assets/img/presenca.webp" alt="Confirmação de presença com orientações para avisar a unidade" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="4">
+              <span class="step__n">05</span>
+              <div>
+                <span class="tag tag--purple">Relato pré-consulta</span>
+                <h3>Conte, do seu jeito, o que quer conversar</h3>
+                <p>O relato pode ser escrito ou gravado em áudio. Quem se expressa melhor falando pode gravar com calma e revisar a transcrição antes de usar.</p>
+                <img class="step__shot" src="assets/img/relato.webp" alt="Campo de relato com o texto do paciente sobre dor no joelho" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="5">
+              <span class="step__n">06</span>
+              <div>
+                <span class="tag tag--purple">Complemento com IA</span>
+                <h3>Perguntas curtas para completar</h3>
+                <p>A partir do relato, a inteligência artificial faz até três perguntas curtas. Você pode responder, dizer que não sabe ou seguir sem complemento.</p>
+                <img class="step__shot" src="assets/img/ia-pergunta.webp" alt="IA perguntando com que frequência a dor aparece e a resposta do paciente" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="6">
+              <span class="step__n">07</span>
+              <div>
+                <span class="tag tag--purple">Resumo</span>
+                <h3>Tudo organizado, e editável</h3>
+                <p>Motivo da consulta, pontos relatados, contexto e outros pontos importantes. A IA organiza o que foi dito, sem diagnosticar, prescrever ou interpretar exames.</p>
+                <img class="step__shot" src="assets/img/resumo.webp" alt="Resumo organizado do relato com campos editáveis" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="7">
+              <span class="step__n">08</span>
+              <div>
+                <span class="tag tag--blue">Perguntas</span>
+                <h3>Leve as dúvidas certas</h3>
+                <p>Selecione e edite perguntas sugeridas para levar à consulta, ou adicione as suas.</p>
+                <img class="step__shot" src="assets/img/perguntas.webp" alt="Perguntas sugeridas selecionadas para levar à consulta" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+            <li class="step" data-step="8">
+              <span class="step__n">09</span>
+              <div>
+                <span class="tag tag--teal">Revisão final</span>
+                <h3>Pronto para a consulta</h3>
+                <p>Você revisa tudo e conclui. Nada é enviado automaticamente a profissionais, UBS ou SUS: você decide o que compartilhar.</p>
+                <img class="step__shot" src="assets/img/concluida.webp" alt="Preparação concluída com o resumo da consulta" width="540" height="1169" loading="lazy">
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- IA RESPONSÁVEL -->
+    <section class="section ai" id="ia">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow eyebrow--purple"><svg class="ic"><use href="#i-spark"/></svg> Inteligência artificial com limites</span>
+          <h2>A IA ajuda a organizar. A decisão é sempre sua.</h2>
+          <p>Ela também apoiou o desenvolvimento da ferramenta. Dentro do app, o papel dela é bem definido.</p>
+        </div>
+        <div class="ai__grid">
+          <div class="ai__col ai__col--do reveal">
+            <h3><span class="ai__badge"><svg class="ic"><use href="#i-check"/></svg></span> O que a IA faz</h3>
+            <ul>
+              <li><svg class="ic"><use href="#i-mic"/></svg><div><b>Transcreve o áudio</b><span>quando você prefere falar em vez de escrever</span></div></li>
+              <li><svg class="ic"><use href="#i-chat"/></svg><div><b>Faz perguntas curtas</b><span>para completar as informações do relato</span></div></li>
+              <li><svg class="ic"><use href="#i-file"/></svg><div><b>Organiza o que foi informado</b><span>em um resumo claro e editável</span></div></li>
+            </ul>
+          </div>
+          <div class="ai__col ai__col--dont reveal">
+            <h3><span class="ai__badge ai__badge--no"><svg class="ic"><use href="#i-x"/></svg></span> O que a IA não faz</h3>
+            <ul>
+              <li><svg class="ic"><use href="#i-x"/></svg><div><b>Não faz diagnóstico</b></div></li>
+              <li><svg class="ic"><use href="#i-x"/></svg><div><b>Não prescreve tratamentos nem indica dose</b></div></li>
+              <li><svg class="ic"><use href="#i-x"/></svg><div><b>Não interpreta exames</b></div></li>
+              <li><svg class="ic"><use href="#i-x"/></svg><div><b>Não envia nada sem você</b></div></li>
+            </ul>
+          </div>
+        </div>
+        <div class="ai__flow reveal" aria-label="Fluxo da IA">
+          <span>Seu relato</span><svg class="ic"><use href="#i-arrow"/></svg>
+          <span class="is-ai">Perguntas curtas</span><svg class="ic"><use href="#i-arrow"/></svg>
+          <span class="is-ai">Resumo organizado</span><svg class="ic"><use href="#i-arrow"/></svg>
+          <span class="is-you">Sua revisão</span><svg class="ic"><use href="#i-arrow"/></svg>
+          <span>Você decide o que levar</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 · PERSONAS -->
+    <section class="section personas" id="personas" data-chapter="personas">
+      <div class="container personas__grid">
+        <div class="section__head section__head--left reveal">
+          <span class="eyebrow"><b>06</b> Experiência simulada com personas</span>
+          <h2>Uma demonstração não representa todo mundo.</h2>
+          <p>Por isso criamos <b>15 perfis fictícios</b> com necessidades diferentes e colocamos a jornada à prova. As simulações mostraram onde ela pode evoluir.</p>
+          <div class="personas__count"><b data-count="15">15</b><span>perfis fictícios<br>com realidades diferentes</span></div>
+        </div>
+        <div class="scenarios">
+          <article class="scenario reveal">
+            <span class="card__icon card__icon--purple"><svg class="ic"><use href="#i-mic"/></svg></span>
+            <div><h3>Quem se expressa melhor falando</h3><p>Jornada por áudio, com transcrição e revisão antes do uso.</p></div>
+          </article>
+          <article class="scenario reveal">
+            <span class="card__icon card__icon--amber"><svg class="ic"><use href="#i-cal"/></svg></span>
+            <div><h3>Quem talvez não consiga comparecer</h3><p>O app registra a situação, mas não cancela a consulta pelo usuário.</p></div>
+          </article>
+          <article class="scenario reveal">
+            <span class="card__icon card__icon--blue"><svg class="ic"><use href="#i-layers"/></svg></span>
+            <div><h3>Mais de um atendimento</h3><p>Cada preparação permaneceu ligada à consulta certa.</p></div>
+          </article>
+          <article class="scenario reveal">
+            <span class="card__icon card__icon--teal"><svg class="ic"><use href="#i-shield"/></svg></span>
+            <div><h3>Pedidos de diagnóstico ou remédio</h3><p>A IA não diagnosticou, não prescreveu e não indicou dose.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PITCH -->
+    <section class="section pitch" id="pitch">
+      <div class="container">
+        <div class="section__head section__head--light reveal">
+          <span class="eyebrow eyebrow--light"><svg class="ic ic--fill"><use href="#i-play"/></svg> Pitch</span>
+          <h2>Assista à apresentação completa.</h2>
+          <p>Problema, solução, demonstração no sistema publicado e próximos passos, em cerca de 6 minutos.</p>
+        </div>
+        <div class="video reveal">
+          <video controls preload="none" playsinline poster="assets/video/pitch-poster.jpg" aria-label="Vídeo do pitch do Chega Junto, com legendas embutidas">
+            <source src="assets/video/pitch-chega-junto.mp4" type="video/mp4">
+          </video>
+          <button class="video__cover" type="button" aria-label="Reproduzir o pitch">
+            <span class="video__play"><svg class="ic ic--fill"><use href="#i-play"/></svg></span>
+            <span class="video__meta"><b>Pitch Chega Junto</b><small>6 min · legendado</small></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOADS -->
+    <section class="section download" id="baixar" data-chapter="baixar">
+      <div class="download__bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i></div>
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow"><svg class="ic"><use href="#i-down"/></svg> Experimente agora</span>
+          <h2>Leve o Chega Junto para o seu celular.</h2>
+          <p>Gratuito, funcionando de verdade e com dados fictícios. Escolha seu aparelho e siga o passo a passo.</p>
+        </div>
+
+        <div class="dl-cards">
+          <a class="dl-card dl-card--ios reveal" href="#tab-ios" data-open-tab="ios">
+            <span class="dl-card__icon"><svg class="ic ic--fill"><use href="#i-apple"/></svg></span>
+            <span class="dl-card__body"><small>Para iPhone</small><b>App Web (PWA)</b><em>Instale pela Tela de Início</em></span>
+            <svg class="ic dl-card__go"><use href="#i-arrow"/></svg>
+          </a>
+          <a class="dl-card dl-card--android reveal" href="https://github.com/jeffsilva03/Chega-Junto-Android/releases/download/android-v0.7.0/chega-junto-0.7.0.apk" data-open-tab="android">
+            <span class="dl-card__icon"><svg class="ic"><use href="#i-android"/></svg></span>
+            <span class="dl-card__body"><small>Para Android</small><b>Baixar APK</b><em>Versão 0.7.0 · 55 MB · Android 7+</em></span>
+            <svg class="ic dl-card__go"><use href="#i-down"/></svg>
+          </a>
+          <a class="dl-card dl-card--portal reveal" href="https://chega-junto-agendamentos.web.app" target="_blank" rel="noopener">
+            <span class="dl-card__icon"><svg class="ic"><use href="#i-monitor"/></svg></span>
+            <span class="dl-card__body"><small>No computador</small><b>Portal de Agendamentos</b><em>Sistema simulado da unidade</em></span>
+            <svg class="ic dl-card__go"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+
+        <div class="tabs reveal" id="guia">
+          <div class="tabs__list" role="tablist" aria-label="Escolha seu aparelho">
+            <button role="tab" id="tab-ios" aria-controls="panel-ios" aria-selected="true"><svg class="ic ic--fill"><use href="#i-apple"/></svg> iPhone</button>
+            <button role="tab" id="tab-android" aria-controls="panel-android" aria-selected="false" tabindex="-1"><svg class="ic"><use href="#i-android"/></svg> Android</button>
+            <button role="tab" id="tab-portal" aria-controls="panel-portal" aria-selected="false" tabindex="-1"><svg class="ic"><use href="#i-monitor"/></svg> Portal</button>
+          </div>
+
+          <!-- iPhone -->
+          <div class="panel" role="tabpanel" id="panel-ios" aria-labelledby="tab-ios">
+            <div class="panel__head">
+              <div>
+                <h3>Instale no iPhone em 5 passos</h3>
+                <p>O Chega Junto para iPhone é um app web. Depois de adicionado à Tela de Início, ele abre em tela cheia, com ícone próprio, como um aplicativo.</p>
+              </div>
+              <div class="link-box">
+                <div class="link-box__qr"><img src="assets/img/qr-ios.svg" alt="QR code para abrir o Chega Junto no iPhone" width="116" height="116"></div>
+                <div class="link-box__body">
+                  <small>Está no computador? Aponte a câmera do iPhone.</small>
+                  <code>chega-junto-desafio-ia.web.app</code>
+                  <div class="link-box__actions">
+                    <a class="btn btn--primary btn--sm" href="https://chega-junto-desafio-ia.web.app" target="_blank" rel="noopener">Abrir o app <svg class="ic"><use href="#i-ext"/></svg></a>
+                    <button class="btn btn--soft btn--sm" data-copy="https://chega-junto-desafio-ia.web.app"><svg class="ic"><use href="#i-copy"/></svg> <span>Copiar link</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ol class="ios-steps">
+              <li class="ios-step">
+                <div class="mock">
+                  <div class="mock__screen mock__screen--safari">
+                    <div class="m-url m-url--hi"><svg class="ic"><use href="#i-compass"/></svg> chega-junto-desafio-ia.web.app</div>
+                    <div class="m-page"><img src="assets/img/logo-mark.png" alt="" width="56" height="56" loading="lazy"><i></i><i></i><i class="short"></i></div>
+                  </div>
+                </div>
+                <span class="ios-step__n">1</span>
+                <h4>Abra o link no Safari</h4>
+                <p>Use o <b>Safari</b>, o navegador padrão do iPhone. Toque em “Abrir o app” ou leia o QR code.</p>
+              </li>
+              <li class="ios-step">
+                <div class="mock">
+                  <div class="mock__screen">
+                    <div class="m-page m-page--full"><i></i><i></i><i class="short"></i><i></i></div>
+                    <div class="m-toolbar"><span>‹</span><span>›</span><span class="m-hi"><svg class="ic"><use href="#i-share"/></svg></span><span>▢</span><span>⧉</span></div>
+                  </div>
+                </div>
+                <span class="ios-step__n">2</span>
+                <h4>Toque em Compartilhar</h4>
+                <p>É o ícone de quadrado com seta para cima <svg class="ic ic--inline"><use href="#i-share"/></svg>, na barra do Safari.</p>
+              </li>
+              <li class="ios-step">
+                <div class="mock">
+                  <div class="mock__screen mock__screen--sheet">
+                    <div class="m-sheet">
+                      <div class="m-row"><span>Copiar</span><svg class="ic"><use href="#i-copy"/></svg></div>
+                      <div class="m-row"><span>Adicionar aos Favoritos</span><span>☆</span></div>
+                      <div class="m-row m-row--hi"><span>Adicionar à Tela de Início</span><svg class="ic"><use href="#i-plus-sq"/></svg></div>
+                      <div class="m-row"><span>Buscar na Página</span><span>⌕</span></div>
+                    </div>
+                  </div>
+                </div>
+                <span class="ios-step__n">3</span>
+                <h4>“Adicionar à Tela de Início”</h4>
+                <p>Role a lista de opções para baixo até encontrar <b>Adicionar à Tela de Início</b> <svg class="ic ic--inline"><use href="#i-plus-sq"/></svg>.</p>
+              </li>
+              <li class="ios-step">
+                <div class="mock">
+                  <div class="mock__screen mock__screen--add">
+                    <div class="m-addbar"><span>Cancelar</span><span class="m-hi-text">Adicionar</span></div>
+                    <b class="m-addtitle">Adicionar à Tela de Início</b>
+                    <div class="m-addrow"><img src="assets/img/app-icon.png" alt="" width="44" height="44" loading="lazy"><div><b>Chega Junto</b><small>chega-junto-desafio-ia.web.app</small></div></div>
+                    <div class="m-toggle"><span>Abrir como App Web</span><i></i></div>
+                  </div>
+                </div>
+                <span class="ios-step__n">4</span>
+                <h4>Toque em “Adicionar”</h4>
+                <p>Confira o nome <b>Chega Junto</b> e confirme no canto superior direito. Se aparecer, deixe “Abrir como App Web” ativado.</p>
+              </li>
+              <li class="ios-step">
+                <div class="mock">
+                  <div class="mock__screen mock__screen--home">
+                    <div class="m-grid">
+                      <i></i><i></i><i></i><i></i><i></i>
+                      <span class="m-app"><img src="assets/img/app-icon.png" alt="" width="52" height="52" loading="lazy"><small>Chega Junto</small></span>
+                      <i></i><i></i>
+                    </div>
+                  </div>
+                </div>
+                <span class="ios-step__n">5</span>
+                <h4>Abra pelo ícone</h4>
+                <p>Pronto! Agora é só tocar no ícone do Chega Junto na Tela de Início, como qualquer app.</p>
+              </li>
+            </ol>
+            <div class="hint">
+              <svg class="ic"><use href="#i-info"/></svg>
+              <p><b>Não encontrou o botão Compartilhar?</b> Em versões mais recentes do iOS, ele pode estar dentro do menu <svg class="ic ic--inline"><use href="#i-dots"/></svg> ao lado da barra de endereço. Em outros navegadores do iPhone a opção também pode existir, mas recomendamos o Safari.</p>
+            </div>
+          </div>
+
+          <!-- Android -->
+          <div class="panel" role="tabpanel" id="panel-android" aria-labelledby="tab-android" hidden>
+            <div class="panel__head">
+              <div>
+                <h3>Instale no Android</h3>
+                <p>Aplicativo nativo em APK, versão 0.7.0. Como é uma versão de demonstração, ele é instalado direto pelo arquivo, fora da Play Store.</p>
+              </div>
+              <div class="link-box">
+                <div class="link-box__qr"><img src="assets/img/qr-android.svg" alt="QR code para baixar o APK do Chega Junto" width="116" height="116"></div>
+                <div class="link-box__body">
+                  <small>Está no computador? Leia com a câmera do Android.</small>
+                  <code>chega-junto-0.7.0.apk · 55 MB</code>
+                  <div class="link-box__actions">
+                    <a class="btn btn--primary btn--sm" href="https://github.com/jeffsilva03/Chega-Junto-Android/releases/download/android-v0.7.0/chega-junto-0.7.0.apk"><svg class="ic"><use href="#i-down"/></svg> Baixar APK</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ol class="list-steps">
+              <li><span class="ls__n">1</span><div><h4>Baixe o arquivo</h4><p>Toque em <b>Baixar APK</b> e aguarde o download de cerca de 55 MB. Requer Android 7.0 ou superior.</p></div></li>
+              <li><span class="ls__n">2</span><div><h4>Abra o arquivo baixado</h4><p>Toque na notificação do download ou abra o app <b>Arquivos › Downloads</b> e selecione <code>chega-junto-0.7.0.apk</code>.</p></div></li>
+              <li><span class="ls__n">3</span><div><h4>Permita a instalação</h4><p>Se o Android pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b> para o navegador ou app de arquivos. Depois volte.</p></div></li>
+              <li><span class="ls__n">4</span><div><h4>Toque em Instalar</h4><p>O Play Protect pode exibir um aviso por ser um app de demonstração fora da loja. Nesse caso, toque em <b>Mais detalhes › Instalar mesmo assim</b>.</p></div></li>
+              <li><span class="ls__n">5</span><div><h4>Abra o Chega Junto</h4><p>O ícone aparece na lista de apps. Entre ou crie sua conta e comece a se preparar.</p></div></li>
+            </ol>
+            <div class="hint">
+              <svg class="ic"><use href="#i-info"/></svg>
+              <p><b>Prefere não instalar o APK?</b> Abra <a href="https://chega-junto-desafio-ia.web.app" target="_blank" rel="noopener">chega-junto-desafio-ia.web.app</a> no Chrome, toque no menu <b>⋮</b> e escolha <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>.</p>
+            </div>
+          </div>
+
+          <!-- Portal -->
+          <div class="panel" role="tabpanel" id="panel-portal" aria-labelledby="tab-portal" hidden>
+            <div class="panel__head">
+              <div>
+                <h3>Portal de Agendamentos</h3>
+                <p>O portal simula a etapa que acontece antes do Chega Junto: a unidade registra o atendimento e ele passa a aparecer no aplicativo do paciente. Ideal para abrir no computador.</p>
+              </div>
+              <div class="link-box">
+                <div class="link-box__body">
+                  <small>Ambiente demonstrativo, sistema não oficial</small>
+                  <code>chega-junto-agendamentos.web.app</code>
+                  <div class="link-box__actions">
+                    <a class="btn btn--primary btn--sm" href="https://chega-junto-agendamentos.web.app" target="_blank" rel="noopener">Abrir o portal <svg class="ic"><use href="#i-ext"/></svg></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="portal-info">
+              <figure><img src="assets/img/portal.webp" alt="Tela de agendamentos do Portal da Unidade" width="1600" height="1000" loading="lazy"></figure>
+              <ul class="checks">
+                <li><svg class="ic"><use href="#i-check"/></svg> Localizar o paciente cadastrado no Chega Junto</li>
+                <li><svg class="ic"><use href="#i-check"/></svg> Criar a consulta com especialidade, profissional, unidade, data e horário</li>
+                <li><svg class="ic"><use href="#i-check"/></svg> Definir orientações e documentos obrigatórios ou opcionais</li>
+                <li><svg class="ic"><use href="#i-check"/></svg> Editar ou cancelar, com o reflexo no app do paciente</li>
+                <li class="muted"><svg class="ic"><use href="#i-info"/></svg> O acesso é feito com a conta de operador da demonstração. Não há cadastro público no portal.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="first-use reveal">
+          <h3>Antes de começar</h3>
+          <div class="first-use__grid">
+            <div><span class="card__icon card__icon--blue"><svg class="ic"><use href="#i-user"/></svg></span><p><b>Use dados fictícios.</b> É uma demonstração acadêmica. Crie sua conta sem informar dados reais de saúde.</p></div>
+            <div><span class="card__icon card__icon--amber"><svg class="ic"><use href="#i-clock"/></svg></span><p><b>Primeiro acesso pode demorar.</b> O servidor gratuito “dorme” sem uso e pode levar cerca de um minuto para acordar.</p></div>
+            <div><span class="card__icon card__icon--purple"><svg class="ic"><use href="#i-spark"/></svg></span><p><b>IA com limite diário.</b> Para controlar o uso, cada conta tem uma cota diária de organizações e transcrições.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 · PRÓXIMOS PASSOS -->
+    <section class="section next" id="proximos" data-chapter="proximos">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow"><b>07</b> Próximos passos</span>
+          <h2>O próximo passo acontece fora da simulação.</h2>
+          <p>As simulações ajudaram a entender o comportamento da solução. Agora, queremos levá-la a pessoas reais.</p>
+        </div>
+        <ol class="roadmap">
+          <li class="reveal"><span class="roadmap__dot is-now"><svg class="ic"><use href="#i-check"/></svg></span><small>Hoje</small><h3>MVP funcional publicado</h3><p>App para iPhone e Android, portal, backend e IA real com revisão humana.</p></li>
+          <li class="reveal"><span class="roadmap__dot">1</span><small>Próximo</small><h3>Validar com usuários reais</h3><p>Acessibilidade, diferentes níveis de familiaridade com tecnologia e a experiência de preparo.</p></li>
+          <li class="reveal"><span class="roadmap__dot">2</span><small>Depois</small><h3>Evoluir e refinar a IA</h3><p>Melhorar a solução a partir do que aprendermos e refinar os limites da inteligência artificial.</p></li>
+          <li class="reveal"><span class="roadmap__dot">3</span><small>Em seguida</small><h3>Piloto controlado</h3><p>Testar a jornada em um ambiente real, com acompanhamento.</p></li>
+          <li class="reveal"><span class="roadmap__dot"><svg class="ic"><use href="#i-flag"/></svg></span><small>Futuro</small><h3>Integrações com o SUS</h3><p>Estudar integrações com os serviços que já fazem parte da jornada.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="cta">
+      <div class="container">
+        <div class="cta__box reveal">
+          <img src="assets/img/app-icon.png" alt="" width="88" height="88" loading="lazy">
+          <h2>Chegue mais preparado. Chegue junto.</h2>
+          <p>Experimente a jornada completa no seu celular.</p>
+          <div class="cta__actions">
+            <a class="btn btn--white btn--lg" href="#baixar"><svg class="ic"><use href="#i-down"/></svg> Baixar o app</a>
+            <a class="btn btn--outline-white btn--lg" href="https://github.com/jeffsilva03/Chega-Junto---Desafio-IA" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg> Ver no GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer><span class="footer-sign">IDEIAS<br>QUE APROXIMAM<br>PESSOAS<br>DO CUIDADO.</span><div class="container footer-main"><div><a class="brand" href="#inicio"><i class="brand-mark"></i><span>chega<b>junto</b></span></a><p>Uma proposta para aproximar pessoas do cuidado que já está esperando por elas.</p><span class="footer-motto">TECNOLOGIA A SERVIÇO DE MAIS ENCONTROS<br>ENTRE PESSOAS E CUIDADO.</span></div><div><b>Fontes consultadas</b><a target="_blank" rel="noreferrer" href="https://prefeitura.sp.gov.br/w/consultas-e-exames-da-rede-p%C3%BAblica-de-sa%C3%BAde-podem-ser-confirmadas-pelo-whatsapp">SMS São Paulo <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a><a target="_blank" rel="noreferrer" href="https://www.ce.gov.br/2025/12/19/ceara-reduz-em-cerca-de-19-as-faltas-em-marcacoes-de-consultas-e-exames-laboratoriais-com-servico-de-mensagens-pelo-whatsapp/">Sesa Ceará <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a><a target="_blank" rel="noreferrer" href="https://dadosabertos.go.gov.br/dataset/transparencia-regulacao-indicadores">SES Goiás <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a><a target="_blank" rel="noreferrer" href="https://www.gov.br/saude/pt-br">Ministério da Saúde <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a><a target="_blank" rel="noreferrer" href="https://datasus.saude.gov.br/">Datasus <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg></a></div><div><b>Desenvolvido para</b><p>Desafio Salte<br>com a IA</p><a href="#dados"><span>Ver metodologia</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-down"></use></svg></a></div></div><div class="container footer-bottom"><span>CHEGA JUNTO · 2026</span><span>PROTÓTIPO CONCEITUAL · NÃO É UM CANAL OFICIAL DO SUS</span></div></footer>
-  <script src="script.js"></script>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a class="brand" href="#inicio"><img src="assets/img/logo-mark.png" alt="" width="36" height="36" loading="lazy"><span class="brand__name">Chega<b>Junto</b></span></a>
+        <p>Saúde mais perto de você. Projeto desenvolvido para o Desafio Salte com a IA.</p>
+      </div>
+      <div class="footer__links">
+        <h4>Acessar</h4>
+        <a href="https://chega-junto-desafio-ia.web.app" target="_blank" rel="noopener">App para iPhone (web)</a>
+        <a href="https://github.com/jeffsilva03/Chega-Junto-Android/releases/download/android-v0.7.0/chega-junto-0.7.0.apk">APK Android 0.7.0</a>
+        <a href="https://chega-junto-agendamentos.web.app" target="_blank" rel="noopener">Portal de Agendamentos</a>
+        <a href="https://github.com/jeffsilva03/Chega-Junto---Desafio-IA" target="_blank" rel="noopener">Repositório no GitHub</a>
+      </div>
+      <div class="footer__links">
+        <h4>Tecnologia</h4>
+        <span>Flutter (Android e Web)</span>
+        <span>FastAPI · MySQL (Aiven)</span>
+        <span>Firebase Hosting · Render</span>
+        <span>OpenAI (organização e transcrição)</span>
+      </div>
+    </div>
+    <div class="container footer__ethics">
+      <svg class="ic"><use href="#i-shield"/></svg>
+      <p><b>Ambiente demonstrativo.</b> Projeto acadêmico com dados fictícios. O Chega Junto não é um sistema oficial, não possui integração com SUS ou gov.br, não substitui o atendimento profissional e não realiza diagnóstico, prescrição ou interpretação de exames.</p>
+    </div>
+  </footer>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js" defer></script>
 </body>
 </html>
