@@ -464,8 +464,8 @@
       <div class="container">
         <div class="section__head reveal">
           <span class="eyebrow"><svg class="ic"><use href="#i-code"/></svg> Por dentro do sistema</span>
-          <h2>Um MVP de ponta a ponta, publicado e testado.</h2>
-          <p>Aplicativo, portal, API, banco de dados e IA real, cada camada com responsabilidade clara, autenticação própria e testes automatizados.</p>
+          <h2>Do app ao banco de dados, tudo publicado.</h2>
+          <p>Cinco camadas, IA real e mais de 700 testes automatizados.</p>
         </div>
 
         <!-- Arquitetura -->
@@ -474,12 +474,12 @@
             <div class="arch__node arch__node--app">
               <span class="arch__ic"><svg class="ic"><use href="#i-phone"/></svg></span>
               <b>App do paciente</b>
-              <small>Flutter · Android (APK) e Web (PWA)</small>
+              <small>Flutter · APK e PWA</small>
             </div>
             <div class="arch__node arch__node--portal">
               <span class="arch__ic"><svg class="ic"><use href="#i-monitor"/></svg></span>
-              <b>Portal de Agendamentos</b>
-              <small>HTML, CSS e JavaScript</small>
+              <b>Portal</b>
+              <small>HTML · CSS · JS</small>
             </div>
             <span class="arch__host">Firebase Hosting</span>
           </div>
@@ -488,8 +488,8 @@
             <div class="arch__node arch__node--api">
               <span class="arch__ic"><svg class="ic"><use href="#i-layers"/></svg></span>
               <b>API REST</b>
-              <small>Python · FastAPI · SQLAlchemy</small>
-              <ul><li>Autenticação</li><li>Agenda e checklist</li><li>Relato e IA</li><li>Cotas de uso</li></ul>
+              <small>FastAPI</small>
+              <ul><li>Login</li><li>Agenda</li><li>Relato</li><li>IA</li></ul>
             </div>
             <span class="arch__host">Render</span>
           </div>
@@ -498,106 +498,101 @@
             <div class="arch__node arch__node--db">
               <span class="arch__ic"><svg class="ic"><use href="#i-db"/></svg></span>
               <b>MySQL</b>
-              <small>Aiven · migrations Alembic</small>
+              <small>Aiven</small>
             </div>
             <div class="arch__node arch__node--ai">
               <span class="arch__ic"><svg class="ic"><use href="#i-spark"/></svg></span>
               <b>OpenAI</b>
-              <small>Organização e transcrição</small>
+              <small>Resumo e transcrição</small>
             </div>
           </div>
         </div>
 
         <!-- Stack por camada -->
-        <div class="stack">
-          <article class="stack__card reveal">
-            <header><span class="card__icon card__icon--blue"><svg class="ic"><use href="#i-phone"/></svg></span><h3>Aplicativo</h3></header>
-            <p>Um único código Flutter gera o APK Android e a versão Web instalável no iPhone.</p>
-            <ul class="chips"><li>Flutter 3.41</li><li>Dart 3.11</li><li>go_router</li><li>record (áudio WAV)</li><li>flutter_tts</li></ul>
-            <ul class="facts">
-              <li>Rotas declarativas e controllers por etapa da preparação</li>
-              <li>Gravação com pausa e retomada, até 5 minutos, com revisão da transcrição</li>
-              <li>Tema escuro, alto contraste, escala de texto e leitura por voz</li>
+        <div class="layers">
+          <div class="layer reveal" style="--c: var(--primary); --s: var(--blue-soft)">
+            <h3><svg class="ic"><use href="#i-phone"/></svg> Interface</h3>
+            <ul>
+              <li><i>Fl</i><b>Flutter 3.41</b><small>Android + Web</small></li>
+              <li><i>Dt</i><b>Dart 3.11</b><small>linguagem</small></li>
+              <li><i>JS</i><b>HTML · CSS · JS</b><small>portal</small></li>
             </ul>
-          </article>
-          <article class="stack__card reveal">
-            <header><span class="card__icon card__icon--teal"><svg class="ic"><use href="#i-layers"/></svg></span><h3>Backend</h3></header>
-            <p>API REST em Python com contratos versionados a cada entrega e validação forte de entrada e saída.</p>
-            <ul class="chips"><li>Python 3.12</li><li>FastAPI</li><li>Pydantic v2</li><li>SQLAlchemy 2</li><li>Uvicorn</li></ul>
-            <ul class="facts">
-              <li>Namespaces separados para paciente e operador do portal</li>
-              <li>Erros sanitizados, sem expor dados internos</li>
-              <li>Camada <code>AiProvider</code> desacopla a IA, com provedor falso nos testes</li>
+          </div>
+          <div class="layer reveal" style="--c: var(--teal-dark); --s: var(--teal-soft)">
+            <h3><svg class="ic"><use href="#i-layers"/></svg> Servidor</h3>
+            <ul>
+              <li><i>Py</i><b>Python 3.12</b><small>linguagem</small></li>
+              <li><i>Fa</i><b>FastAPI</b><small>API REST</small></li>
+              <li><i>SQ</i><b>SQLAlchemy 2</b><small>ORM</small></li>
             </ul>
-          </article>
-          <article class="stack__card reveal">
-            <header><span class="card__icon card__icon--amber"><svg class="ic"><use href="#i-db"/></svg></span><h3>Dados</h3></header>
-            <p>Banco relacional gerenciado, com conexão criptografada e esquema evoluído por migrations.</p>
-            <ul class="chips"><li>MySQL</li><li>Aiven</li><li>Alembic</li><li>TLS</li></ul>
-            <ul class="facts">
-              <li>6 migrations versionadas, de esquema inicial a perguntas adaptativas</li>
-              <li>Chaves estrangeiras e isolamento dos dados por usuário</li>
-              <li>Áudio não é salvo no banco; é descartado após a transcrição</li>
+          </div>
+          <div class="layer reveal" style="--c: #B87400; --s: var(--warning-soft)">
+            <h3><svg class="ic"><use href="#i-db"/></svg> Dados</h3>
+            <ul>
+              <li><i>My</i><b>MySQL</b><small>Aiven · TLS</small></li>
+              <li><i>Al</i><b>Alembic</b><small>6 migrations</small></li>
             </ul>
-          </article>
-          <article class="stack__card reveal">
-            <header><span class="card__icon card__icon--slate"><svg class="ic"><use href="#i-shield"/></svg></span><h3>Segurança</h3></header>
-            <p>Autenticação própria, com tokens que expiram e verificação de dono em cada requisição.</p>
-            <ul class="chips"><li>JWT</li><li>Argon2</li><li>HTTPS</li><li>CORS restrito</li></ul>
-            <ul class="facts">
-              <li>Senhas com hash Argon2; tokens de paciente e operador com segredos distintos</li>
-              <li>Token mantido só em memória no portal</li>
-              <li>Auditoria de segredos antes de cada publicação</li>
+          </div>
+          <div class="layer reveal" style="--c: var(--purple); --s: var(--purple-soft)">
+            <h3><svg class="ic"><use href="#i-spark"/></svg> IA</h3>
+            <ul>
+              <li><i>AI</i><b>OpenAI</b><small>Responses API</small></li>
+              <li><i>{ }</i><b>JSON Schema</b><small>saída estrita</small></li>
             </ul>
-          </article>
+          </div>
+          <div class="layer reveal" style="--c: var(--ink); --s: #E8EEF6">
+            <h3><svg class="ic"><use href="#i-shield"/></svg> Infra</h3>
+            <ul>
+              <li><i>Fb</i><b>Firebase</b><small>hospedagem</small></li>
+              <li><i>Rd</i><b>Render</b><small>API</small></li>
+              <li><i>Jw</i><b>JWT · Argon2</b><small>login</small></li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Pipeline de IA -->
-        <div class="ai-pipe reveal">
-          <div class="ai-pipe__head">
-            <span class="eyebrow eyebrow--purple"><svg class="ic"><use href="#i-spark"/></svg> Como a IA foi integrada</span>
-            <h3>Saída estruturada, limites no servidor e revisão humana.</h3>
-            <p>A IA não conversa livremente: cada chamada pede uma resposta em formato fixo, validada pelo backend antes de chegar ao app.</p>
-          </div>
-          <ol class="ai-pipe__steps">
-            <li><b>1</b><div><h4>Relato</h4><p>Texto ou áudio. O áudio é transcrito e o paciente revisa antes de usar.</p></div></li>
-            <li><b>2</b><div><h4>Perguntas adaptativas</h4><p>Uma pergunta por vez, com base no relato e nas respostas anteriores. O limite de 3 é imposto no backend.</p></div></li>
-            <li><b>3</b><div><h4>Resumo em esquema fixo</h4><p>Motivo, pontos relatados, contexto e outros pontos, via Structured Outputs com JSON Schema estrito.</p></div></li>
-            <li><b>4</b><div><h4>Revisão e controle</h4><p>Editar o relato invalida o resumo. Nada é enviado a terceiros sem ação do paciente.</p></div></li>
+        <!-- Fluxo da IA -->
+        <div class="ai-flow reveal">
+          <span class="eyebrow eyebrow--onpurple"><svg class="ic"><use href="#i-spark"/></svg> Como a IA trabalha</span>
+          <ol class="ai-flow__track">
+            <li><span class="ai-flow__ic"><svg class="ic"><use href="#i-mic"/></svg></span><b>Relato</b><small>texto ou áudio</small></li>
+            <li><span class="ai-flow__ic"><svg class="ic"><use href="#i-chat"/></svg></span><b>Perguntas</b><small>até 3, uma por vez</small></li>
+            <li><span class="ai-flow__ic"><svg class="ic"><use href="#i-file"/></svg></span><b>Resumo</b><small>formato fixo</small></li>
+            <li class="is-you"><span class="ai-flow__ic"><svg class="ic"><use href="#i-user"/></svg></span><b>Você revisa</b><small>e decide</small></li>
           </ol>
-          <ul class="ai-pipe__rules">
-            <li><svg class="ic"><use href="#i-check"/></svg> <code>store: false</code> e nenhuma ferramenta habilitada</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Sem retry automático: falhas preservam o que já foi salvo</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Cotas diárias por paciente e globais</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Registro de uso sem guardar relato, áudio ou resposta</li>
+          <ul class="ai-flow__guards">
+            <li><svg class="ic"><use href="#i-shield"/></svg> <code>store: false</code></li>
+            <li><svg class="ic"><use href="#i-x"/></svg> Sem ferramentas</li>
+            <li><svg class="ic"><use href="#i-clock"/></svg> Cotas diárias</li>
+            <li><svg class="ic"><use href="#i-file"/></svg> Áudio não é salvo</li>
           </ul>
         </div>
 
         <!-- Qualidade e evolução -->
         <div class="quality">
-          <div class="quality__nums reveal">
-            <div><b data-count="486">486</b><span>testes no backend</span></div>
-            <div><b data-count="214">214</b><span>testes no app Flutter</span></div>
-            <div><b data-count="29">29</b><span>testes no portal</span></div>
-            <div><b>0</b><span>alertas no <code>flutter analyze</code> e no Ruff</span></div>
+          <div class="tests reveal">
+            <div class="tests__total"><b data-count="729">729</b><span>testes automatizados</span></div>
+            <ul class="tests__bars">
+              <li style="--v: 486"><span>Backend</span><i><em></em></i><b>486</b></li>
+              <li style="--v: 214"><span>App</span><i><em></em></i><b>214</b></li>
+              <li style="--v: 29"><span>Portal</span><i><em></em></i><b>29</b></li>
+            </ul>
           </div>
           <div class="versions reveal">
-            <h3>Evolução em versões</h3>
-            <p>Cada entrega virou um checkpoint com relatório, validação e tag no Git.</p>
-            <ol>
-              <li><b>V1</b><span>Base do projeto</span></li>
-              <li><b>V2</b><span>MVP funcional</span></li>
-              <li><b>V3</b><span>Login e API</span></li>
-              <li><b>V4</b><span>Portal simulador</span></li>
-              <li><b>V5</b><span>API no Render</span></li>
-              <li><b>V6</b><span>App Web publicado</span></li>
-              <li><b>V7</b><span>Portal público</span></li>
-              <li><b>V8</b><span>IA e transcrição reais</span></li>
-              <li class="is-now"><b>V9</b><span>Preparo conversacional</span></li>
+            <h3>9 versões entregues</h3>
+            <ol class="versions__line">
+              <li><i></i><b>V1</b><small>Base</small></li>
+              <li><i></i><b>V2</b><small>MVP</small></li>
+              <li><i></i><b>V3</b><small>Login</small></li>
+              <li><i></i><b>V4</b><small>Portal</small></li>
+              <li><i></i><b>V5</b><small>API</small></li>
+              <li><i></i><b>V6</b><small>Web</small></li>
+              <li><i></i><b>V7</b><small>Público</small></li>
+              <li><i></i><b>V8</b><small>IA real</small></li>
+              <li class="is-now"><i></i><b>V9</b><small>Conversa</small></li>
             </ol>
           </div>
         </div>
-        <p class="tech__note reveal">Desenvolvimento assistido por agentes de IA de programação, guiados por documentos de contexto e regras do projeto, com revisão e validação humana em cada etapa. <a href="https://github.com/jeffsilva03/Chega-Junto---Desafio-IA" target="_blank" rel="noopener">Ver o código no GitHub</a>.</p>
+        <p class="tech__note reveal"><svg class="ic"><use href="#i-github"/></svg> Desenvolvido com apoio de agentes de IA e revisão humana. <a href="https://github.com/jeffsilva03/Chega-Junto---Desafio-IA" target="_blank" rel="noopener">Ver o código</a></p>
       </div>
     </section>
 
