@@ -472,36 +472,36 @@
         <div class="arch reveal" role="img" aria-label="Arquitetura: o aplicativo Flutter e o Portal Web se comunicam por HTTPS com a API FastAPI no Render, que persiste no MySQL do Aiven e chama a OpenAI">
           <div class="arch__col">
             <div class="arch__node arch__node--app">
-              <span class="arch__ic"><svg class="ic"><use href="#i-phone"/></svg></span>
+              <span class="arch__ic arch__ic--logo"><img src="assets/img/tech/flutter.svg" alt="" width="24" height="24"></span>
               <b>App do paciente</b>
               <small>Flutter · APK e PWA</small>
             </div>
             <div class="arch__node arch__node--portal">
-              <span class="arch__ic"><svg class="ic"><use href="#i-monitor"/></svg></span>
+              <span class="arch__ic arch__ic--logo"><img src="assets/img/tech/html5.svg" alt="" width="24" height="24"></span>
               <b>Portal</b>
               <small>HTML · CSS · JS</small>
             </div>
-            <span class="arch__host">Firebase Hosting</span>
+            <span class="arch__host"><img src="assets/img/tech/firebase.svg" alt="" width="14" height="14"> Firebase Hosting</span>
           </div>
           <div class="arch__link"><span>HTTPS + JWT</span><i></i></div>
           <div class="arch__col">
             <div class="arch__node arch__node--api">
-              <span class="arch__ic"><svg class="ic"><use href="#i-layers"/></svg></span>
+              <span class="arch__ic arch__ic--logo"><img src="assets/img/tech/fastapi.svg" alt="" width="24" height="24"></span>
               <b>API REST</b>
               <small>FastAPI</small>
               <ul><li>Login</li><li>Agenda</li><li>Relato</li><li>IA</li></ul>
             </div>
-            <span class="arch__host">Render</span>
+            <span class="arch__host"><img src="assets/img/tech/render.svg" alt="" width="14" height="14"> Render</span>
           </div>
           <div class="arch__link arch__link--split"><span>TLS</span><i></i><span>Responses API</span><i></i></div>
           <div class="arch__col">
             <div class="arch__node arch__node--db">
-              <span class="arch__ic"><svg class="ic"><use href="#i-db"/></svg></span>
+              <span class="arch__ic arch__ic--logo"><img src="assets/img/tech/mysql.svg" alt="" width="24" height="24"></span>
               <b>MySQL</b>
               <small>Aiven</small>
             </div>
             <div class="arch__node arch__node--ai">
-              <span class="arch__ic"><svg class="ic"><use href="#i-spark"/></svg></span>
+              <span class="arch__ic arch__ic--logo"><img src="assets/img/tech/openai.svg" alt="" width="24" height="24"></span>
               <b>OpenAI</b>
               <small>Resumo e transcrição</small>
             </div>
@@ -513,39 +513,39 @@
           <div class="layer reveal" style="--c: var(--primary); --s: var(--blue-soft)">
             <h3><svg class="ic"><use href="#i-phone"/></svg> Interface</h3>
             <ul>
-              <li><i>Fl</i><b>Flutter 3.41</b><small>Android + Web</small></li>
-              <li><i>Dt</i><b>Dart 3.11</b><small>linguagem</small></li>
-              <li><i>JS</i><b>HTML · CSS · JS</b><small>portal</small></li>
+              <li><i class="logo"><img src="assets/img/tech/flutter.svg" alt="" width="24" height="24"></i><b>Flutter 3.41</b><small>Android + Web</small></li>
+              <li><i class="logo"><img src="assets/img/tech/dart.svg" alt="" width="24" height="24"></i><b>Dart 3.11</b><small>linguagem</small></li>
+              <li><i class="logo logo--trio"><img src="assets/img/tech/html5.svg" alt="" width="15" height="15"><img src="assets/img/tech/css3.svg" alt="" width="15" height="15"><img src="assets/img/tech/javascript.svg" alt="" width="15" height="15"></i><b>HTML · CSS · JS</b><small>portal</small></li>
             </ul>
           </div>
           <div class="layer reveal" style="--c: var(--teal-dark); --s: var(--teal-soft)">
             <h3><svg class="ic"><use href="#i-layers"/></svg> Servidor</h3>
             <ul>
-              <li><i>Py</i><b>Python 3.12</b><small>linguagem</small></li>
-              <li><i>Fa</i><b>FastAPI</b><small>API REST</small></li>
-              <li><i>SQ</i><b>SQLAlchemy 2</b><small>ORM</small></li>
+              <li><i class="logo"><img src="assets/img/tech/python.svg" alt="" width="24" height="24"></i><b>Python 3.12</b><small>linguagem</small></li>
+              <li><i class="logo"><img src="assets/img/tech/fastapi.svg" alt="" width="24" height="24"></i><b>FastAPI</b><small>API REST</small></li>
+              <li><i class="logo"><img src="assets/img/tech/sqlalchemy.svg" alt="" width="24" height="24"></i><b>SQLAlchemy 2</b><small>ORM</small></li>
             </ul>
           </div>
           <div class="layer reveal" style="--c: #B87400; --s: var(--warning-soft)">
             <h3><svg class="ic"><use href="#i-db"/></svg> Dados</h3>
             <ul>
-              <li><i>My</i><b>MySQL</b><small>Aiven · TLS</small></li>
+              <li><i class="logo"><img src="assets/img/tech/mysql.svg" alt="" width="24" height="24"></i><b>MySQL</b><small>Aiven · TLS</small></li>
               <li><i>Al</i><b>Alembic</b><small>6 migrations</small></li>
             </ul>
           </div>
           <div class="layer reveal" style="--c: var(--purple); --s: var(--purple-soft)">
             <h3><svg class="ic"><use href="#i-spark"/></svg> IA</h3>
             <ul>
-              <li><i>AI</i><b>OpenAI</b><small>Responses API</small></li>
-              <li><i>{ }</i><b>JSON Schema</b><small>saída estrita</small></li>
+              <li><i class="logo"><img src="assets/img/tech/openai.svg" alt="" width="24" height="24"></i><b>OpenAI</b><small>Responses API</small></li>
+              <li><i class="logo"><img src="assets/img/tech/json.svg" alt="" width="24" height="24"></i><b>JSON Schema</b><small>saída estrita</small></li>
             </ul>
           </div>
           <div class="layer reveal" style="--c: var(--ink); --s: #E8EEF6">
             <h3><svg class="ic"><use href="#i-shield"/></svg> Infra</h3>
             <ul>
-              <li><i>Fb</i><b>Firebase</b><small>hospedagem</small></li>
-              <li><i>Rd</i><b>Render</b><small>API</small></li>
-              <li><i>Jw</i><b>JWT · Argon2</b><small>login</small></li>
+              <li><i class="logo"><img src="assets/img/tech/firebase.svg" alt="" width="24" height="24"></i><b>Firebase</b><small>hospedagem</small></li>
+              <li><i class="logo"><img src="assets/img/tech/render.svg" alt="" width="24" height="24"></i><b>Render</b><small>API</small></li>
+              <li><i class="logo"><img src="assets/img/tech/jsonwebtokens.svg" alt="" width="24" height="24"></i><b>JWT · Argon2</b><small>login</small></li>
             </ul>
           </div>
         </div>

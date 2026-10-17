@@ -436,6 +436,14 @@ code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .86
 .versions__line small { font-size: .74rem; color: #B7C8E4; font-weight: 600; line-height: 1.2; }
 .versions__line li.is-now i { background: var(--primary); border-color: #fff; box-shadow: 0 0 0 6px rgba(0, 100, 255, .35); }
 .versions__line li.is-now b { color: #fff; }
+.layer li i.logo { background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-s); }
+.layer li i.logo img { width: 24px; height: 24px; }
+.layer li i.logo--trio { display: flex; gap: 1px; padding: 0 3px; }
+.layer li i.logo--trio img { width: 11px; height: 11px; }
+.arch__ic--logo { background: #fff !important; border: 1px solid var(--border); box-shadow: var(--shadow-s); }
+.arch__ic--logo img { width: 24px; height: 24px; }
+.arch__host { display: inline-flex; align-items: center; gap: 6px; }
+.arch__host img { width: 14px; height: 14px; }
 .tech__note { margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; }
 .tech__note .ic { color: var(--ink); }
 .tech__note a { font-weight: 800; }
@@ -697,6 +705,8 @@ code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .86
   .layer { padding: 16px 12px; }
   .layer li { grid-template-columns: 34px minmax(0, 1fr); column-gap: 10px; padding: 4px; }
   .layer li i { width: 34px; height: 34px; font-size: .8rem; border-radius: 10px; }
+  .layer li i.logo img { width: 20px; height: 20px; }
+  .layer li i.logo--trio img { width: 9px; height: 9px; }
   .layer li b { font-size: .85rem; }
   .layer:last-child { grid-column: 1 / -1; }
   .arch { padding: 18px; border-radius: 24px; }
